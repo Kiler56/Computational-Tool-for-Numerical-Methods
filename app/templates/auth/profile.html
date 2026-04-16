@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Perfil — NumCalc{% endblock %}
+
+{% block content %}
+<section class="auth-container">
+    <div class="auth-card profile-card">
+        <div class="auth-header">
+            <span class="auth-icon">👤</span>
+            <h1 data-i18n="profile_title">Mi Perfil</h1>
+        </div>
+
+        {% if success %}
+        <div class="alert alert-success">{{ success }}</div>
+        {% endif %}
+
+        <div class="profile-info-bar">
+            <div class="profile-stat">
+                <span class="stat-label" data-i18n="username_label">Nombre de usuario</span>
+                <span class="stat-value">{{ current_user.username }}</span>
+            </div>
+            <div class="profile-stat">
+                <span class="stat-label" data-i18n="email_label">Correo electrónico</span>
+                <span class="stat-value">{{ current_user.email }}</span>
+            </div>
+        </div>
+
+        <form method="POST" class="auth-form" id="profile-form">
+            <div class="form-group">
+                <label for="display_name" data-i18n="display_name_label">Nombre para mostrar</label>
+                <input type="text" id="display_name" name="display_name" value="{{ current_user.display_name }}" placeholder="Tu nombre">
+            </div>
+
+            <div class="form-group">
+                <label for="preferred_lang" data-i18n="lang_label">Idioma preferido</label>
+                <select id="preferred_lang" name="preferred_lang" class="form-select">
+                    <option value="es" {% if current_user.preferred_lang == 'es' %}selected{% endif %}>🇪🇸 Español</option>
+                    <option value="en" {% if current_user.preferred_lang == 'en' %}selected{% endif %}>🇺🇸 English</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" data-i18n="btn_save">Guardar Cambios</button>
+        </form>
+
+        <div class="profile-actions">
+            <a href="/history" class="btn btn-outline" data-i18n="history">Mi Historial</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

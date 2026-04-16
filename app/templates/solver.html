@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}{{ method.description }} — NumCalc{% endblock %}
+
+{% block content %}
+<section class="solver-header">
+    <div class="header-titles">
+        <h1 class="page-title">{{ method.description }}</h1>
+        <p class="solver-slug"><span data-i18n="api_slug">Método API:</span> <code>{{ method.name }}</code></p>
+    </div>
+</section>
+
+{% if method.instructions %}
+<section class="method-instructions callout callout-info">
+    <div class="callout-icon">ℹ️</div>
+    <div class="callout-content"
+         data-instructions-es="{{ method.instructions.es if method.instructions is mapping else method.instructions }}"
+         data-instructions-en="{{ method.instructions.en if method.instructions is mapping else method.instructions }}">
+        <h3 data-i18n="instructions_title">Instrucciones de Uso</h3>
+        <div id="instructions-body">
+            {{ (method.instructions.es if method.instructions is mapping else method.instructions) | safe }}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="solver-body">
+    <!-- Controles de tamaño -->
+    <div class="size-controls">
+        <label for="matrix-size" data-i18n="size_label">Tamaño del sistema (n):</label>
+        <div class="size-stepper">
+            <button id="btn-decrease" class="btn btn-sm" onclick="changeSize(-1)">−</button>
+            <span id="size-display" class="size-value">3</span>
+            <button id="btn-increase" class="btn btn-sm" onclick="changeSize(1)">+</button>
+        </div>
+    </div>
+
+    <!-- Entrada de datos -->
+    <div class="input-area">
+        <div class="matrix-section">
+            <h3 data-i18n="matrix_label">Matriz A</h3>
+            <div id="matrix-container" class="matrix-grid"></div>
+        </div>
+        <div class="equals-sign">=</div>
+        <div class="vector-section">
+            <h3 data-i18n="vector_label">Vector b</h3>
+            <div id="vector-container" class="vector-grid"></div>
+        </div>
+    </div>
+
+    <button id="btn-solve" class="btn btn-primary btn-solve" onclick="handleSolve()">
+        <span class="btn-text" data-i18n="btn_solve">Resolver Sistema</span>
+        <span class="btn-spinner" style="display:none;">⟳</span>
+    </button>
+
+    <!-- Errores -->
+    <div id="error-container" class="alert alert-error" style="display:none;"></div>
+
+    <!-- Resultados -->
+    <section id="results-section" class="results" style="display:none;">
+        <div class="result-solution">
+            <h2 data-i18n="solution_title">Solución</h2>
+            <div id="solution-container" class="solution-display"></div>
+            <button class="btn btn-sm btn-copy" id="btn-copy-solution" onclick="copySolution()" data-i18n="btn_copy">📋 Copiar</button>
+        </div>
+        <div class="result-steps">
+            <h2><span data-i18n="steps_title">Pasos</span> <span id="step-count" class="badge"></span></h2>
+            <div id="steps-container" class="steps-list"></div>
+        </div>
+    </section>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const METHOD_NAME = "{{ method.name }}";
+    let currentSize = 3;
+
+    function changeSize(delta) {
+        const newSize = currentSize + delta;
+        if (newSize < 2 || newSize > 8) return;
+        currentSize = newSize;
+        document.getElementById('size-display').textContent = currentSize;
+        buildMatrixGrid(currentSize, 'matrix-container');
+        buildVectorGrid(currentSize, 'vector-container');
+        hideResults();
+    }
+
+    async function handleSolve() {
+        const btn = document.getElementById('btn-solve');
+        const btnText = btn.querySelector('.btn-text');
+        const btnSpinner = btn.querySelector('.btn-spinner');
+        const errorDiv = document.getElementById('error-container');
+
+        errorDiv.style.display = 'none';
+        btnText.style.display = 'none';
+        btnSpinner.style.display = 'inline-block';
+        btn.disabled = true;
+
+        try {
+            const matrix = readMatrix('matrix-container', currentSize);
+            const b = readVector('vector-container', currentSize);
+
+            if (!matrix || !b) {
+                throw new Error(I18n.t('error_fill_fields'));
+            }
+
+            const result = await solveMethod(METHOD_NAME, matrix, b);
+
+            if (result.error) {
+                throw new Error(result.error);
+            }
+
+            renderSolution(result.solution, 'solution-container');
+            renderSteps(result.steps, 'steps-container');
+            document.getElementById('step-count').textContent = result.steps.length + ' ' + I18n.t('steps_suffix');
+            document.getElementById('results-section').style.display = 'block';
+            document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+
+        } catch (err) {
+            errorDiv.textContent = err.message;
+            errorDiv.style.display = 'block';
+        } finally {
+            btnText.style.display = 'inline';
+            btnSpinner.style.display = 'none';
+            btn.disabled = false;
+        }
+    }
+
+    function hideResults() {
+        document.getElementById('results-section').style.display = 'none';
+        document.getElementById('error-container').style.display = 'none';
+    }
+
+    function copySolution() {
+        const el = document.getElementById('solution-container');
+        navigator.clipboard.writeText(el.textContent).then(() => {
+            const btn = document.getElementById('btn-copy-solution');
+            btn.textContent = I18n.t('btn_copied');
+            setTimeout(() => { btn.textContent = I18n.t('btn_copy'); }, 1500);
+        });
+    }
+
+    // Inicializar grids al cargar
+    document.addEventListener('DOMContentLoaded', () => {
+        buildMatrixGrid(currentSize, 'matrix-container');
+        buildVectorGrid(currentSize, 'vector-container');
+
+        // Aplicar traducción de instrucciones del método
+        I18n.init().then(() => {
+            const container = document.querySelector("[data-instructions-es]");
+            if (container) {
+                const lang = I18n.getLang();
+                const esHTML = container.getAttribute("data-instructions-es");
+                const enHTML = container.getAttribute("data-instructions-en");
+                const body = document.getElementById("instructions-body");
+                if (body) body.innerHTML = lang === "en" ? enHTML : esHTML;
+            }
+        });
+    });
+</script>
+{% endblock %}

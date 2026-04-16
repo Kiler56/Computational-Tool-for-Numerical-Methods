@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Calculadora de Métodos Numéricos — Herramienta interactiva para resolver sistemas de ecuaciones lineales.">
+    <title>{% block title %}Calculadora Numérica{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body data-user-lang="{{ current_user.preferred_lang if current_user.is_authenticated else 'es' }}">
+    <div class="dashboard">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="brand">
+                    <span class="brand-icon">∑</span>
+                    <span class="brand-text">NumCalc</span>
+                </a>
+                <button class="mobile-menu-close" id="menu-close" data-i18n-aria="close_menu" aria-label="Cerrar menú">×</button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section-title" data-i18n="nav_title">Métodos Numéricos</div>
+                {% if methods is defined %}
+                <ul class="nav-list">
+                    {% for m in methods %}
+                    <li>
+                        <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}">
+                            {{ m.description }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </nav>
+            
+            <!-- User Section in Sidebar -->
+            <div class="sidebar-user">
+                {% if current_user.is_authenticated %}
+                <div class="user-badge">
+                    <span class="user-avatar">{{ current_user.display_name[0]|upper if current_user.display_name else current_user.username[0]|upper }}</span>
+                    <span class="user-name">{{ current_user.display_name or current_user.username }}</span>
+                </div>
+                <ul class="user-nav">
+                    <li><a href="/profile" class="nav-link nav-link-user" data-i18n="profile">Mi Perfil</a></li>
+                    <li><a href="/history" class="nav-link nav-link-user" data-i18n="history">Mi Historial</a></li>
+                    <li><a href="/logout" class="nav-link nav-link-logout" data-i18n="logout">Cerrar Sesión</a></li>
+                </ul>
+                {% else %}
+                <ul class="user-nav">
+                    <li><a href="/login" class="btn btn-outline btn-sm btn-block" data-i18n="login">Iniciar Sesión</a></li>
+                    <li><a href="/register" class="btn btn-primary btn-sm btn-block" data-i18n="register">Crear Cuenta</a></li>
+                </ul>
+                {% endif %}
+            </div>
+
+            <div class="sidebar-footer">
+                <p data-i18n="footer_copy">&copy; 2026 — Telemática</p>
+                <p><small data-i18n="footer_arch">Arquitectura Monolito Modular</small></p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="topbar">
+                <button class="mobile-menu-toggle" id="menu-toggle" data-i18n-aria="open_menu" aria-label="Abrir menú">☰</button>
+                
+                <!-- Language Toggle -->
+                <div class="lang-toggle">
+                    <button id="lang-es" class="lang-btn active" onclick="I18n.setLang('es')" title="Español">ES</button>
+                    <button id="lang-en" class="lang-btn" onclick="I18n.setLang('en')" title="English">EN</button>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Background overlay for mobile menu -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/api.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/matrix.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/steps.js') }}"></script>
+    <script>
+        // Lógica de UI para Sidebar Responsive
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const toggleBtn = document.getElementById('menu-toggle');
+        const closeBtn = document.getElementById('menu-close');
+
+        function openMenu() {
+            sidebar.classList.add('open');
+            overlay.classList.add('visible');
+        }
+
+        function closeMenu() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('visible');
+        }
+
+        toggleBtn.addEventListener('click', openMenu);
+        closeBtn.addEventListener('click', closeMenu);
+        overlay.addEventListener('click', closeMenu);
+
+        // Highlight active link in sidebar
+        document.addEventListener("DOMContentLoaded", () => {
+            const currentPath = window.location.pathname;
+            const links = document.querySelectorAll('.nav-link');
+            links.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

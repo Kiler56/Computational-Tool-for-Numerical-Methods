@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Historial — NumCalc{% endblock %}
+
+{% block content %}
+<section class="history-container">
+    <div class="history-header">
+        <h1 data-i18n="history_title">Mi Historial de Cálculos</h1>
+    </div>
+
+    {% if calculations %}
+    <div class="history-table-wrapper">
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th data-i18n="col_date">Fecha</th>
+                    <th data-i18n="col_method">Método</th>
+                    <th data-i18n="col_size">Tamaño</th>
+                    <th data-i18n="col_steps">Pasos</th>
+                    <th data-i18n="col_solution">Solución</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for calc in calculations %}
+                <tr class="history-row" onclick="toggleDetail(this)">
+                    <td class="date-cell">{{ calc.created_at.strftime('%d/%m/%Y %H:%M') if calc.created_at else '—' }}</td>
+                    <td>
+                        <a href="/solver/{{ calc.method_name }}" class="method-link">{{ calc.method_description or calc.method_name }}</a>
+                    </td>
+                    <td class="center-cell">{{ calc.get_matrix()|length }}×{{ calc.get_matrix()|length }}</td>
+                    <td class="center-cell">{{ calc.steps_count }}</td>
+                    <td class="solution-cell"><code>{{ calc.get_solution() }}</code></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="history-empty">
+        <span class="empty-icon">📊</span>
+        <p data-i18n="history_empty">Aún no has realizado ningún cálculo. ¡Prueba algún método!</p>
+        <a href="/" class="btn btn-primary">← Dashboard</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

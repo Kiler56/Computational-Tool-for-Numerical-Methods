@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}NumCalc — Métodos Numéricos{% endblock %}
+
+{% block content %}
+<section class="hero hero-dashboard">
+    <h1 data-i18n="hero_title">Calculadora de Métodos Numéricos</h1>
+    <p class="hero-subtitle" data-i18n="hero_subtitle">Bienvenido al entorno interactivo para la resolución de sistemas de ecuaciones lineales.</p>
+</section>
+
+{% if error %}
+<div class="alert alert-error">{{ error }}</div>
+{% endif %}
+
+<div class="welcome-box">
+    <h2 data-i18n="how_to_title">👋 Cómo usar la herramienta</h2>
+    <p data-i18n="how_to_desc">Esta plataforma ha sido diseñada para escalar rápidamente con múltiples algoritmos numéricos desarrollados por nuestro equipo.</p>
+    
+    <ol class="welcome-steps">
+        <li data-i18n="step1"><strong>Selecciona un método</strong> desde el panel lateral izquierdo. Encontrarás más de 20 métodos a medida que el equipo los implemente.</li>
+        <li data-i18n="step2"><strong>Lee las instrucciones</strong> específicas en la vista de cada método para entender los requerimientos de la matriz.</li>
+        <li data-i18n="step3"><strong>Ingresa los datos</strong> y observa la resolución paso a paso.</li>
+    </ol>
+
+    <p class="welcome-note" data-i18n="tip">💡 <em>TIP: A medida que se agreguen nuevos métodos por los devs, estos aparecerán automáticamente en el menú.</em></p>
+</div>
+{% endblock %}

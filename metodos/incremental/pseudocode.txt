@@ -1,0 +1,21 @@
+Algorithm IncrementalSearch(f, x0, h, N)
+
+1. x_prev ← x0
+2. f_prev ← f(x_prev)
+
+3. For i ← 1 to N do
+      x_curr ← x_prev + h
+      f_curr ← f(x_curr)
+
+      Print iteration values
+
+      If (f_prev * f_curr < 0) then
+           Print "Root in [x_prev, x_curr]"
+           Stop
+      EndIf
+
+      x_prev ← x_curr
+      f_prev ← f_curr
+   EndFor
+
+4. Print "No root found"

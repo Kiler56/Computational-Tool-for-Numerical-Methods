@@ -1,0 +1,28 @@
+Algorithm Bisection(f, a, b, Tol, N)
+
+1. If f(a)*f(b) > 0 then
+      Print "Invalid interval"
+      Stop
+
+2. xm ← (a + b) / 2
+3. E ← ∞
+
+4. For iter ← 1 to N do
+      fxm ← f(xm)
+
+      Print iteration values
+
+      If f(a)*fxm < 0 then
+           b ← xm
+      Else
+           a ← xm
+      EndIf
+
+      x_old ← xm
+      xm ← (a + b)/2
+      E ← |xm - x_old|
+
+      If E < Tol then Stop
+   EndFor
+
+5. Print xm

@@ -1,0 +1,26 @@
+Algorithm Trisection(f, a, b, Tol, N)
+
+1. E ← ∞
+
+2. For iter ← 1 to N do
+      x1 ← a + (b - a)/3
+      x2 ← b - (b - a)/3
+
+      Print iteration values
+
+      If f(a)*f(x1) < 0 then
+           b ← x1
+      ElseIf f(x1)*f(x2) < 0 then
+           a ← x1
+           b ← x2
+      Else
+           a ← x2
+      EndIf
+
+      E ← |b - a|
+
+      If E < Tol then Stop
+   EndFor
+
+3. xm ← (a + b)/2
+4. Print xm

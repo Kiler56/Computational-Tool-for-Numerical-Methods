@@ -1,0 +1,29 @@
+Inicio
+
+Definir función derivada_aprox(f, x):
+    h ← 1e-6
+    retornar (f(x + h) - f(x - h)) / (2*h)
+
+Definir función newton(f, x0, tolerancia, max_iter):
+    x ← x0
+
+    Para i desde 1 hasta max_iter:
+        fx ← f(x)
+        dfx ← derivada_aprox(f, x)
+
+        Si dfx = 0:
+            Mostrar "Error: derivada cero"
+            Retornar None
+
+        x_nuevo ← x - fx / dfx
+
+        Si |x_nuevo - x| < tolerancia:
+            Mostrar "Convergió en i iteraciones"
+            Retornar x_nuevo
+
+        x ← x_nuevo
+
+    Mostrar "No convergió"
+    Retornar None
+
+Fin

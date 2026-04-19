@@ -1,0 +1,18 @@
+Inicio
+
+Definir función punto_fijo(g, x0, tolerancia, max_iter):
+    x ← x0
+
+    Para i desde 1 hasta max_iter:
+        x_nuevo ← g(x)
+
+        Si |x_nuevo - x| < tolerancia:
+            Mostrar "Convergió en i iteraciones"
+            Retornar x_nuevo
+
+        x ← x_nuevo
+
+    Mostrar "No convergió"
+    Retornar None
+
+Fin

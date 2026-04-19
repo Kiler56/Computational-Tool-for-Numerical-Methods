@@ -1,0 +1,25 @@
+Inicio
+
+Definir función secante(f, x0, x1, tolerancia, max_iter):
+
+    Para i desde 1 hasta max_iter:
+        f0 ← f(x0)
+        f1 ← f(x1)
+
+        Si (f1 - f0) = 0:
+            Mostrar "Error: división por cero"
+            Retornar None
+
+        x2 ← x1 - f1 * (x1 - x0) / (f1 - f0)
+
+        Si |x2 - x1| < tolerancia:
+            Mostrar "Convergió en i iteraciones"
+            Retornar x2
+
+        x0 ← x1
+        x1 ← x2
+
+    Mostrar "No convergió"
+    Retornar None
+
+Fin

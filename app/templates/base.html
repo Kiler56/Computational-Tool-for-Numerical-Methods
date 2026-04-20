@@ -23,15 +23,30 @@
             </div>
             
             <nav class="sidebar-nav">
-                <div class="nav-section-title" data-i18n="nav_title">Métodos Numéricos</div>
+                <div class="nav-section-title" data-i18n="nav_systems">Sistemas Lineales</div>
                 {% if methods is defined %}
                 <ul class="nav-list">
                     {% for m in methods %}
+                    {% if m.method_type is not defined or m.method_type == 'linear_system' %}
                     <li>
                         <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}">
                             {{ m.description }}
                         </a>
                     </li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+
+                <div class="nav-section-title" data-i18n="nav_roots" style="margin-top:1.5rem;">Búsqueda de Raíces</div>
+                <ul class="nav-list">
+                    {% for m in methods %}
+                    {% if m.method_type is defined and m.method_type == 'root' %}
+                    <li>
+                        <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}">
+                            {{ m.description }}
+                        </a>
+                    </li>
+                    {% endif %}
                     {% endfor %}
                 </ul>
                 {% endif %}

@@ -57,17 +57,14 @@ def api_methods():
 
 @main_bp.route("/api/solve", methods=["POST"])
 def api_solve():
-    """Resuelve un sistema usando el método indicado."""
+    """Resuelve un sistema/ecuación usando el método indicado."""
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "Body JSON requerido."}), 400
 
     method_name = data.get("method")
-    matrix = data.get("matrix")
-    b = data.get("b")
-
-    if not method_name or matrix is None or b is None:
-        return jsonify({"error": "Campos requeridos: 'method', 'matrix', 'b'."}), 400
+    if not method_name:
+        return jsonify({"error": "Campo 'method' requerido."}), 400
 
     try:
         method = registry.get(method_name)
@@ -75,7 +72,20 @@ def api_solve():
         return jsonify({"error": str(e)}), 400
 
     try:
-        result = method.solve(matrix, b)
+        if method.method_type == "root":
+            # Métodos de búsqueda de raíces: f(x) = 0
+            expr = data.get("expr")
+            params = data.get("params", {})
+            if not expr:
+                return jsonify({"error": "Campo 'expr' requerido para métodos de raíces."}), 400
+            result = method.solve(expr, params)
+        else:
+            # Métodos de sistemas lineales: Ax = b
+            matrix = data.get("matrix")
+            b = data.get("b")
+            if matrix is None or b is None:
+                return jsonify({"error": "Campos 'matrix' y 'b' requeridos para sistemas lineales."}), 400
+            result = method.solve(matrix, b)
 
         # Guardar en historial si el usuario está logueado
         if current_user.is_authenticated:
@@ -88,8 +98,14 @@ def api_solve():
                 method_description=method.description,
                 steps_count=len(result.get("steps", [])),
             )
-            calc.set_matrix(matrix)
-            calc.set_vector(b)
+
+            if method.method_type == "root":
+                calc.set_matrix({"expr": data.get("expr"), "params": data.get("params", {})})
+                calc.set_vector([])
+            else:
+                calc.set_matrix(data.get("matrix"))
+                calc.set_vector(data.get("b"))
+
             calc.set_solution(result.get("solution", []))
             db.session.add(calc)
             db.session.commit()

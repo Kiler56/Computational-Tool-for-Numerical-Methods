@@ -27,24 +27,38 @@ class NumericalMethod(ABC):
         """Instrucciones de uso en formato HTML. Retorna dict con claves 'es' y 'en'."""
         ...
 
-    @abstractmethod
-    def solve(self, A: list, b: list) -> dict:
+    @property
+    def method_type(self) -> str:
+        """Tipo de método: 'linear_system' o 'root'.
+        Subclases pueden sobreescribir. Por defecto 'linear_system'.
         """
-        Resuelve el sistema Ax = b.
+        return "linear_system"
 
-        Args:
-            A: Matriz de coeficientes (list[list[float]]).
-            b: Vector de términos independientes (list[float]).
+    @property
+    def params_schema(self) -> list:
+        """Define los parámetros que el formulario del solver debe mostrar.
+        Retorna lista de dicts: [{"key": "a", "label_es": "...", "label_en": "...", "type": "float", "default": 0}, ...]
+        Solo relevante para métodos de tipo 'root'.
+        """
+        return []
+
+    @abstractmethod
+    def solve(self, *args, **kwargs) -> dict:
+        """
+        Resuelve el problema numérico.
+
+        Para linear_system: solve(A, b) -> Ax = b.
+        Para root: solve(expr, params) -> f(x) = 0.
 
         Returns:
             dict con al menos:
-                - "solution": list[float]
-                - "steps": list[dict]  (snapshots de cada paso)
-                - "method": str        (self.name)
+                - "solution": resultado
+                - "steps": list[dict]
+                - "method": str (self.name)
         """
         ...
 
     @staticmethod
-    def _snapshot(matrix: list) -> list:
-        """Copia profunda serializable de una matriz (o vector)."""
-        return copy.deepcopy(matrix)
+    def _snapshot(data: list) -> list:
+        """Copia profunda serializable."""
+        return copy.deepcopy(data)

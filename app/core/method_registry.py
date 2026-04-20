@@ -47,11 +47,16 @@ class MethodRegistry:
         return self._methods[name]()
 
     def list_all(self) -> list[dict]:
-        """Lista todos los métodos registrados con su name y description."""
+        """Lista todos los métodos registrados con metadata completa."""
         result = []
         for name, cls in self._methods.items():
             instance = cls()
-            result.append({"name": instance.name, "description": instance.description})
+            result.append({
+                "name": instance.name,
+                "description": instance.description,
+                "method_type": instance.method_type,
+                "params_schema": instance.params_schema,
+            })
         return result
 
 

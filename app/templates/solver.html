@@ -24,7 +24,35 @@
 {% endif %}
 
 <section class="solver-body">
-    <!-- Controles de tamaño -->
+
+{% if method.method_type == "root" %}
+    <!-- ════════ Formulario para métodos de raíces ════════ -->
+    <div class="root-form">
+        <div class="form-group">
+            <label for="expr-input" data-i18n="expr_label">Función f(x):</label>
+            <input type="text" id="expr-input" class="form-input form-input-expr"
+                   placeholder="ej: x**2 - 2" value="x**2 - 2" autocomplete="off">
+            <small class="expr-hint" data-i18n="expr_hint">Funciones disponibles: sin, cos, tan, exp, log, sqrt, abs, pi, e</small>
+        </div>
+
+        <div class="root-params-grid">
+            {% for param in method.params_schema %}
+            <div class="form-group">
+                <label for="param-{{ param.key }}"
+                       data-i18n-es="{{ param.label_es }}"
+                       data-i18n-en="{{ param.label_en }}">{{ param.label_es }}</label>
+                <input type="number" id="param-{{ param.key }}"
+                       class="form-input root-param-input"
+                       data-param-key="{{ param.key }}"
+                       step="any"
+                       value="{{ param.default }}">
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% else %}
+    <!-- ════════ Formulario para sistemas lineales Ax=b ════════ -->
     <div class="size-controls">
         <label for="matrix-size" data-i18n="size_label">Tamaño del sistema (n):</label>
         <div class="size-stepper">
@@ -34,7 +62,6 @@
         </div>
     </div>
 
-    <!-- Entrada de datos -->
     <div class="input-area">
         <div class="matrix-section">
             <h3 data-i18n="matrix_label">Matriz A</h3>
@@ -46,9 +73,12 @@
             <div id="vector-container" class="vector-grid"></div>
         </div>
     </div>
+{% endif %}
 
     <button id="btn-solve" class="btn btn-primary btn-solve" onclick="handleSolve()">
-        <span class="btn-text" data-i18n="btn_solve">Resolver Sistema</span>
+        <span class="btn-text" data-i18n="{{ 'btn_find_root' if method.method_type == 'root' else 'btn_solve' }}">
+            {{ 'Encontrar Raíz' if method.method_type == 'root' else 'Resolver Sistema' }}
+        </span>
         <span class="btn-spinner" style="display:none;">⟳</span>
     </button>
 
@@ -58,7 +88,9 @@
     <!-- Resultados -->
     <section id="results-section" class="results" style="display:none;">
         <div class="result-solution">
-            <h2 data-i18n="solution_title">Solución</h2>
+            <h2 data-i18n="{{ 'root_title' if method.method_type == 'root' else 'solution_title' }}">
+                {{ 'Raíz Encontrada' if method.method_type == 'root' else 'Solución' }}
+            </h2>
             <div id="solution-container" class="solution-display"></div>
             <button class="btn btn-sm btn-copy" id="btn-copy-solution" onclick="copySolution()" data-i18n="btn_copy">📋 Copiar</button>
         </div>
@@ -73,6 +105,7 @@
 {% block scripts %}
 <script>
     const METHOD_NAME = "{{ method.name }}";
+    const METHOD_TYPE = "{{ method.method_type }}";
     let currentSize = 3;
 
     function changeSize(delta) {
@@ -97,20 +130,41 @@
         btn.disabled = true;
 
         try {
-            const matrix = readMatrix('matrix-container', currentSize);
-            const b = readVector('vector-container', currentSize);
+            let result;
 
-            if (!matrix || !b) {
-                throw new Error(I18n.t('error_fill_fields'));
+            if (METHOD_TYPE === 'root') {
+                // Modo raíces: enviar expresión + parámetros
+                const expr = document.getElementById('expr-input').value.trim();
+                if (!expr) throw new Error(I18n.t('error_fill_expr'));
+
+                const params = {};
+                document.querySelectorAll('.root-param-input').forEach(input => {
+                    params[input.dataset.paramKey] = parseFloat(input.value);
+                });
+
+                const response = await fetch('/api/solve', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ method: METHOD_NAME, expr, params }),
+                });
+                result = await response.json();
+            } else {
+                // Modo sistema lineal: enviar matrix + b
+                const matrix = readMatrix('matrix-container', currentSize);
+                const b = readVector('vector-container', currentSize);
+                if (!matrix || !b) throw new Error(I18n.t('error_fill_fields'));
+                result = await solveMethod(METHOD_NAME, matrix, b);
             }
 
-            const result = await solveMethod(METHOD_NAME, matrix, b);
+            if (result.error) throw new Error(result.error);
 
-            if (result.error) {
-                throw new Error(result.error);
+            // Renderizar solución
+            if (METHOD_TYPE === 'root') {
+                renderRootSolution(result, 'solution-container');
+            } else {
+                renderSolution(result.solution, 'solution-container');
             }
 
-            renderSolution(result.solution, 'solution-container');
             renderSteps(result.steps, 'steps-container');
             document.getElementById('step-count').textContent = result.steps.length + ' ' + I18n.t('steps_suffix');
             document.getElementById('results-section').style.display = 'block';
@@ -124,6 +178,35 @@
             btnSpinner.style.display = 'none';
             btn.disabled = false;
         }
+    }
+
+    function renderRootSolution(result, containerId) {
+        const container = document.getElementById(containerId);
+        const root = result.root !== undefined ? result.root : result.solution[0];
+        const iters = result.iterations || result.steps.length;
+
+        let html = `<div class="solution-vector">
+            <div class="solution-item">
+                <span class="var-name">x*</span>
+                <span class="var-equals">=</span>
+                <span class="var-value">${Number(root).toFixed(10)}</span>
+            </div>
+            <div class="solution-item">
+                <span class="var-name" data-i18n="iterations_label">Iteraciones</span>
+                <span class="var-equals">=</span>
+                <span class="var-value">${iters}</span>
+            </div>`;
+
+        if (result.intervals) {
+            html += `<div class="solution-item">
+                <span class="var-name" data-i18n="interval_label">Intervalo</span>
+                <span class="var-equals">∈</span>
+                <span class="var-value">[${result.intervals[0][0].toFixed(6)}, ${result.intervals[0][1].toFixed(6)}]</span>
+            </div>`;
+        }
+
+        html += `</div>`;
+        container.innerHTML = html;
     }
 
     function hideResults() {
@@ -140,10 +223,12 @@
         });
     }
 
-    // Inicializar grids al cargar
+    // Inicializar al cargar
     document.addEventListener('DOMContentLoaded', () => {
-        buildMatrixGrid(currentSize, 'matrix-container');
-        buildVectorGrid(currentSize, 'vector-container');
+        if (METHOD_TYPE !== 'root') {
+            buildMatrixGrid(currentSize, 'matrix-container');
+            buildVectorGrid(currentSize, 'vector-container');
+        }
 
         // Aplicar traducción de instrucciones del método
         I18n.init().then(() => {
@@ -155,6 +240,14 @@
                 const body = document.getElementById("instructions-body");
                 if (body) body.innerHTML = lang === "en" ? enHTML : esHTML;
             }
+
+            // Traducir labels de parámetros de raíces
+            document.querySelectorAll('[data-i18n-es]').forEach(el => {
+                const lang = I18n.getLang();
+                el.textContent = lang === 'en'
+                    ? el.getAttribute('data-i18n-en')
+                    : el.getAttribute('data-i18n-es');
+            });
         });
     });
 </script>

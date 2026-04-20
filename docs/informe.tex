@@ -1,0 +1,135 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\geometry{left=2.5cm,right=2.5cm,top=3cm,bottom=3cm}
+\usepackage{hyperref}
+
+\title{Numerical Methods: First Delivery Report}
+\author{Julián Peña Ochoa \\ Juan Camilo Ríos \\ Adyuer Ojeda \\ Carlos Manuel Ochoa Cifuentes}
+\date{April 2026}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+This document serves as the formal report containing the required test cases and structural documentation for the Computational Tool for Numerical Methods.
+
+\section{Methodology and Added Values}
+The project was deployed as a monolithic Flask application with full REST API and adaptive frontend. 
+We successfully implemented the required 10 methods plus \textbf{5 additional methods (Trisection, Tridiagonal, Steffensen, Aitken, Müller)}. 
+All methods are also fully ported to Javascript, fulfilling the \textbf{Second Language requirement}.
+
+\section{Test Results (Tolerance = $10^{-7}$, N = 100)}
+
+\subsection{Incremental Search}
+\textbf{Parameters:} $f(x) = \ln(\sin^2(x) + 1) - 0.5$, $x_0 = -3$, $\Delta x = 0.5$ \\
+\textbf{Result:} Root located near $-2.25$.
+
+\subsection{Bisection}
+\textbf{Parameters:} $a = 0$, $b = 1$
+\begin{center}
+\begin{tabular}{c c c c c}
+\toprule
+$n$ & $x_m$ & $f(x_m)$ & $E$ \\
+\midrule
+1 & 0.500000 & -... & - \\
+... & ... & ... & ... \\
+24 & 0.9364045 & -3.16e-08 & 5.96e-08 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\textbf{Root Found:} 0.9364045262
+
+\subsection{False Position}
+\textbf{Parameters:} $a = 0$, $b = 1$
+\begin{center}
+\begin{tabular}{c c c c c}
+\toprule
+$n$ & $x_m$ & $f(x_m)$ & $E$ \\
+\midrule
+5 & 0.9364045 & 1.89e-13 & 2.2e-10 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\textbf{Root Found:} 0.9364045809
+
+\subsection{Newton}
+\textbf{Parameters:} $x_0 = 0.5$
+\begin{center}
+\begin{tabular}{c c c c c}
+\toprule
+$n$ & $x_n$ & $f(x_n)$ & $E$ \\
+\midrule
+4 & 0.9364045 & -4.98e-10 & 8.61e-10 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\textbf{Root Found:} 0.9364045809
+
+\subsection{Fixed Point}
+\textbf{Parameters:} $x_0 = -0.5$, $g(x) = f(x) - x$
+\begin{center}
+\begin{tabular}{c c c c c}
+\toprule
+$n$ & $x_n$ & $g(x_n)$ & $E$ \\
+\midrule
+... & ... & ... & ... \\
+30 & -0.374445 & -0.374445 & 7.72e-08 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\textbf{Root Found:} -0.3744450530
+
+\subsection{Secant}
+\textbf{Parameters:} $x_0 = 0.5$, $x_1 = 1.0$
+\begin{center}
+\begin{tabular}{c c c c c}
+\toprule
+$n$ & $x_n$ & $f(x_n)$ & $E$ \\
+\midrule
+5 & 0.9364045 & 3.43e-10 & 5.93e-10 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\textbf{Root Found:} 0.9364045809
+
+\subsection{Multiple Roots}
+\textbf{Parameters:} $h(x) = e^x - x - 1$, $x_0 = 1.0$
+\begin{center}
+\begin{tabular}{c c c c c}
+\toprule
+$n$ & $x_n$ & $f(x_n)$ & $E$ \\
+\midrule
+5 & 0.0000000 & 0.00e+00 & 0.00e+00 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\textbf{Root Found:} 0.0000000000
+
+\subsection{Linear Systems (Gaussian Elimination)}
+\textbf{Parameters:} Matrix $A$ and Vector $b$.
+\[
+A = \begin{bmatrix}
+2 & -1 & 0 & 3 \\
+1 & 0.5 & 3 & 8 \\
+0 & 13 & -2 & 11 \\
+14 & 5 & -2 & 3 
+\end{bmatrix}, 
+b = \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \end{bmatrix}
+\]
+Running Simple Gaussian Elimination, Partial Pivoting, and Total Pivoting strictly converges to:
+\[
+x = \begin{bmatrix} 0.038495 \\ -0.180227 \\ -0.309711 \\ 0.247594 \end{bmatrix}
+\]
+
+\end{document}

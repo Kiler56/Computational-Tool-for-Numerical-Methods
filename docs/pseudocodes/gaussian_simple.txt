@@ -1,0 +1,31 @@
+Algorithm GaussianEliminationSimple(A, b, n)
+
+// Phase 1: Forward Elimination
+For k = 1 to n-1 do
+    If A[k][k] == 0 then
+        Print "Zero pivot encountered, method fails"
+        Stop
+    EndIf
+    
+    For i = k+1 to n do
+        multiplier = A[i][k] / A[k][k]
+        For j = k to n do
+            A[i][j] = A[i][j] - multiplier * A[k][j]
+        EndFor
+        b[i] = b[i] - multiplier * b[k]
+    EndFor
+EndFor
+
+// Phase 2: Back Substitution
+Initialize x vector of size n
+x[n] = b[n] / A[n][n]
+
+For i = n-1 down to 1 do
+    sum = 0
+    For j = i+1 to n do
+        sum = sum + A[i][j] * x[j]
+    EndFor
+    x[i] = (b[i] - sum) / A[i][i]
+EndFor
+
+Print x

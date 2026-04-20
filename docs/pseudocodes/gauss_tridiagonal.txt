@@ -1,0 +1,22 @@
+Algorithm GaussTridiagonal(dl, d, du, b, n)
+// dl: lower diagonal
+// d: main diagonal
+// du: upper diagonal
+// b: constants vector
+
+// Phase 1: Forward Sweep
+For i = 2 to n do
+    multiplier = dl[i-1] / d[i-1]
+    d[i] = d[i] - multiplier * du[i-1]
+    b[i] = b[i] - multiplier * b[i-1]
+EndFor
+
+// Phase 2: Back Substitution
+Initialize x vector of size n
+x[n] = b[n] / d[n]
+
+For i = n-1 down to 1 do
+    x[i] = (b[i] - du[i] * x[i+1]) / d[i]
+EndFor
+
+Print x

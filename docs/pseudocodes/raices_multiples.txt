@@ -1,0 +1,36 @@
+Inicio
+
+Definir función derivada_aprox(f, x):
+    h ← 1e-5
+    retornar (f(x + h) - f(x - h)) / (2*h)
+
+Definir función segunda_derivada_aprox(f, x):
+    h ← 1e-5
+    retornar (f(x + h) - 2*f(x) + f(x - h)) / (h^2)
+
+Definir función raices_multiples(f, x0, tolerancia, max_iter):
+    x ← x0
+
+    Para i desde 1 hasta max_iter:
+        fx ← f(x)
+        dfx ← derivada_aprox(f, x)
+        d2fx ← segunda_derivada_aprox(f, x)
+
+        denominador ← (dfx^2 - fx * d2fx)
+
+        Si denominador = 0:
+            Mostrar "Error: división por cero"
+            Retornar None
+
+        x_nuevo ← x - (fx * dfx) / denominador
+
+        Si |x_nuevo - x| < tolerancia:
+            Mostrar "Convergió en i iteraciones"
+            Retornar x_nuevo
+
+        x ← x_nuevo
+
+    Mostrar "No convergió"
+    Retornar None
+
+Fin

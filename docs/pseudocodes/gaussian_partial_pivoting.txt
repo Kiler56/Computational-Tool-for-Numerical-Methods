@@ -1,0 +1,47 @@
+Algorithm GaussianEliminationPartialPivoting(A, b, n)
+
+// Phase 1: Forward Elimination with Partial Pivoting
+For k = 1 to n-1 do
+    // Find pivot row
+    max_val = |A[k][k]|
+    max_row = k
+    For p = k+1 to n do
+        If |A[p][k]| > max_val then
+            max_val = |A[p][k]|
+            max_row = p
+        EndIf
+    EndFor
+    
+    If max_val == 0 then
+        Print "System has no unique solution"
+        Stop
+    EndIf
+    
+    If max_row != k then
+        Swap row max_row with row k in A
+        Swap b[max_row] with b[k]
+    EndIf
+    
+    // Elimination
+    For i = k+1 to n do
+        multiplier = A[i][k] / A[k][k]
+        For j = k to n do
+            A[i][j] = A[i][j] - multiplier * A[k][j]
+        EndFor
+        b[i] = b[i] - multiplier * b[k]
+    EndFor
+EndFor
+
+// Phase 2: Back Substitution
+Initialize x vector of size n
+x[n] = b[n] / A[n][n]
+
+For i = n-1 down to 1 do
+    sum = 0
+    For j = i+1 to n do
+        sum = sum + A[i][j] * x[j]
+    EndFor
+    x[i] = (b[i] - sum) / A[i][i]
+EndFor
+
+Print x

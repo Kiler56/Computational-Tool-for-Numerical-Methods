@@ -1,0 +1,26 @@
+# Pruebas Base para Entrega 1 - Análisis Numérico
+# Tol = 10^-7, N = 100 
+
+1. Funciones:
+   f(x) = ln(sin^2(x) + 1) - 0.5
+   f1(x) = ln(sin^2(x) + 1) - 0.5 - x
+   g(x) = ln(sin^2(x) + 1) - 0.5
+   h(x) = e^x - x - 1
+
+2. Parámetros de Raíces:
+   - Incremental: f, x0 = -3, delta_x = 0.5
+   - Bisección/Falsa Posición: f, a=0, b=1
+   - Newton/Steffensen: f(x), x0 = 0.5
+   - Punto Fijo/Aitken: g(x), x0 = -0.5
+   - Secante: f(x), x0 = 0.5, x1 = 1.0
+   - Raíces Múltiples: h(x), x0 = 1.0
+   - Muller: f(x), x0=0, x1=0.5, x2=1.0
+
+3. Matriz (Gauss):
+   A = [
+     [2, -1, 0, 3],
+     [1, 0.5, 3, 8],
+     [0, 13, -2, 11],
+     [14, 5, -2, 3]
+   ]
+   b = [1, 1, 1, 1]

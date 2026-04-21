@@ -50,13 +50,47 @@
         inf: Infinity,
     };
 
+    function normalizeExpression(expr) {
+        let normalized = String(expr ?? "").trim();
+        const powerFunctions = [
+            "sin",
+            "cos",
+            "tan",
+            "asin",
+            "acos",
+            "atan",
+            "sinh",
+            "cosh",
+            "tanh",
+            "exp",
+            "log",
+            "log10",
+            "log2",
+            "sqrt",
+            "abs",
+        ];
+
+        normalized = normalized.replace(/\bln\s*\(/g, "log(");
+        normalized = normalized.replace(/\be\s*\^\s*\(([^()]+)\)/g, "exp($1)");
+        normalized = normalized.replace(/\be\s*\^\s*([A-Za-z0-9_.]+)/g, "exp($1)");
+
+        for (const fnName of powerFunctions) {
+            const regex = new RegExp(`\\b${fnName}\\s*\\^\\s*([\\d.]+)\\s*\\(([^()]+)\\)`, "g");
+            normalized = normalized.replace(regex, `(${fnName}($2))**$1`);
+        }
+
+        normalized = normalized.replace(/\^/g, "**");
+        return normalized;
+    }
+
     function makeFunction(expr) {
+        const normalizedExpr = normalizeExpression(expr);
         return function f(x) {
             const scope = { x, ...SAFE_MATH };
             const keys = Object.keys(scope);
             const values = Object.values(scope);
             try {
-                return Number(Function(...keys, `"use strict"; return (${expr});`)(...values));
+                return Number(Function(...keys, `"use strict"; return (${normalizedExpr});`)(...values));
             } catch (err) {
                 throw new Error(`Expresion invalida: ${err.message}`);
             }
@@ -412,7 +446,7 @@
             const f0 = f(x0);
             const f1 = f(x1);
             const denom = f1 - f0;
-            if (Math.abs(denom) < 1e-15) {
+            if (denom === 0) {
                 throw new Error(`Division por cero: f(x1) - f(x0) ≈ 0 en iteracion ${i}.`);
             }
 
@@ -471,7 +505,7 @@
             const d2fx = deriv2(f, x);
 
             const denom = (dfx ** 2) - (fx * d2fx);
-            if (Math.abs(denom) < 1e-15) {
+            if (denom === 0) {
                 throw new Error(`Division por cero en iteracion ${i}: f'² - f·f'' ≈ 0.`);
             }
 
@@ -852,6 +886,7 @@
         puntoFijo,
         secante,
         raicesMultiples,
+        normalizeExpression,
     };
 
     global.NumericalMethodsJS = api;

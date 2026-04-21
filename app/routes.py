@@ -83,9 +83,16 @@ def api_solve():
             # Métodos de sistemas lineales: Ax = b
             matrix = data.get("matrix")
             b = data.get("b")
+            params = data.get("params", {})
             if matrix is None or b is None:
                 return jsonify({"error": "Campos 'matrix' y 'b' requeridos para sistemas lineales."}), 400
-            result = method.solve(matrix, b)
+            
+            import inspect
+            sig = inspect.signature(method.solve)
+            if 'params' in sig.parameters:
+                result = method.solve(matrix, b, params=params)
+            else:
+                result = method.solve(matrix, b)
 
         # Guardar en historial si el usuario está logueado
         if current_user.is_authenticated:

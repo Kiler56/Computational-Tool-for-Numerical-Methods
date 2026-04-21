@@ -73,6 +73,24 @@
             <div id="vector-container" class="vector-grid"></div>
         </div>
     </div>
+    
+    {% if method.params_schema %}
+    <div class="root-params-grid" style="margin-top: 1.5rem;">
+        {% for param in method.params_schema %}
+        <div class="form-group">
+            <label for="param-{{ param.key }}"
+                   data-i18n-es="{{ param.label_es }}"
+                   data-i18n-en="{{ param.label_en }}">{{ param.label_es }}</label>
+            <input type="{% if param.type == 'text' %}text{% else %}number{% endif %}" id="param-{{ param.key }}"
+                   class="form-input root-param-input"
+                   data-param-key="{{ param.key }}"
+                   data-param-type="{% if param.type == 'text' %}text{% else %}number{% endif %}"
+                   {% if param.type != 'text' %}step="any"{% endif %}
+                   value="{{ param.default }}">
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 {% endif %}
 
     <button id="btn-solve" class="btn btn-primary btn-solve" onclick="handleSolve()">
@@ -95,7 +113,20 @@
             <button class="btn btn-sm btn-copy" id="btn-copy-solution" onclick="copySolution()" data-i18n="btn_copy">📋 Copiar</button>
         </div>
         <div class="result-steps">
-            <h2><span data-i18n="steps_title">Pasos</span> <span id="step-count" class="badge"></span></h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                <h2 style="margin: 0;"><span data-i18n="steps_title">Pasos</span> <span id="step-count" class="badge"></span></h2>
+                <div class="view-mode-toggle" style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-sm btn-outline active" id="btn-view-all" onclick="setViewMode('all')">Ver Todo</button>
+                    <button class="btn btn-sm btn-outline" id="btn-view-step" onclick="setViewMode('step')">Paso a Paso</button>
+                </div>
+            </div>
+            
+            <div id="step-controls" class="step-controls" style="display: none; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1.5rem; background: var(--bg-tertiary); padding: 1rem; border-radius: 8px;">
+                <button class="btn btn-primary btn-sm" id="btn-prev-step" onclick="prevStep()">← Anterior</button>
+                <span id="current-step-display" style="font-weight: 600; font-size: 1.1rem; color: var(--text-primary); min-width: 120px; text-align: center;">Paso 1 de X</span>
+                <button class="btn btn-primary btn-sm" id="btn-next-step" onclick="nextStep()">Siguiente →</button>
+            </div>
+
             <div id="steps-container" class="steps-list"></div>
         </div>
     </section>
@@ -116,6 +147,7 @@
         buildMatrixGrid(currentSize, 'matrix-container');
         buildVectorGrid(currentSize, 'vector-container');
         hideResults();
+        saveState();
     }
 
     async function handleSolve() {
@@ -153,7 +185,22 @@
                 const matrix = readMatrix('matrix-container', currentSize);
                 const b = readVector('vector-container', currentSize);
                 if (!matrix || !b) throw new Error(I18n.t('error_fill_fields'));
-                result = await solveMethod(METHOD_NAME, matrix, b);
+                
+                const params = {};
+                document.querySelectorAll('.root-param-input').forEach(input => {
+                    if (input.dataset.paramType === 'text') {
+                        params[input.dataset.paramKey] = input.value;
+                    } else {
+                        params[input.dataset.paramKey] = parseFloat(input.value);
+                    }
+                });
+                
+                const response = await fetch('/api/solve', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ method: METHOD_NAME, matrix, b, params }),
+                });
+                result = await response.json();
             }
 
             if (result.error) throw new Error(result.error);
@@ -162,7 +209,7 @@
             if (METHOD_TYPE === 'root') {
                 renderRootSolution(result, 'solution-container');
             } else {
-                renderSolution(result.solution, 'solution-container');
+                renderSolution(result, 'solution-container');
             }
 
             renderSteps(result.steps, 'steps-container');
@@ -223,12 +270,95 @@
         });
     }
 
+    // Manejar persistencia de estado (guardar al modificar inputs)
+    document.addEventListener('input', (e) => {
+        if (e.target.tagName === 'INPUT') {
+            saveState();
+        }
+    });
+
+    function saveState() {
+        const state = {
+            methodType: METHOD_TYPE,
+            params: {}
+        };
+
+        if (METHOD_TYPE === 'root') {
+            const exprEl = document.getElementById('expr-input');
+            if (exprEl) state.expr = exprEl.value;
+        } else {
+            state.size = currentSize;
+            const matrix = readMatrix('matrix-container', currentSize);
+            const b = readVector('vector-container', currentSize);
+            if (matrix) state.matrix = matrix;
+            if (b) state.b = b;
+        }
+
+        document.querySelectorAll('.root-param-input').forEach(input => {
+            state.params[input.dataset.paramKey] = input.value;
+        });
+
+        sessionStorage.setItem('numcalc_state', JSON.stringify(state));
+    }
+
+    function restoreState() {
+        const stateStr = sessionStorage.getItem('numcalc_state');
+        if (!stateStr) return;
+        try {
+            const state = JSON.parse(stateStr);
+
+            if (METHOD_TYPE === 'root') {
+                if (state.expr) {
+                    const exprEl = document.getElementById('expr-input');
+                    if (exprEl) exprEl.value = state.expr;
+                }
+            } else {
+                if (state.size && state.size !== currentSize) {
+                    currentSize = state.size;
+                    document.getElementById('size-display').textContent = currentSize;
+                    buildMatrixGrid(currentSize, 'matrix-container');
+                    buildVectorGrid(currentSize, 'vector-container');
+                }
+                if (state.matrix && state.matrix.length === currentSize) {
+                    for (let i = 0; i < currentSize; i++) {
+                        for (let j = 0; j < currentSize; j++) {
+                            const el = document.getElementById(`a-${i}-${j}`);
+                            if (el && state.matrix[i][j] !== null && state.matrix[i][j] !== undefined) {
+                                el.value = state.matrix[i][j];
+                            }
+                        }
+                    }
+                }
+                if (state.b && state.b.length === currentSize) {
+                    for (let i = 0; i < currentSize; i++) {
+                        const el = document.getElementById(`b-${i}`);
+                        if (el && state.b[i] !== null && state.b[i] !== undefined) {
+                            el.value = state.b[i];
+                        }
+                    }
+                }
+            }
+
+            if (state.params) {
+                document.querySelectorAll('.root-param-input').forEach(input => {
+                    if (state.params[input.dataset.paramKey] !== undefined) {
+                        input.value = state.params[input.dataset.paramKey];
+                    }
+                });
+            }
+        } catch (e) {
+            console.error("Error restoring state", e);
+        }
+    }
+
     // Inicializar al cargar
     document.addEventListener('DOMContentLoaded', () => {
         if (METHOD_TYPE !== 'root') {
             buildMatrixGrid(currentSize, 'matrix-container');
             buildVectorGrid(currentSize, 'vector-container');
         }
+        
+        restoreState();
 
         // Aplicar traducción de instrucciones del método
         I18n.init().then(() => {

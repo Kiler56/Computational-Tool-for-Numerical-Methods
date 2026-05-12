@@ -1,29 +1,29 @@
-Inicio
+Begin
 
-Definir función derivada_aprox(f, x):
+Define function approx_derivative(f, x):
     h ← 1e-6
-    retornar (f(x + h) - f(x - h)) / (2*h)
+    return (f(x + h) - f(x - h)) / (2*h)
 
-Definir función newton(f, x0, tolerancia, max_iter):
+Define function newton(f, x0, tolerance, max_iter):
     x ← x0
 
-    Para i desde 1 hasta max_iter:
+    For i from 1 to max_iter:
         fx ← f(x)
-        dfx ← derivada_aprox(f, x)
+        dfx ← approx_derivative(f, x)
 
-        Si dfx = 0:
-            Mostrar "Error: derivada cero"
-            Retornar None
+        If dfx = 0:
+            Print "Error: zero derivative"
+            Return None
 
-        x_nuevo ← x - fx / dfx
+        x_new ← x - fx / dfx
 
-        Si |x_nuevo - x| < tolerancia:
-            Mostrar "Convergió en i iteraciones"
-            Retornar x_nuevo
+        If |x_new - x| < tolerance:
+            Print "Converged in i iterations"
+            Return x_new
 
-        x ← x_nuevo
+        x ← x_new
 
-    Mostrar "No convergió"
-    Retornar None
+    Print "Did not converge"
+    Return None
 
-Fin
+End

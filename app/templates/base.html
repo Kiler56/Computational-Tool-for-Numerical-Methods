@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Calculadora de Métodos Numéricos — Herramienta interactiva para resolver sistemas de ecuaciones lineales.">
-    <title>{% block title %}Calculadora Numérica{% endblock %}</title>
+    <meta name="description" content="Numerical Methods Calculator — Interactive linear systems, root finding, and interpolation.">
+    <title>{% block title %}Numerical Calculator{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
-<body data-user-lang="{{ current_user.preferred_lang if current_user.is_authenticated else 'es' }}">
+<body data-user-lang="{{ current_user.preferred_lang if current_user.is_authenticated else 'en' }}">
     <div class="dashboard">
         <!-- Sidebar Navigation -->
         <aside class="sidebar" id="sidebar">
@@ -19,11 +19,11 @@
                     <span class="brand-icon">∑</span>
                     <span class="brand-text">NumCalc</span>
                 </a>
-                <button class="mobile-menu-close" id="menu-close" data-i18n-aria="close_menu" aria-label="Cerrar menú">×</button>
+                <button class="mobile-menu-close" id="menu-close" data-i18n-aria="close_menu" aria-label="Close menu">×</button>
             </div>
             
             <nav class="sidebar-nav">
-                <div class="nav-section-title" data-i18n="nav_systems">Sistemas Lineales</div>
+                <div class="nav-section-title" data-i18n="nav_systems">Linear systems</div>
                 {% if methods is defined %}
                 <ul class="nav-list">
                     {% for m in methods %}
@@ -37,7 +37,20 @@
                     {% endfor %}
                 </ul>
 
-                <div class="nav-section-title" data-i18n="nav_roots" style="margin-top:1.5rem;">Búsqueda de Raíces</div>
+                <div class="nav-section-title" data-i18n="nav_interp" style="margin-top:1.5rem;">Interpolation</div>
+                <ul class="nav-list">
+                    {% for m in methods %}
+                    {% if m.method_type is defined and m.method_type == 'interpolation' %}
+                    <li>
+                        <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}">
+                            {{ m.description }}
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+
+                <div class="nav-section-title" data-i18n="nav_roots" style="margin-top:1.5rem;">Root finding</div>
                 <ul class="nav-list">
                     {% for m in methods %}
                     {% if m.method_type is defined and m.method_type == 'root' %}
@@ -60,33 +73,33 @@
                     <span class="user-name">{{ current_user.display_name or current_user.username }}</span>
                 </div>
                 <ul class="user-nav">
-                    <li><a href="/profile" class="nav-link nav-link-user" data-i18n="profile">Mi Perfil</a></li>
-                    <li><a href="/history" class="nav-link nav-link-user" data-i18n="history">Mi Historial</a></li>
-                    <li><a href="/logout" class="nav-link nav-link-logout" data-i18n="logout">Cerrar Sesión</a></li>
+                    <li><a href="/profile" class="nav-link nav-link-user" data-i18n="profile">My profile</a></li>
+                    <li><a href="/history" class="nav-link nav-link-user" data-i18n="history">My history</a></li>
+                    <li><a href="/logout" class="nav-link nav-link-logout" data-i18n="logout">Log out</a></li>
                 </ul>
                 {% else %}
                 <ul class="user-nav">
-                    <li><a href="/login" class="btn btn-outline btn-sm btn-block" data-i18n="login">Iniciar Sesión</a></li>
-                    <li><a href="/register" class="btn btn-primary btn-sm btn-block" data-i18n="register">Crear Cuenta</a></li>
+                    <li><a href="/login" class="btn btn-outline btn-sm btn-block" data-i18n="login">Log in</a></li>
+                    <li><a href="/register" class="btn btn-primary btn-sm btn-block" data-i18n="register">Sign up</a></li>
                 </ul>
                 {% endif %}
             </div>
 
             <div class="sidebar-footer">
-                <p data-i18n="footer_copy">&copy; 2026 — Telemática</p>
-                <p><small data-i18n="footer_arch">Arquitectura Monolito Modular</small></p>
+                <p data-i18n="footer_copy">&copy; 2026 — Telematics</p>
+                <p><small data-i18n="footer_arch">Modular monolith architecture</small></p>
             </div>
         </aside>
 
         <!-- Main Content Area -->
         <main class="main-content">
             <header class="topbar">
-                <button class="mobile-menu-toggle" id="menu-toggle" data-i18n-aria="open_menu" aria-label="Abrir menú">☰</button>
+                <button class="mobile-menu-toggle" id="menu-toggle" data-i18n-aria="open_menu" aria-label="Open menu">☰</button>
                 
                 <!-- Language Toggle -->
                 <div class="lang-toggle">
-                    <button id="lang-es" class="lang-btn active" onclick="I18n.setLang('es')" title="Español">ES</button>
-                    <button id="lang-en" class="lang-btn" onclick="I18n.setLang('en')" title="English">EN</button>
+                    <button id="lang-es" class="lang-btn" onclick="I18n.setLang('es')" title="Español">ES</button>
+                    <button id="lang-en" class="lang-btn active" onclick="I18n.setLang('en')" title="English">EN</button>
                 </div>
             </header>
 
@@ -104,7 +117,7 @@
     <script src="{{ url_for('static', filename='js/matrix.js') }}"></script>
     <script src="{{ url_for('static', filename='js/steps.js') }}"></script>
     <script>
-        // Lógica de UI para Sidebar Responsive
+        // Responsive sidebar UI
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
         const toggleBtn = document.getElementById('menu-toggle');

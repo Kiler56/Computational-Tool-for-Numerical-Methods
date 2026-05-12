@@ -1,0 +1,34 @@
+Lagrange interpolation — evaluate P(x*) at a point x*
+
+Input:
+    Arrays x[0..n-1], y[0..n-1] with pairwise distinct x[i]
+    Evaluation point x*
+
+Output:
+    Value P(x*)
+
+Procedure LagrangeBasis(j, x, x_nodes):
+    L ← 1
+    For m ← 0 To n-1:
+        If m ≠ j:
+            L ← L * (x - x_nodes[m]) / (x_nodes[j] - x_nodes[m])
+    Return L
+
+Procedure LagrangeEval(x_nodes, y_nodes, x_star):
+    n ← length(x_nodes)
+    If n < 2:
+        Error "need at least two nodes"
+    For each pair i < j:
+        If x_nodes[i] = x_nodes[j]:
+            Error "abscissas must be distinct"
+
+    sum ← 0
+    For j ← 0 To n-1:
+        Lj ← LagrangeBasis(j, x_star, x_nodes)
+        term ← y_nodes[j] * Lj
+        sum ← sum + term
+        Log step for Lj and term
+
+    Return sum
+
+End

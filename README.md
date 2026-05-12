@@ -1,104 +1,110 @@
-# Calculadora de Métodos Numéricos
+# Numerical Methods Calculator
 
-Herramienta computacional web para resolver y analizar sistemas de ecuaciones lineales usando diferentes métodos numéricos. Visualiza cada paso intermedio de la solución.
+Web application to solve linear systems, interpolate data with Lagrange polynomials, and find roots of scalar equations—with a step-by-step trace for each algorithm.
 
-## Arquitectura — Monolito Modular
+## Architecture — modular monolith
 
 ```
 app/
-├── __init__.py          ← Application Factory (create_app)
-├── config.py            ← Configuración por entorno
-├── routes.py            ← Blueprint: vistas HTML + API REST
+├── __init__.py          ← Application factory (create_app)
+├── config.py            ← Environment configuration
+├── routes.py            ← Blueprint: HTML views + REST API
 ├── core/
-│   ├── base_method.py   ← ABC NumericalMethod
+│   ├── base_method.py   ← NumericalMethod ABC
 │   └── method_registry.py ← Autodiscovery via pkgutil
-├── methods/             ← Cada archivo = un método autodescubierto
-├── static/              ← CSS + JS (servidos por Flask)
-└── templates/           ← Jinja2 (base, index, solver)
+├── methods/             ← One module per method (auto-discovered)
+├── static/              ← CSS + JS (served by Flask)
+└── templates/           ← Jinja2 (base, index, solver, …)
 ```
 
-**Principio clave:** agregar un nuevo método = crear UN archivo en `app/methods/`. Sin tocar nada más.
+**Convention:** add a new numerical method by dropping **one** file under `app/methods/` that subclasses `NumericalMethod`. Restart the app to register it.
 
-## Métodos Implementados
+## Implemented methods
 
-| Método | Archivo | Descripción |
-|--------|---------|-------------|
-| Eliminación Gaussiana Simple | `gaussian_simple.py` | Sin pivoteo, eliminación directa |
-| Pivoteo Parcial | `gaussian_pivoting.py` | Máximo en columna |
-| Pivoteo Total | `gaussian_pivoting.py` | Máximo en submatriz + permutación de columnas |
-| Gauss Tridiagonal | `gauss_tridiagonal.py` | Algoritmo de Thomas (TDMA) — O(n) |
+| Category | Method | Module | Notes |
+|----------|--------|--------|--------|
+| Linear systems | Gaussian elimination (no pivoting) | `gaussian_simple.py` | Fails on zero pivots |
+| | Partial pivoting | `gaussian_pivoting.py` | Column pivot |
+| | Total pivoting | `gaussian_pivoting.py` | Row + column permutations |
+| | Tridiagonal (Thomas) | `gauss_tridiagonal.py` | O(n) |
+| Interpolation | Lagrange | `lagrange.py` | Evaluate P(x) at a point |
+| Root finding | Bisection, Regula Falsi, incremental search, fixed-point, Newton, secant, multiple roots, trisection | `bisection.py`, … | Expression parser + parameters |
 
-## Inicio Rápido
+Pseudocode drafts live under `docs/pseudocodes/` (including `lagrange.txt`).
 
-### Desarrollo Local
+## Quick start
+
+### Local development
 
 ```bash
-# Instalar dependencias
 pip install -r requirements.txt
-
-# Ejecutar en modo desarrollo
 python run.py
 ```
 
-→ App disponible en http://localhost:5000
+→ http://localhost:5000
 
-### Docker (Producción)
+### Docker
 
 ```bash
 docker compose up --build
 ```
 
-→ App disponible en http://localhost:5000
+→ http://localhost:5000
 
-## API REST
+## REST API
 
 ### `GET /api/methods`
 
-Lista los métodos disponibles.
-
-```bash
-curl http://localhost:5000/api/methods
-```
+Lists registered methods (name, description, `method_type`, `params_schema`).
 
 ### `POST /api/solve`
 
-Resuelve un sistema Ax = b.
+Payload depends on `method_type`:
+
+**Linear system** (`matrix`, `b`):
 
 ```bash
 curl -X POST http://localhost:5000/api/solve \
   -H "Content-Type: application/json" \
-  -d '{
-    "method": "gaussian_simple",
-    "matrix": [[2,1,-1],[-3,-1,2],[-2,1,2]],
-    "b": [8,-11,-3]
-  }'
+  -d '{"method":"gaussian_simple","matrix":[[2,1,-1],[-3,-1,2],[-2,1,2]],"b":[8,-11,-3]}'
+```
+
+**Root finding** (`expr`, `params`):
+
+```bash
+curl -X POST http://localhost:5000/api/solve \
+  -H "Content-Type: application/json" \
+  -d '{"method":"newton","expr":"x**2 - 2","params":{"x0":1.5,"tol":1e-7,"max_iter":100}}'
+```
+
+**Lagrange interpolation** (`points`, `x_eval`):
+
+```bash
+curl -X POST http://localhost:5000/api/solve \
+  -H "Content-Type: application/json" \
+  -d '{"method":"lagrange","points":[[0,1],[1,2],[2,5]],"x_eval":1.5}'
 ```
 
 ### `GET /api/health`
 
-```bash
-curl http://localhost:5000/api/health
-# {"status": "ok"}
-```
+Returns `{"status":"ok"}`.
 
-## Agregar un Nuevo Método
+## Adding a new method
 
-1. Crear `app/methods/mi_metodo.py`
-2. Implementar clase que herede de `NumericalMethod`:
+1. Create `app/methods/my_method.py`.
+2. Implement a `NumericalMethod` subclass with `name`, `description`, `instructions`, `method_type`, and `solve(...)`.
+3. Restart the app — the method appears in the sidebar and in `/api/methods`.
 
 ```python
 from app.core.base_method import NumericalMethod
 
-class MiMetodo(NumericalMethod):
+class MyMethod(NumericalMethod):
     @property
-    def name(self): return "mi_metodo"
+    def name(self): return "my_method"
 
     @property
-    def description(self): return "Mi Método Custom"
+    def description(self): return "My method"
 
     def solve(self, A, b):
-        # ... lógica ...
         return {"solution": [...], "steps": [...], "method": self.name}
 ```
-
-3. Reiniciar la app → el método aparece automáticamente en la UI y la API.

@@ -5,7 +5,7 @@
 <section class="solver-header">
     <div class="header-titles">
         <h1 class="page-title">{{ method.description }}</h1>
-        <p class="solver-slug"><span data-i18n="api_slug">Método API:</span> <code>{{ method.name }}</code></p>
+        <p class="solver-slug"><span data-i18n="api_slug">API method:</span> <code>{{ method.name }}</code></p>
     </div>
 </section>
 
@@ -15,7 +15,7 @@
     <div class="callout-content"
          data-instructions-es="{{ method.instructions.es if method.instructions is mapping else method.instructions }}"
          data-instructions-en="{{ method.instructions.en if method.instructions is mapping else method.instructions }}">
-        <h3 data-i18n="instructions_title">Instrucciones de Uso</h3>
+        <h3 data-i18n="instructions_title">Usage instructions</h3>
         <div id="instructions-body">
             {{ (method.instructions.es if method.instructions is mapping else method.instructions) | safe }}
         </div>
@@ -26,13 +26,12 @@
 <section class="solver-body">
 
 {% if method.method_type == "root" %}
-    <!-- ════════ Formulario para métodos de raíces ════════ -->
     <div class="root-form">
         <div class="form-group">
-            <label for="expr-input" data-i18n="expr_label">Función f(x):</label>
+            <label for="expr-input" data-i18n="expr_label">Function f(x):</label>
             <input type="text" id="expr-input" class="form-input form-input-expr"
-                   placeholder="ej: x**2 - 2" value="x**2 - 2" autocomplete="off">
-            <small class="expr-hint" data-i18n="expr_hint">Funciones disponibles: sin, cos, tan, exp, log, sqrt, abs, pi, e</small>
+                   placeholder="e.g. x**2 - 2" value="x**2 - 2" autocomplete="off">
+            <small class="expr-hint" data-i18n="expr_hint">Available functions: sin, cos, tan, exp, log, sqrt, abs, pi, e</small>
         </div>
 
         <div class="root-params-grid">
@@ -40,7 +39,7 @@
             <div class="form-group">
                 <label for="param-{{ param.key }}"
                        data-i18n-es="{{ param.label_es }}"
-                       data-i18n-en="{{ param.label_en }}">{{ param.label_es }}</label>
+                       data-i18n-en="{{ param.label_en }}">{{ param.label_en }}</label>
                 <input type="number" id="param-{{ param.key }}"
                        class="form-input root-param-input"
                        data-param-key="{{ param.key }}"
@@ -51,20 +50,38 @@
         </div>
     </div>
 
-{% else %}
-    <!-- ════════ Formulario para sistemas lineales Ax=b ════════ -->
+{% elif method.method_type == "interpolation" %}
     <div class="size-controls">
-        <label for="matrix-size" data-i18n="size_label">Tamaño del sistema (n):</label>
+        <label for="interp-size-display" data-i18n="num_points_label">Number of nodes (n):</label>
         <div class="size-stepper">
-            <button id="btn-decrease" class="btn btn-sm" onclick="changeSize(-1)">−</button>
+            <button type="button" id="btn-interp-decrease" class="btn btn-sm" onclick="changeInterpSize(-1)">−</button>
+            <span id="interp-size-display" class="size-value">3</span>
+            <button type="button" id="btn-interp-increase" class="btn btn-sm" onclick="changeInterpSize(1)">+</button>
+        </div>
+    </div>
+
+    <div class="interp-form">
+        <h3 data-i18n="points_label">Nodes (x<sub>i</sub>, y<sub>i</sub>)</h3>
+        <div id="interp-points-container" class="interp-points-grid"></div>
+        <div class="form-group" style="margin-top:1rem;">
+            <label for="x-eval-input" data-i18n="x_eval_label">Evaluate P(x) at x =</label>
+            <input type="number" id="x-eval-input" class="form-input" step="any" value="1.5">
+        </div>
+    </div>
+
+{% else %}
+    <div class="size-controls">
+        <label for="matrix-size" data-i18n="size_label">System size (n):</label>
+        <div class="size-stepper">
+            <button type="button" id="btn-decrease" class="btn btn-sm" onclick="changeSize(-1)">−</button>
             <span id="size-display" class="size-value">3</span>
-            <button id="btn-increase" class="btn btn-sm" onclick="changeSize(1)">+</button>
+            <button type="button" id="btn-increase" class="btn btn-sm" onclick="changeSize(1)">+</button>
         </div>
     </div>
 
     <div class="input-area">
         <div class="matrix-section">
-            <h3 data-i18n="matrix_label">Matriz A</h3>
+            <h3 data-i18n="matrix_label">Matrix A</h3>
             <div id="matrix-container" class="matrix-grid"></div>
         </div>
         <div class="equals-sign">=</div>
@@ -75,27 +92,25 @@
     </div>
 {% endif %}
 
-    <button id="btn-solve" class="btn btn-primary btn-solve" onclick="handleSolve()">
-        <span class="btn-text" data-i18n="{{ 'btn_find_root' if method.method_type == 'root' else 'btn_solve' }}">
-            {{ 'Encontrar Raíz' if method.method_type == 'root' else 'Resolver Sistema' }}
+    <button type="button" id="btn-solve" class="btn btn-primary btn-solve" onclick="handleSolve()">
+        <span class="btn-text" data-i18n="{{ 'btn_find_root' if method.method_type == 'root' else ('btn_interpolate' if method.method_type == 'interpolation' else 'btn_solve') }}">
+            {% if method.method_type == "root" %}Find root{% elif method.method_type == "interpolation" %}Interpolate{% else %}Solve system{% endif %}
         </span>
         <span class="btn-spinner" style="display:none;">⟳</span>
     </button>
 
-    <!-- Errores -->
     <div id="error-container" class="alert alert-error" style="display:none;"></div>
 
-    <!-- Resultados -->
     <section id="results-section" class="results" style="display:none;">
         <div class="result-solution">
-            <h2 data-i18n="{{ 'root_title' if method.method_type == 'root' else 'solution_title' }}">
-                {{ 'Raíz Encontrada' if method.method_type == 'root' else 'Solución' }}
+            <h2 data-i18n="{{ 'root_title' if method.method_type == 'root' else ('interp_title' if method.method_type == 'interpolation' else 'solution_title') }}">
+                {% if method.method_type == "root" %}Root found{% elif method.method_type == "interpolation" %}Interpolated value{% else %}Solution{% endif %}
             </h2>
             <div id="solution-container" class="solution-display"></div>
-            <button class="btn btn-sm btn-copy" id="btn-copy-solution" onclick="copySolution()" data-i18n="btn_copy">📋 Copiar</button>
+            <button type="button" class="btn btn-sm btn-copy" id="btn-copy-solution" onclick="copySolution()" data-i18n="btn_copy">📋 Copy</button>
         </div>
         <div class="result-steps">
-            <h2><span data-i18n="steps_title">Pasos</span> <span id="step-count" class="badge"></span></h2>
+            <h2><span data-i18n="steps_title">Steps</span> <span id="step-count" class="badge"></span></h2>
             <div id="steps-container" class="steps-list"></div>
         </div>
     </section>
@@ -107,6 +122,13 @@
     const METHOD_NAME = "{{ method.name }}";
     const METHOD_TYPE = "{{ method.method_type }}";
     let currentSize = 3;
+    let interpNumPoints = 3;
+
+    const DEFAULT_INTERP_ROWS = [
+        [0, 1],
+        [1, 2],
+        [2, 5],
+    ];
 
     function changeSize(delta) {
         const newSize = currentSize + delta;
@@ -116,6 +138,51 @@
         buildMatrixGrid(currentSize, 'matrix-container');
         buildVectorGrid(currentSize, 'vector-container');
         hideResults();
+    }
+
+    function changeInterpSize(delta) {
+        const n = interpNumPoints + delta;
+        if (n < 2 || n > 12) return;
+        interpNumPoints = n;
+        document.getElementById('interp-size-display').textContent = interpNumPoints;
+        buildInterpRows();
+        hideResults();
+    }
+
+    function buildInterpRows() {
+        const container = document.getElementById('interp-points-container');
+        if (!container) return;
+        container.innerHTML = '';
+
+        const header = document.createElement('div');
+        header.className = 'interp-row interp-header';
+        header.innerHTML = '<span data-i18n="interp_col_x">x</span><span data-i18n="interp_col_y">y</span>';
+        container.appendChild(header);
+
+        for (let i = 0; i < interpNumPoints; i++) {
+            const row = document.createElement('div');
+            row.className = 'interp-row';
+            const def = DEFAULT_INTERP_ROWS[i] || [i, i + 1];
+            row.innerHTML = `
+                <input type="number" class="form-input interp-x" step="any" value="${def[0]}" aria-label="x${i}">
+                <input type="number" class="form-input interp-y" step="any" value="${def[1]}" aria-label="y${i}">
+            `;
+            container.appendChild(row);
+        }
+        if (window.I18n) I18n.applyTranslations();
+    }
+
+    function readInterpPoints() {
+        const xs = document.querySelectorAll('.interp-x');
+        const ys = document.querySelectorAll('.interp-y');
+        const points = [];
+        for (let i = 0; i < xs.length; i++) {
+            const xv = parseFloat(xs[i].value);
+            const yv = parseFloat(ys[i].value);
+            if (Number.isNaN(xv) || Number.isNaN(yv)) return null;
+            points.push([xv, yv]);
+        }
+        return points;
     }
 
     async function handleSolve() {
@@ -133,7 +200,6 @@
             let result;
 
             if (METHOD_TYPE === 'root') {
-                // Modo raíces: enviar expresión + parámetros
                 const expr = document.getElementById('expr-input').value.trim();
                 if (!expr) throw new Error(I18n.t('error_fill_expr'));
 
@@ -148,8 +214,20 @@
                     body: JSON.stringify({ method: METHOD_NAME, expr, params }),
                 });
                 result = await response.json();
+            } else if (METHOD_TYPE === 'interpolation') {
+                const points = readInterpPoints();
+                if (!points) throw new Error(I18n.t('error_fill_points'));
+                const xEvalRaw = document.getElementById('x-eval-input').value.trim();
+                const x_eval = parseFloat(xEvalRaw);
+                if (Number.isNaN(x_eval)) throw new Error(I18n.t('error_fill_x_eval'));
+
+                const response = await fetch('/api/solve', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ method: METHOD_NAME, points, x_eval }),
+                });
+                result = await response.json();
             } else {
-                // Modo sistema lineal: enviar matrix + b
                 const matrix = readMatrix('matrix-container', currentSize);
                 const b = readVector('vector-container', currentSize);
                 if (!matrix || !b) throw new Error(I18n.t('error_fill_fields'));
@@ -158,9 +236,10 @@
 
             if (result.error) throw new Error(result.error);
 
-            // Renderizar solución
             if (METHOD_TYPE === 'root') {
                 renderRootSolution(result, 'solution-container');
+            } else if (METHOD_TYPE === 'interpolation') {
+                renderInterpSolution(result, 'solution-container');
             } else {
                 renderSolution(result.solution, 'solution-container');
             }
@@ -180,6 +259,26 @@
         }
     }
 
+    function renderInterpSolution(result, containerId) {
+        const container = document.getElementById(containerId);
+        const sol = result.solution;
+        const px = sol.P_x !== undefined ? sol.P_x : sol.p_x;
+        const xev = sol.x_eval;
+        const html = `<div class="solution-vector">
+            <div class="solution-item">
+                <span class="var-name">x</span>
+                <span class="var-equals">=</span>
+                <span class="var-value">${Number(xev).toFixed(10)}</span>
+            </div>
+            <div class="solution-item">
+                <span class="var-name">P(x)</span>
+                <span class="var-equals">=</span>
+                <span class="var-value">${Number(px).toFixed(10)}</span>
+            </div>
+        </div>`;
+        container.innerHTML = html;
+    }
+
     function renderRootSolution(result, containerId) {
         const container = document.getElementById(containerId);
         const root = result.root !== undefined ? result.root : result.solution[0];
@@ -192,14 +291,14 @@
                 <span class="var-value">${Number(root).toFixed(10)}</span>
             </div>
             <div class="solution-item">
-                <span class="var-name" data-i18n="iterations_label">Iteraciones</span>
+                <span class="var-name" data-i18n="iterations_label">Iterations</span>
                 <span class="var-equals">=</span>
                 <span class="var-value">${iters}</span>
             </div>`;
 
         if (result.intervals) {
             html += `<div class="solution-item">
-                <span class="var-name" data-i18n="interval_label">Intervalo</span>
+                <span class="var-name" data-i18n="interval_label">Interval</span>
                 <span class="var-equals">∈</span>
                 <span class="var-value">[${result.intervals[0][0].toFixed(6)}, ${result.intervals[0][1].toFixed(6)}]</span>
             </div>`;
@@ -223,14 +322,14 @@
         });
     }
 
-    // Inicializar al cargar
     document.addEventListener('DOMContentLoaded', () => {
-        if (METHOD_TYPE !== 'root') {
+        if (METHOD_TYPE === 'linear_system' || METHOD_TYPE === undefined || METHOD_TYPE === '') {
             buildMatrixGrid(currentSize, 'matrix-container');
             buildVectorGrid(currentSize, 'vector-container');
+        } else if (METHOD_TYPE === 'interpolation') {
+            buildInterpRows();
         }
 
-        // Aplicar traducción de instrucciones del método
         I18n.init().then(() => {
             const container = document.querySelector("[data-instructions-es]");
             if (container) {
@@ -241,7 +340,6 @@
                 if (body) body.innerHTML = lang === "en" ? enHTML : esHTML;
             }
 
-            // Traducir labels de parámetros de raíces
             document.querySelectorAll('[data-i18n-es]').forEach(el => {
                 const lang = I18n.getLang();
                 el.textContent = lang === 'en'

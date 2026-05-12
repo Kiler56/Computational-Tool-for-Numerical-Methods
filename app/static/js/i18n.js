@@ -1,11 +1,9 @@
 /**
- * i18n.js — Sistema de internacionalización client-side.
- * Carga archivos JSON con traducciones y aplica los textos
- * a todos los elementos con atributo data-i18n.
+ * i18n.js — Client-side internationalization.
  */
 
 const I18n = (() => {
-    let currentLang = "es";
+    let currentLang = "en";
     let translations = {};
 
     /**
@@ -15,7 +13,7 @@ const I18n = (() => {
         // Prioridad: 1) lang guardado en localStorage, 2) atributo data del body, 3) "es"
         const saved = localStorage.getItem("numcalc_lang");
         const bodyLang = document.body.dataset.userLang;
-        currentLang = saved || bodyLang || "es";
+        currentLang = saved || bodyLang || "en";
 
         await loadLang(currentLang);
         applyTranslations();
@@ -32,9 +30,9 @@ const I18n = (() => {
             translations = await resp.json();
             currentLang = lang;
         } catch (err) {
-            console.warn(`[i18n] No se pudo cargar ${lang}.json, fallback a es`, err);
-            if (lang !== "es") {
-                await loadLang("es");
+            console.warn(`[i18n] Could not load ${lang}.json, falling back to en`, err);
+            if (lang !== "en") {
+                await loadLang("en");
             }
         }
     }

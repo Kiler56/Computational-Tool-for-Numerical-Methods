@@ -1,25 +1,26 @@
-Inicio
+Begin
 
-Definir función secante(f, x0, x1, tolerancia, max_iter):
+Define function secant(f, x0, x1, tolerance, max_iter):
 
-    Para i desde 1 hasta max_iter:
+    For i from 1 to max_iter:
         f0 ← f(x0)
         f1 ← f(x1)
+        denom ← (f1 - f0)
 
-        Si (f1 - f0) = 0:
-            Mostrar "Error: división por cero"
-            Retornar None
+        If denom = 0:
+            Print "Error: division by zero"
+            Return None
 
-        x2 ← x1 - f1 * (x1 - x0) / (f1 - f0)
+        x2 ← x1 - f1 * (x1 - x0) / denom
 
-        Si |x2 - x1| < tolerancia:
-            Mostrar "Convergió en i iteraciones"
-            Retornar x2
+        If |x2 - x1| < tolerance:
+            Print "Converged in i iterations"
+            Return x2
 
         x0 ← x1
         x1 ← x2
 
-    Mostrar "No convergió"
-    Retornar None
+    Print "Did not converge"
+    Return None
 
-Fin
+End

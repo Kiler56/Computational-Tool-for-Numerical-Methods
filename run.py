@@ -1,4 +1,4 @@
-"""Entry point para desarrollo local: python run.py"""
+"""Local development entry point: python run.py"""
 from app import create_app
 
 app = create_app("dev")

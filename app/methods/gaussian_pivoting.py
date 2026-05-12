@@ -60,7 +60,7 @@ class GaussianPartialPivoting(NumericalMethod):
             pivot = M[k][k]
             if abs(pivot) < 1e-12:
                 raise ValueError(
-                    f"Sistema singular: pivote cero en columna {k} incluso después de pivoteo parcial."
+                    f"Singular system: zero pivot in column {k} even after partial pivoting."
                 )
 
             step_data = {
@@ -91,7 +91,7 @@ class GaussianPartialPivoting(NumericalMethod):
         x = [0.0] * n
         for i in range(n - 1, -1, -1):
             if abs(M[i][i]) < 1e-12:
-                raise ValueError(f"Sistema singular en sustitución regresiva (fila {i}).")
+                raise ValueError(f"Singular system during back substitution (row {i}).")
             s = sum(M[i][j] * x[j] for j in range(i + 1, n))
             x[i] = (M[i][n] - s) / M[i][i]
             steps.append({
@@ -175,7 +175,7 @@ class GaussianTotalPivoting(NumericalMethod):
             pivot = M[k][k]
             if abs(pivot) < 1e-12:
                 raise ValueError(
-                    f"Sistema singular: pivote cero en paso {k} incluso después de pivoteo total."
+                    f"Singular system: zero pivot at step {k} even after total pivoting."
                 )
 
             steps.append({
@@ -207,7 +207,7 @@ class GaussianTotalPivoting(NumericalMethod):
         x_perm = [0.0] * n
         for i in range(n - 1, -1, -1):
             if abs(M[i][i]) < 1e-12:
-                raise ValueError(f"Sistema singular en sustitución regresiva (fila {i}).")
+                raise ValueError(f"Singular system during back substitution (row {i}).")
             s = sum(M[i][j] * x_perm[j] for j in range(i + 1, n))
             x_perm[i] = (M[i][n] - s) / M[i][i]
             steps.append({

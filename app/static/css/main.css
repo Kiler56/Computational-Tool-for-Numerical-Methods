@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   Calculadora de Métodos Numéricos — Dark Theme
+   Numerical Methods Calculator — Dark Theme
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
@@ -1247,4 +1247,30 @@ body {
     color: var(--text-muted);
 }
 
+/* Lagrange / interpolation node grid */
+.interp-points-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 28rem;
+}
+
+.interp-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.interp-row.interp-header {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.interp-row.interp-header span {
+    padding-left: 0.25rem;
+}
 

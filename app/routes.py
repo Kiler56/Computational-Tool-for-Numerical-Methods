@@ -1,6 +1,6 @@
 """
-Blueprint principal — vistas HTML + API REST.
-Las rutas de API delegan al MethodRegistry; las vistas usan Jinja2.
+Main blueprint — HTML views + REST API.
+API routes delegate to MethodRegistry; views use Jinja2.
 """
 from flask import Blueprint, jsonify, render_template, request
 from flask_login import current_user
@@ -10,28 +10,32 @@ from app.core.method_registry import registry
 main_bp = Blueprint("main", __name__)
 
 
-# ─── Vistas HTML ────────────────────────────────────────────────
+# ─── HTML views ─────────────────────────────────────────────────
 
 @main_bp.route("/")
 def index():
-    """Página principal: dashboard de bienvenida."""
+    """Home dashboard."""
     methods = registry.list_all()
     return render_template("index.html", methods=methods)
 
 
 @main_bp.route("/solver/<method_name>")
 def solver(method_name: str):
-    """Página del solver para un método específico."""
+    """Solver page for a specific method."""
     try:
         method = registry.get(method_name)
     except KeyError:
-        return render_template("index.html", methods=registry.list_all(), error=f"Método '{method_name}' no encontrado."), 404
+        return render_template(
+            "index.html",
+            methods=registry.list_all(),
+            error=f"Method '{method_name}' was not found.",
+        ), 404
     return render_template("solver.html", method=method, methods=registry.list_all())
 
 
 @main_bp.route("/history")
 def history():
-    """Historial de cálculos del usuario autenticado."""
+    """Authenticated user's calculation history."""
     if not current_user.is_authenticated:
         from flask import redirect, url_for
         return redirect(url_for("auth.login"))
@@ -47,24 +51,24 @@ def history():
     return render_template("history.html", calculations=calcs, methods=registry.list_all())
 
 
-# ─── API REST ───────────────────────────────────────────────────
+# ─── REST API ───────────────────────────────────────────────────
 
 @main_bp.route("/api/methods", methods=["GET"])
 def api_methods():
-    """Lista todos los métodos numéricos disponibles."""
+    """List available numerical methods."""
     return jsonify(registry.list_all())
 
 
 @main_bp.route("/api/solve", methods=["POST"])
 def api_solve():
-    """Resuelve un sistema/ecuación usando el método indicado."""
+    """Run the selected numerical method."""
     data = request.get_json(silent=True)
     if not data:
-        return jsonify({"error": "Body JSON requerido."}), 400
+        return jsonify({"error": "JSON body is required."}), 400
 
     method_name = data.get("method")
     if not method_name:
-        return jsonify({"error": "Campo 'method' requerido."}), 400
+        return jsonify({"error": "Field 'method' is required."}), 400
 
     try:
         method = registry.get(method_name)
@@ -73,21 +77,26 @@ def api_solve():
 
     try:
         if method.method_type == "root":
-            # Métodos de búsqueda de raíces: f(x) = 0
             expr = data.get("expr")
             params = data.get("params", {})
             if not expr:
-                return jsonify({"error": "Campo 'expr' requerido para métodos de raíces."}), 400
+                return jsonify({"error": "Field 'expr' is required for root-finding methods."}), 400
             result = method.solve(expr, params)
+        elif method.method_type == "interpolation":
+            points = data.get("points")
+            x_eval = data.get("x_eval")
+            if points is None:
+                return jsonify({"error": "Field 'points' is required for interpolation (list of [x, y])."}), 400
+            if x_eval is None:
+                return jsonify({"error": "Field 'x_eval' is required for interpolation."}), 400
+            result = method.solve(points, x_eval=float(x_eval))
         else:
-            # Métodos de sistemas lineales: Ax = b
             matrix = data.get("matrix")
             b = data.get("b")
             if matrix is None or b is None:
-                return jsonify({"error": "Campos 'matrix' y 'b' requeridos para sistemas lineales."}), 400
+                return jsonify({"error": "Fields 'matrix' and 'b' are required for linear systems."}), 400
             result = method.solve(matrix, b)
 
-        # Guardar en historial si el usuario está logueado
         if current_user.is_authenticated:
             from app.extensions import db
             from app.models import CalculationHistory
@@ -102,6 +111,9 @@ def api_solve():
             if method.method_type == "root":
                 calc.set_matrix({"expr": data.get("expr"), "params": data.get("params", {})})
                 calc.set_vector([])
+            elif method.method_type == "interpolation":
+                calc.set_matrix(data.get("points"))
+                calc.set_vector([data.get("x_eval")])
             else:
                 calc.set_matrix(data.get("matrix"))
                 calc.set_vector(data.get("b"))
@@ -114,14 +126,14 @@ def api_solve():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        return jsonify({"error": f"Error interno: {str(e)}"}), 500
+        return jsonify({"error": f"Internal error: {str(e)}"}), 500
 
 
 @main_bp.route("/api/history", methods=["GET"])
 def api_history():
-    """Devuelve historial del usuario como JSON."""
+    """Return the user's history as JSON."""
     if not current_user.is_authenticated:
-        return jsonify({"error": "No autenticado."}), 401
+        return jsonify({"error": "Not authenticated."}), 401
 
     from app.models import CalculationHistory
     calcs = (

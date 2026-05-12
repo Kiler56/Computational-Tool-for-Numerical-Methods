@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}NumCalc — Métodos Numéricos{% endblock %}
+{% block title %}NumCalc — Numerical Methods{% endblock %}
 
 {% block content %}
 <section class="hero hero-dashboard">
-    <h1 data-i18n="hero_title">Calculadora de Métodos Numéricos</h1>
-    <p class="hero-subtitle" data-i18n="hero_subtitle">Bienvenido al entorno interactivo para la resolución de sistemas de ecuaciones lineales.</p>
+    <h1 data-i18n="hero_title">Numerical Methods Calculator</h1>
+    <p class="hero-subtitle" data-i18n="hero_subtitle">Welcome to the interactive workspace for linear systems, interpolation, and root finding.</p>
 </section>
 
 {% if error %}
@@ -12,15 +12,15 @@
 {% endif %}
 
 <div class="welcome-box">
-    <h2 data-i18n="how_to_title">👋 Cómo usar la herramienta</h2>
-    <p data-i18n="how_to_desc">Esta plataforma ha sido diseñada para escalar rápidamente con múltiples algoritmos numéricos desarrollados por nuestro equipo.</p>
+    <h2 data-i18n="how_to_title">👋 How to use this tool</h2>
+    <p data-i18n="how_to_desc">This platform is designed to grow with many numerical algorithms contributed by the team.</p>
     
     <ol class="welcome-steps">
-        <li data-i18n="step1"><strong>Selecciona un método</strong> desde el panel lateral izquierdo. Encontrarás más de 20 métodos a medida que el equipo los implemente.</li>
-        <li data-i18n="step2"><strong>Lee las instrucciones</strong> específicas en la vista de cada método para entender los requerimientos de la matriz.</li>
-        <li data-i18n="step3"><strong>Ingresa los datos</strong> y observa la resolución paso a paso.</li>
+        <li data-i18n="step1"><strong>Pick a method</strong> from the left sidebar. Linear solvers, interpolation, and root finders are grouped by category.</li>
+        <li data-i18n="step2"><strong>Read the instructions</strong> on each method page for input requirements.</li>
+        <li data-i18n="step3"><strong>Enter your data</strong> and review the step-by-step trace.</li>
     </ol>
 
-    <p class="welcome-note" data-i18n="tip">💡 <em>TIP: A medida que se agreguen nuevos métodos por los devs, estos aparecerán automáticamente en el menú.</em></p>
+    <p class="welcome-note" data-i18n="tip">💡 <em>TIP: New methods dropped into <code>app/methods/</code> show up in the menu automatically after a restart.</em></p>
 </div>
 {% endblock %}

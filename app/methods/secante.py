@@ -64,7 +64,7 @@ class Secante(NumericalMethod):
 
             denom = f1 - f0
             if abs(denom) < 1e-15:
-                raise ValueError(f"División por cero: f(x₁) - f(x₀) ≈ 0 en iteración {i}.")
+                raise ValueError(f"Division by zero: f(x₁) - f(x₀) ≈ 0 at iteration {i}.")
 
             x2 = x1 - f1 * (x1 - x0) / denom
             E = abs(x2 - x1)

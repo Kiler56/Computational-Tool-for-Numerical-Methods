@@ -85,7 +85,7 @@ class Trisection(NumericalMethod):
         xm = (a + b) / 2
         steps.append({
             "step": len(steps) + 1, "phase": "converged",
-            "description": f"Convergió: raíz ≈ {xm:.10g}, E = {E:.6e}",
+            "description": f"Converged: root ≈ {xm:.10g}, E = {E:.6e}",
             "a": a, "b": b, "xm": xm, "f_xm": f(xm), "error": E,
         })
 

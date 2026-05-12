@@ -1,5 +1,5 @@
 """
-Blueprint de autenticación — register, login, logout, profile.
+Authentication blueprint — register, login, logout, profile.
 """
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
@@ -10,8 +10,6 @@ from app.models import User
 
 auth_bp = Blueprint("auth", __name__)
 
-
-# ─── Registro ────────────────────────────────────────────────────
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
@@ -24,18 +22,17 @@ def register():
         password = request.form.get("password", "")
         confirm = request.form.get("confirm_password", "")
 
-        # Validaciones
         error = None
         if not username or not email or not password:
-            error = "Todos los campos son obligatorios."
+            error = "All fields are required."
         elif len(password) < 4:
-            error = "La contraseña debe tener al menos 4 caracteres."
+            error = "Password must be at least 4 characters."
         elif password != confirm:
-            error = "Las contraseñas no coinciden."
+            error = "Passwords do not match."
         elif User.query.filter_by(email=email).first():
-            error = "Ya existe una cuenta con ese email."
+            error = "An account with this email already exists."
         elif User.query.filter_by(username=username).first():
-            error = "Ese nombre de usuario ya está en uso."
+            error = "That username is already taken."
 
         if error:
             return render_template(
@@ -56,8 +53,6 @@ def register():
     return render_template("auth/register.html", methods=registry.list_all())
 
 
-# ─── Login ───────────────────────────────────────────────────────
-
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
@@ -72,7 +67,7 @@ def login():
         if not user or not user.check_password(password):
             return render_template(
                 "auth/login.html",
-                error="Credenciales incorrectas.",
+                error="Invalid email or password.",
                 email=email,
                 methods=registry.list_all(),
             )
@@ -84,8 +79,6 @@ def login():
     return render_template("auth/login.html", methods=registry.list_all())
 
 
-# ─── Logout ──────────────────────────────────────────────────────
-
 @auth_bp.route("/logout")
 @login_required
 def logout():
@@ -93,14 +86,12 @@ def logout():
     return redirect(url_for("main.index"))
 
 
-# ─── Perfil ──────────────────────────────────────────────────────
-
 @auth_bp.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
     if request.method == "POST":
         display_name = request.form.get("display_name", "").strip()
-        preferred_lang = request.form.get("preferred_lang", "es")
+        preferred_lang = request.form.get("preferred_lang", "en")
 
         if display_name:
             current_user.display_name = display_name
@@ -110,7 +101,7 @@ def profile():
         db.session.commit()
         return render_template(
             "auth/profile.html",
-            success="Perfil actualizado correctamente.",
+            success="Profile updated successfully.",
             methods=registry.list_all(),
         )
 

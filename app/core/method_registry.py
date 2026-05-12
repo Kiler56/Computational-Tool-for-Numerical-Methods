@@ -1,9 +1,7 @@
 """
-Registry singleton que descubre y registra automáticamente todos los métodos
-numéricos en el paquete `app.methods` usando pkgutil + importlib.
+Singleton registry that discovers numerical methods in `app.methods` via pkgutil.
 
-Para agregar un nuevo método: solo crear un archivo .py en app/methods/
-con una clase que herede de NumericalMethod. El registry la detecta al arrancar.
+To add a method: create one module under app/methods/ with a NumericalMethod subclass.
 """
 import importlib
 import inspect
@@ -13,16 +11,13 @@ from app.core.base_method import NumericalMethod
 
 
 class MethodRegistry:
-    """Singleton que mantiene un diccionario {name: clase} de métodos disponibles."""
+    """Singleton holding {slug: class} for registered methods."""
 
     def __init__(self):
         self._methods: dict[str, type[NumericalMethod]] = {}
 
     def discover(self, package_name: str) -> None:
-        """
-        Importa todos los módulos del paquete indicado y registra
-        automáticamente las subclases de NumericalMethod encontradas.
-        """
+        """Import submodules and register NumericalMethod subclasses."""
         package = importlib.import_module(package_name)
         for importer, module_name, is_pkg in pkgutil.iter_modules(package.__path__):
             full_name = f"{package_name}.{module_name}"
@@ -37,17 +32,17 @@ class MethodRegistry:
                         instance = obj()
                         self._methods[instance.name] = obj
                     except TypeError:
-                        # Clase abstracta incompleta, la ignoramos
+                        # Incomplete abstract class — skip
                         pass
 
     def get(self, name: str) -> NumericalMethod:
-        """Devuelve una instancia del método por su name. Lanza KeyError si no existe."""
+        """Return a method instance by slug; raises KeyError if missing."""
         if name not in self._methods:
-            raise KeyError(f"Método '{name}' no encontrado. Disponibles: {list(self._methods.keys())}")
+            raise KeyError(f"Method '{name}' not found. Available: {list(self._methods.keys())}")
         return self._methods[name]()
 
     def list_all(self) -> list[dict]:
-        """Lista todos los métodos registrados con metadata completa."""
+        """List registered methods with metadata."""
         result = []
         for name, cls in self._methods.items():
             instance = cls()

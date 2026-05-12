@@ -71,7 +71,7 @@ class RaicesMultiples(NumericalMethod):
 
             denom = dfx ** 2 - fx * d2fx
             if abs(denom) < 1e-15:
-                raise ValueError(f"División por cero en iteración {i}: f'² - f·f'' ≈ 0.")
+                raise ValueError(f"Division by zero at iteration {i}: f'² - f·f'' ≈ 0.")
 
             x_new = x - (fx * dfx) / denom
             E = abs(x_new - x)

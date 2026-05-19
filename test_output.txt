@@ -1,0 +1,191 @@
+﻿
+======================================================================
+  Importaciones
+======================================================================
+  [PASS]  VandermondeInterpolation importado correctamente
+  [PASS]  Simpson38 importado correctamente
+
+======================================================================
+  VANDERMONDE -- Caso de prueba del profesor
+======================================================================
+
+  Coeficientes obtenidos (ascendente):
+    a0 = 3.000000
+    a1 = -5.533333
+    a2 = 5.825000
+    a3 = -1.141667
+  Coeficientes esperados (ascendente):
+    a0 = 3.000000
+    a1 = -5.533333
+    a2 = 5.825000
+    a3 = -1.141667
+
+  [PASS]  a0 = 3.000000
+         obtenido=3  esperado=3  error=0.00e+00
+  [PASS]  a1 = -5.533333
+         obtenido=-5.533333333  esperado=-5.533333  error=3.33e-07
+  [PASS]  a2 = 5.825000
+         obtenido=5.825  esperado=5.825  error=8.88e-16
+  [PASS]  a3 = -1.141667
+         obtenido=-1.141666667  esperado=-1.141667  error=3.33e-07
+  [PASS]  p(-1.0) = 15.5  (interpolacion exacta en punto del profesor)
+         obtenido=15.5  esperado=15.5  error=1.78e-15
+  [PASS]  p(0.0) = 3.0  (interpolacion exacta en punto del profesor)
+         obtenido=3  esperado=3  error=0.00e+00
+  [PASS]  p(3.0) = 8.0  (interpolacion exacta en punto del profesor)
+         obtenido=8  esperado=8  error=1.78e-15
+  [PASS]  p(4.0) = 1.0  (interpolacion exacta en punto del profesor)
+         obtenido=1  esperado=1  error=3.55e-15
+
+  Polinomio obtenido:  p(x) = 3 - 5.53333x + 5.825x^2 - 1.14167x^3
+  Polinomio esperado:  p(x) = 3 - 5.53333x + 5.825x^2 - 1.14167x^3
+  [PASS]  Polinomio contiene coeficientes principales
+
+  Matriz de Vandermonde construida (ascendente x^0..x^3):
+    [    1.0000,    -1.0000,     1.0000,    -1.0000]
+    [    1.0000,     0.0000,     0.0000,     0.0000]
+    [    1.0000,     3.0000,     9.0000,    27.0000]
+    [    1.0000,     4.0000,    16.0000,    64.0000]
+  [PASS]  Matriz de Vandermonde correcta
+
+  La del profesor usa orden descendente (x^3, x^2, x^1, x^0):
+    [-1  1  -1  1]     <-- nuestra fila invertida: [1, -1, 1, -1]
+    [ 0  0   0  1]     <-- nuestra: [1, 0, 0, 0]
+    [27  9   3  1]     <-- nuestra: [1, 3, 9, 27]
+    [64 16   4  1]     <-- nuestra: [1, 4, 16, 64]
+  Ambas son equivalentes, solo difiere la convencion.
+
+======================================================================
+  VANDERMONDE -- Casos adicionales
+======================================================================
+  [PASS]  a0 = 1  (p(x) = 1 + 2x)
+         obtenido=1  esperado=1  error=0.00e+00
+  [PASS]  a1 = 2  (p(x) = 1 + 2x)
+         obtenido=2  esperado=2  error=0.00e+00
+  [PASS]  a0 = 0  (y=x^2)
+         obtenido=0  esperado=0  error=0.00e+00
+  [PASS]  a1 = 0  (y=x^2)
+         obtenido=0  esperado=0  error=0.00e+00
+  [PASS]  a2 = 1  (y=x^2)
+         obtenido=1  esperado=1  error=0.00e+00
+  [PASS]  p(5) = 25  (y=x^2)
+         obtenido=25  esperado=25  error=0.00e+00
+
+======================================================================
+  VANDERMONDE -- Validaciones de error
+======================================================================
+  [PASS]  Correctamente rechaza x duplicados
+  [PASS]  Correctamente rechaza tamanos distintos
+  [PASS]  Correctamente rechaza un solo punto
+
+======================================================================
+  VANDERMONDE -- Estructura y etapas (requisito del profesor)
+======================================================================
+  [PASS]  Clave 'solution' presente
+  [PASS]  Clave 'properties' presente
+  [PASS]  Clave 'steps' presente
+  [PASS]  Clave 'iterations' presente
+  [PASS]  Clave 'method' presente
+  [PASS]  Fase 'build_matrix' (Construccion de Vandermonde) presente en los pasos
+  [PASS]  Fase 'pivot' (Pivoteo total) presente en los pasos
+  [PASS]  Fase 'elimination' (Eliminacion gaussiana) presente en los pasos
+  [PASS]  Fase 'back_substitution' (Sustitucion regresiva) presente en los pasos
+  [PASS]  Fase 'result' (Polinomio resultante) presente en los pasos
+  [PASS]  Fase 'verification' (Verificacion en puntos) presente en los pasos
+
+  --- Etapas del metodo (resumen) ---
+    Paso  1 [build_matrix        ] Construcci├│n de la matriz de Vandermonde 4├ù4. V[i][j] = x_i^j  ÔåÆ  x = [-1.0, 0.0
+    Paso  2 [pivot               ] Paso 1: pivote total = 64 | intercambio filas F1ÔåöF4 | intercambio cols C1ÔåöC4
+    Paso  3 [elimination         ] F2 ÔåÉ F2 - (0)┬ÀF1
+    Paso  4 [elimination         ] F3 ÔåÉ F3 - (0.421875)┬ÀF1
+    Paso  5 [elimination         ] F4 ÔåÉ F4 - (-0.015625)┬ÀF1
+    Paso  6 [pivot               ] Paso 2: pivote total = 2.25 | intercambio filas F2ÔåöF3 | intercambio cols C2ÔåöC3
+    Paso  7 [elimination         ] F3 ÔåÉ F3 - (0)┬ÀF2
+    Paso  8 [elimination         ] F4 ÔåÉ F4 - (0.555556)┬ÀF2
+    Paso  9 [pivot               ] Paso 3: pivote total = -1.66667 | intercambio filas F3ÔåöF4
+    Paso 10 [elimination         ] F4 ÔåÉ F4 - (-0)┬ÀF3
+    Paso 11 [back_substitution   ] a_perm[3] = (3 - suma) / 1 = 3
+    Paso 12 [back_substitution   ] a_perm[2] = (11.3056 - suma) / -1.66667 = -5.5333333
+    Paso 13 [back_substitution   ] a_perm[1] = (7.57812 - suma) / 2.25 = 5.825
+    Paso 14 [back_substitution   ] a_perm[0] = (1 - suma) / 64 = -1.1416667
+    Paso 15 [reorder             ] Reordenamiento de columnas [3, 2, 1, 0] ÔåÆ coeficientes finales: ['3', '-5.53333'
+    Paso 16 [result              ] Polinomio interpolante: p(x) = 3 - 5.53333x + 5.825x^2 - 1.14167x^3
+    Paso 17 [verification        ] p(-1.0) = 15.5  (esperado 15.5, error = 1.78e-15)
+    Paso 18 [verification        ] p(0.0) = 3  (esperado 3.0, error = 0.00e+00)
+    Paso 19 [verification        ] p(3.0) = 8  (esperado 8.0, error = 1.78e-15)
+    Paso 20 [verification        ] p(4.0) = 1  (esperado 1.0, error = 3.55e-15)
+
+======================================================================
+  SIMPSON 3/8 -- Integrales con solucion analitica conocida
+======================================================================
+  [PASS]  int_0^1 x dx = 0.5 (exacto)
+         obtenido=0.5  esperado=0.5  error=0.00e+00
+  [PASS]  int_0^1 x^2 dx = 1/3 (exacto)
+         obtenido=0.3333333333  esperado=0.3333333333  error=0.00e+00
+  [PASS]  int_0^2 x^3 dx = 4 (exacto, grado 3)
+         obtenido=4  esperado=4  error=4.44e-16
+  [PASS]  int_0^pi sin(x) dx = 2  (n=3, error esperado ~0.04)
+         obtenido=2.040524285  esperado=2  error=4.05e-02
+  [PASS]  int_0^pi sin(x) dx = 2  (n=30)
+         obtenido=2.000003014  esperado=2  error=3.01e-06
+  [PASS]  int_0^1 e^x dx = e-1 = 1.71828  (n=3)
+         obtenido=1.718540153  esperado=1.718281828  error=2.58e-04
+  [PASS]  int_0^1 e^x dx = e-1 = 1.71828  (n=30)
+         obtenido=1.718281855  esperado=1.718281828  error=2.65e-08
+  [PASS]  int_1^2 1/x dx = ln(2) = 0.693147  (n=3)
+         obtenido=0.69375  esperado=0.6931471806  error=6.03e-04
+  [PASS]  int_1^2 1/x dx = ln(2) = 0.693147  (n=30)
+         obtenido=0.6931472669  esperado=0.6931471806  error=8.63e-08
+
+======================================================================
+  SIMPSON 3/8 -- Ajuste de n y validaciones
+======================================================================
+  [PASS]  n=4 ajustado a n=6 (multiplo de 3)
+  [PASS]  n=6 se mantiene sin ajuste
+  [PASS]  Correctamente rechaza a > b
+
+======================================================================
+  SIMPSON 3/8 -- Estructura y etapas (requisito del profesor)
+======================================================================
+  [PASS]  Clave 'solution' presente
+  [PASS]  Clave 'properties' presente
+  [PASS]  Clave 'steps' presente
+  [PASS]  Clave 'iterations' presente
+  [PASS]  Clave 'method' presente
+  [PASS]  Fase 'setup' (Configuracion (a, b, n, h)) presente
+  [PASS]  Fase 'evaluation' (Evaluacion de nodos f(x_i)) presente
+  [PASS]  Fase 'weighted_sum' (Suma ponderada) presente
+  [PASS]  Fase 'result' (Integral resultante) presente
+  [PASS]  Fase 'error_estimation' (Estimacion del error) presente
+
+  --- Etapas del metodo (resumen) ---
+    Paso  1 [setup               ] Configuraci├│n: a=0.0, b=3.141592653589793, n=3, h=(b-a)/n=(3.141592653589793-0.0
+    Paso  2 [evaluation          ] x_0 = 0, f(x_0) = 0, coeficiente = 1
+    Paso  3 [evaluation          ] x_1 = 1.0471976, f(x_1) = 0.8660254038, coeficiente = 3
+    Paso  4 [evaluation          ] x_2 = 2.0943951, f(x_2) = 0.8660254038, coeficiente = 3
+    Paso  5 [evaluation          ] x_3 = 3.1415927, f(x_3) = 1.224646799e-16, coeficiente = 1
+    Paso  6 [weighted_sum        ] Suma ponderada ╬ú(c_i ┬À f(x_i)) = 5.196152423  con patr├│n de coeficientes [1, 3, 
+    Paso  7 [result              ] Integral Ôëê (3h/8) ┬À suma = (3┬À1.0471976/8) ┬À 5.196152423 = 2.040524285
+    Paso  8 [error_estimation    ] Estimaci├│n de error (extrapolaci├│n de Richardson con n_ref=9): I_ref = 2.0003822
+
+======================================================================
+  CONVERGENCIA -- Error decrece al aumentar n
+======================================================================
+
+       n             I aprox         error    mejora
+  ------  ------------------  ------------  --------
+       3         2.040524285      4.05e-02       ---
+       6         2.002009847      2.01e-03     20.2x
+      12         2.000119386      1.19e-04     16.8x
+      30         2.000003014      3.01e-06     39.6x
+      60         2.000000188      1.88e-07     16.0x
+  [PASS]  Convergencia O(h^4) verificada
+
+======================================================================
+  RESUMEN FINAL
+======================================================================
+  Total de checks : 55
+  Aprobados       : 55
+  Fallidos        : 0
+
+  [OK] TODOS LOS TESTS PASARON.

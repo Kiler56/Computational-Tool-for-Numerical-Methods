@@ -51,6 +51,24 @@
         </div>
     </div>
 
+{% elif method.method_type == "interpolation" %}
+    <!-- ════════ Formulario para métodos de interpolación ════════ -->
+    <div class="size-controls">
+        <label for="matrix-size" data-i18n="size_label">Número de puntos (n):</label>
+        <div class="size-stepper">
+            <button id="btn-decrease" class="btn btn-sm" onclick="changeSize(-1)">−</button>
+            <span id="size-display" class="size-value">3</span>
+            <button id="btn-increase" class="btn btn-sm" onclick="changeSize(1)">+</button>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <div class="matrix-section">
+            <h3 data-i18n="points_label">Puntos (X, Y)</h3>
+            <div id="points-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; max-width: 300px; margin: 0 auto;"></div>
+        </div>
+    </div>
+
 {% else %}
     <!-- ════════ Formulario para sistemas lineales Ax=b ════════ -->
     <div class="size-controls">
@@ -144,8 +162,12 @@
         if (newSize < 2 || newSize > 8) return;
         currentSize = newSize;
         document.getElementById('size-display').textContent = currentSize;
-        buildMatrixGrid(currentSize, 'matrix-container');
-        buildVectorGrid(currentSize, 'vector-container');
+        if (METHOD_TYPE === 'interpolation') {
+            buildPointsGrid(currentSize, 'points-container');
+        } else {
+            buildMatrixGrid(currentSize, 'matrix-container');
+            buildVectorGrid(currentSize, 'vector-container');
+        }
         hideResults();
         saveState();
     }
@@ -178,6 +200,17 @@
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ method: METHOD_NAME, expr, params }),
+                });
+                result = await response.json();
+            } else if (METHOD_TYPE === 'interpolation') {
+                // Modo interpolación: enviar x, y
+                const pts = readPoints(currentSize);
+                if (!pts) throw new Error(I18n.t('error_fill_fields'));
+                
+                const response = await fetch('/api/solve', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ method: METHOD_NAME, x: pts.x, y: pts.y }),
                 });
                 result = await response.json();
             } else {
@@ -286,6 +319,10 @@
         if (METHOD_TYPE === 'root') {
             const exprEl = document.getElementById('expr-input');
             if (exprEl) state.expr = exprEl.value;
+        } else if (METHOD_TYPE === 'interpolation') {
+            state.size = currentSize;
+            const pts = readPoints(currentSize);
+            if (pts) state.pts = pts;
         } else {
             state.size = currentSize;
             const matrix = readMatrix('matrix-container', currentSize);
@@ -311,6 +348,20 @@
                 if (state.expr) {
                     const exprEl = document.getElementById('expr-input');
                     if (exprEl) exprEl.value = state.expr;
+                }
+            } else if (METHOD_TYPE === 'interpolation') {
+                if (state.size && state.size !== currentSize) {
+                    currentSize = state.size;
+                    document.getElementById('size-display').textContent = currentSize;
+                    buildPointsGrid(currentSize, 'points-container');
+                }
+                if (state.pts && state.pts.x.length === currentSize) {
+                    for (let i = 0; i < currentSize; i++) {
+                        const elX = document.getElementById(`pt-x-${i}`);
+                        const elY = document.getElementById(`pt-y-${i}`);
+                        if (elX && state.pts.x[i] !== null && state.pts.x[i] !== undefined) elX.value = state.pts.x[i];
+                        if (elY && state.pts.y[i] !== null && state.pts.y[i] !== undefined) elY.value = state.pts.y[i];
+                    }
                 }
             } else {
                 if (state.size && state.size !== currentSize) {
@@ -353,7 +404,9 @@
 
     // Inicializar al cargar
     document.addEventListener('DOMContentLoaded', () => {
-        if (METHOD_TYPE !== 'root') {
+        if (METHOD_TYPE === 'interpolation') {
+            buildPointsGrid(currentSize, 'points-container');
+        } else if (METHOD_TYPE !== 'root') {
             buildMatrixGrid(currentSize, 'matrix-container');
             buildVectorGrid(currentSize, 'vector-container');
         }

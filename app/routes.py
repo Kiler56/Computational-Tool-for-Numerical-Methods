@@ -79,6 +79,14 @@ def api_solve():
             if not expr:
                 return jsonify({"error": "Campo 'expr' requerido para métodos de raíces."}), 400
             result = method.solve(expr, params)
+        elif method.method_type == "interpolation":
+            # Métodos de interpolación: x, y
+            x_points = data.get("x")
+            y_points = data.get("y")
+            params = data.get("params", {})
+            if not x_points or not y_points:
+                return jsonify({"error": "Campos 'x' y 'y' requeridos para interpolación."}), 400
+            result = method.solve(x_points, y_points, params=params)
         else:
             # Métodos de sistemas lineales: Ax = b
             matrix = data.get("matrix")
@@ -108,6 +116,9 @@ def api_solve():
 
             if method.method_type == "root":
                 calc.set_matrix({"expr": data.get("expr"), "params": data.get("params", {})})
+                calc.set_vector([])
+            elif method.method_type == "interpolation":
+                calc.set_matrix({"x": data.get("x"), "y": data.get("y")})
                 calc.set_vector([])
             else:
                 calc.set_matrix(data.get("matrix"))

@@ -156,7 +156,11 @@ function renderSolution(result, containerId) {
         propsDiv.style.marginBottom = '1.5rem';
         let propsHtml = '<h3 style="margin-top:0;">Propiedades de la Matriz</h3><ul style="margin-bottom:0;">';
         for (const [key, value] of Object.entries(result.properties)) {
-            propsHtml += `<li><strong>${key}:</strong> ${value}</li>`;
+            let displayVal = value;
+            if (typeof value === 'string' && value.includes('\n')) {
+                displayVal = `<pre style="background:var(--bg-primary); padding:0.5rem; border-radius:4px; margin-top:0.25rem;">${value}</pre>`;
+            }
+            propsHtml += `<li style="margin-bottom:0.5rem;"><strong>${key}:</strong> ${displayVal}</li>`;
         }
         propsHtml += '</ul>';
         propsDiv.innerHTML = propsHtml;

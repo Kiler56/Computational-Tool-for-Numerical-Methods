@@ -100,8 +100,30 @@ class Jacobi(NumericalMethod):
                 "description": "ADVERTENCIA: El método no convergió en el número máximo de iteraciones."
             })
 
+        props = {}
+        try:
+            import numpy as np
+            A_np = np.array(A)
+            D = np.diag(np.diag(A_np))
+            L = np.tril(A_np, -1)
+            U = np.triu(A_np, 1)
+            D_inv = np.linalg.inv(D)
+            Tj = -np.dot(D_inv, (L + U))
+            eigenvalues = np.linalg.eigvals(Tj)
+            spectral_radius = np.max(np.abs(eigenvalues))
+            
+            props["Radio Espectral (ρ)"] = f"{spectral_radius:.6g}"
+            props["Convergencia"] = "Garantizada (ρ < 1)" if spectral_radius < 1 else "No garantizada (ρ >= 1)"
+            
+            # Format Tj matrix
+            Tj_str = "[" + "]\n[".join([", ".join([f"{v:.4f}" for v in row]) for row in Tj]) + "]"
+            props["Matriz de Transición Tj"] = Tj_str
+        except Exception as e:
+            pass
+
         return {
             "solution": x,
+            "properties": props,
             "steps": steps,
             "iterations": len(steps) - 1,
             "method": self.name,

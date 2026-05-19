@@ -74,3 +74,62 @@ function readVector(containerId, n) {
     }
     return vec;
 }
+
+/**
+ * Genera una grilla de inputs Nx2 para puntos (X, Y).
+ */
+function buildPointsGrid(n, containerId) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    
+    // Create header row
+    const xLabel = document.createElement('div');
+    xLabel.textContent = 'X';
+    xLabel.style.fontWeight = 'bold';
+    xLabel.style.textAlign = 'center';
+    
+    const yLabel = document.createElement('div');
+    yLabel.textContent = 'Y';
+    yLabel.style.fontWeight = 'bold';
+    yLabel.style.textAlign = 'center';
+    
+    container.appendChild(xLabel);
+    container.appendChild(yLabel);
+
+    for (let i = 0; i < n; i++) {
+        const xInput = document.createElement('input');
+        xInput.type = 'number';
+        xInput.step = 'any';
+        xInput.className = 'matrix-input';
+        xInput.id = `pt-x-${i}`;
+        xInput.placeholder = `x${i+1}`;
+        xInput.setAttribute('aria-label', `Punto X${i+1}`);
+        container.appendChild(xInput);
+        
+        const yInput = document.createElement('input');
+        yInput.type = 'number';
+        yInput.step = 'any';
+        yInput.className = 'matrix-input';
+        yInput.id = `pt-y-${i}`;
+        yInput.placeholder = `y${i+1}`;
+        yInput.setAttribute('aria-label', `Punto Y${i+1}`);
+        container.appendChild(yInput);
+    }
+}
+
+/**
+ * Lee los valores de los puntos y devuelve {x: number[], y: number[]}.
+ * Retorna null si algún campo está vacío.
+ */
+function readPoints(n) {
+    const xPoints = [];
+    const yPoints = [];
+    for (let i = 0; i < n; i++) {
+        const xEl = document.getElementById(`pt-x-${i}`);
+        const yEl = document.getElementById(`pt-y-${i}`);
+        if (!xEl || xEl.value === '' || !yEl || yEl.value === '') return null;
+        xPoints.push(parseFloat(xEl.value));
+        yPoints.push(parseFloat(yEl.value));
+    }
+    return { x: xPoints, y: yPoints };
+}

@@ -93,8 +93,29 @@ class GaussSeidel(NumericalMethod):
                 "description": "ADVERTENCIA: El método no convergió."
             })
 
+        props = {}
+        try:
+            import numpy as np
+            A_np = np.array(A)
+            D = np.diag(np.diag(A_np))
+            L = np.tril(A_np, -1)
+            U = np.triu(A_np, 1)
+            DL_inv = np.linalg.inv(D + L)
+            Tg = -np.dot(DL_inv, U)
+            eigenvalues = np.linalg.eigvals(Tg)
+            spectral_radius = np.max(np.abs(eigenvalues))
+            
+            props["Radio Espectral (ρ)"] = f"{spectral_radius:.6g}"
+            props["Convergencia"] = "Garantizada (ρ < 1)" if spectral_radius < 1 else "No garantizada (ρ >= 1)"
+            
+            Tg_str = "[" + "]\n[".join([", ".join([f"{v:.4f}" for v in row]) for row in Tg]) + "]"
+            props["Matriz de Transición Tg"] = Tg_str
+        except Exception as e:
+            pass
+
         return {
             "solution": x,
+            "properties": props,
             "steps": steps,
             "iterations": len(steps) - 1,
             "method": self.name,

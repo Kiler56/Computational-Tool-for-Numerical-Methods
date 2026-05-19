@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Pruebas - Vandermonde y Simpson 3/8</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0f172a;color:#e2e8f0;padding:24px}
+h1{text-align:center;font-size:1.6rem;color:#38bdf8;margin-bottom:4px}
+h2{font-size:1.2rem;color:#38bdf8;margin:18px 0 8px;border-bottom:1px solid #334155;padding-bottom:4px}
+h3{font-size:1rem;color:#94a3b8;margin:12px 0 6px}
+.subtitle{text-align:center;color:#94a3b8;font-size:.85rem;margin-bottom:16px}
+.section{background:#1e293b;border-radius:8px;padding:14px;margin-bottom:14px;border:1px solid #334155}
+.pass{color:#4ade80;font-weight:600} .fail{color:#f87171;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:.82rem;margin:6px 0}
+th{background:#334155;color:#cbd5e1;padding:5px 8px;text-align:left;font-weight:600}
+td{padding:4px 8px;border-bottom:1px solid #1e293b}
+tr:nth-child(even){background:#1e293b80}
+.mono{font-family:'Cascadia Code','Consolas',monospace;font-size:.8rem}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:700}
+.badge-pass{background:#166534;color:#4ade80} .badge-fail{background:#7f1d1d;color:#f87171}
+.badge-total{background:#1e3a5f;color:#38bdf8}
+.summary-box{display:flex;gap:16px;justify-content:center;margin:12px 0}
+.summary-card{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:12px 24px;text-align:center}
+.summary-card .num{font-size:1.8rem;font-weight:700} .summary-card .lbl{font-size:.75rem;color:#94a3b8}
+.step-line{font-size:.78rem;padding:2px 0;border-bottom:1px solid #1e293b20}
+.matrix{font-family:monospace;font-size:.82rem;background:#0f172a;padding:8px;border-radius:4px;margin:4px 0;display:inline-block}
+.data-box{background:#0f172a;border:1px solid #334155;border-radius:6px;padding:10px;margin:6px 0}
+.note{color:#fbbf24;font-size:.8rem;font-style:italic}
+</style>
+</head>
+<body>
+
+<h1>Pruebas de Métodos Numéricos — Segunda Entrega</h1>
+<p class="subtitle">Vandermonde &amp; Simpson 3/8 · Datos de prueba del profesor · Mayo 2026</p>
+
+<div class="summary-box">
+  <div class="summary-card"><div class="num" style="color:#4ade80">55</div><div class="lbl">APROBADOS</div></div>
+  <div class="summary-card"><div class="num" style="color:#f87171">0</div><div class="lbl">FALLIDOS</div></div>
+  <div class="summary-card"><div class="num" style="color:#38bdf8">55</div><div class="lbl">TOTAL</div></div>
+</div>
+
+<!-- ============== VANDERMONDE ============== -->
+<div class="section">
+<h2>1. Método de Vandermonde — Caso de prueba del profesor</h2>
+
+<div class="data-box">
+<h3>Datos de entrada (Prueba_métodos2.pdf)</h3>
+<table>
+<tr><th>x</th><td>-1</td><td>0</td><td>3</td><td>4</td></tr>
+<tr><th>y</th><td>15.5</td><td>3</td><td>8</td><td>1</td></tr>
+</table>
+</div>
+
+<h3>Coeficientes obtenidos vs esperados</h3>
+<table>
+<tr><th>Coef.</th><th>Obtenido</th><th>Esperado (profesor)</th><th>Error</th><th>Estado</th></tr>
+<tr><td>a₀</td><td class="mono">3.000000</td><td class="mono">3.000000</td><td class="mono">0.00e+00</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>a₁</td><td class="mono">-5.533333</td><td class="mono">-5.533333</td><td class="mono">3.33e-07</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>a₂</td><td class="mono">5.825000</td><td class="mono">5.825000</td><td class="mono">0.00e+00</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>a₃</td><td class="mono">-1.141667</td><td class="mono">-1.141667</td><td class="mono">3.33e-07</td><td><span class="badge badge-pass">PASS</span></td></tr>
+</table>
+
+<h3>Polinomio interpolante</h3>
+<div class="data-box mono">p(x) = 3 - 5.53333x + 5.825x² - 1.14167x³</div>
+<p class="note">Equivale al del profesor: -1.141667x³ + 5.825000x² - 5.533333x + 3.000000</p>
+
+<h3>Matriz de Vandermonde construida</h3>
+<div class="matrix">
+[ 1.0000,  -1.0000,   1.0000,  -1.0000 ]<br>
+[ 1.0000,   0.0000,   0.0000,   0.0000 ]<br>
+[ 1.0000,   3.0000,   9.0000,  27.0000 ]<br>
+[ 1.0000,   4.0000,  16.0000,  64.0000 ]
+</div>
+<p class="note">Orden ascendente (x⁰..x³). La del profesor usa orden descendente — mismos valores.</p>
+
+<h3>Verificación: el polinomio pasa por los 4 puntos</h3>
+<table>
+<tr><th>x</th><th>p(x) obtenido</th><th>y esperado</th><th>Error</th><th>Estado</th></tr>
+<tr><td>-1</td><td class="mono">15.500000</td><td class="mono">15.5</td><td class="mono">1.78e-15</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>0</td><td class="mono">3.000000</td><td class="mono">3.0</td><td class="mono">0.00e+00</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>3</td><td class="mono">8.000000</td><td class="mono">8.0</td><td class="mono">1.78e-15</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>4</td><td class="mono">1.000000</td><td class="mono">1.0</td><td class="mono">3.55e-15</td><td><span class="badge badge-pass">PASS</span></td></tr>
+</table>
+
+<h3>Etapas paso a paso (requisito del profesor)</h3>
+<div class="data-box mono" style="font-size:.75rem;line-height:1.6">
+Paso  1 [build_matrix]  Construcción de la matriz de Vandermonde 4×4<br>
+Paso  2 [pivot]  Pivote total = 64 | intercambio filas F1↔F4 | cols C1↔C4<br>
+Paso  3 [elimination]  F2 ← F2 - (0)·F1<br>
+Paso  4 [elimination]  F3 ← F3 - (0.421875)·F1<br>
+Paso  5 [elimination]  F4 ← F4 - (-0.015625)·F1<br>
+Paso  6 [pivot]  Pivote total = 2.25 | intercambio filas F2↔F3 | cols C2↔C3<br>
+Paso  7 [elimination]  F3 ← F3 - (0)·F2<br>
+Paso  8 [elimination]  F4 ← F4 - (0.555556)·F2<br>
+Paso  9 [pivot]  Pivote total = -1.66667 | intercambio filas F3↔F4<br>
+Paso 10 [elimination]  F4 ← F4 - (-0)·F3<br>
+Paso 11 [back_sub]  a_perm[3] = 3<br>
+Paso 12 [back_sub]  a_perm[2] = -5.5333333<br>
+Paso 13 [back_sub]  a_perm[1] = 5.825<br>
+Paso 14 [back_sub]  a_perm[0] = -1.1416667<br>
+Paso 15 [reorder]  Reordenamiento → coeficientes finales<br>
+Paso 16 [result]  p(x) = 3 - 5.53333x + 5.825x² - 1.14167x³<br>
+Paso 17-20 [verification]  Verificación en los 4 puntos originales ✓
+</div>
+</div>
+
+<!-- ============== SIMPSON 3/8 ============== -->
+<div class="section">
+<h2>2. Método de Simpson 3/8 — Integración numérica</h2>
+<p style="font-size:.82rem;color:#94a3b8;margin-bottom:8px">Fórmula: I ≈ (3h/8)·[f(x₀) + 3f(x₁) + 3f(x₂) + 2f(x₃) + … + f(xₙ)]</p>
+
+<h3>Integrales exactas (polinomios grado ≤ 3)</h3>
+<table>
+<tr><th>Integral</th><th>Valor exacto</th><th>Obtenido</th><th>Error</th><th>Estado</th></tr>
+<tr><td>∫₀¹ x dx</td><td class="mono">0.5</td><td class="mono">0.5</td><td class="mono">0.00e+00</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>∫₀¹ x² dx</td><td class="mono">0.333333</td><td class="mono">0.333333</td><td class="mono">0.00e+00</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>∫₀² x³ dx</td><td class="mono">4.0</td><td class="mono">4.0</td><td class="mono">4.44e-16</td><td><span class="badge badge-pass">PASS</span></td></tr>
+</table>
+
+<h3>Integrales con solución analítica conocida</h3>
+<table>
+<tr><th>Integral</th><th>n</th><th>Valor exacto</th><th>Obtenido</th><th>Error</th><th>Estado</th></tr>
+<tr><td>∫₀π sin(x) dx</td><td>3</td><td class="mono">2.0</td><td class="mono">2.040524</td><td class="mono">4.05e-02</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>∫₀π sin(x) dx</td><td>30</td><td class="mono">2.0</td><td class="mono">2.000003</td><td class="mono">3.01e-06</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>∫₀¹ eˣ dx</td><td>3</td><td class="mono">1.71828</td><td class="mono">1.71854</td><td class="mono">2.58e-04</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>∫₀¹ eˣ dx</td><td>30</td><td class="mono">1.71828</td><td class="mono">1.71828</td><td class="mono">2.65e-08</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>∫₁² 1/x dx</td><td>3</td><td class="mono">0.69315</td><td class="mono">0.69375</td><td class="mono">6.03e-04</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>∫₁² 1/x dx</td><td>30</td><td class="mono">0.69315</td><td class="mono">0.69315</td><td class="mono">8.63e-08</td><td><span class="badge badge-pass">PASS</span></td></tr>
+</table>
+
+<h3>Etapas paso a paso — ∫₀π sin(x) dx con n=3</h3>
+<div class="data-box mono" style="font-size:.75rem;line-height:1.6">
+Paso 1 [setup]  a=0, b=π, n=3, h=π/3 ≈ 1.0472<br>
+Paso 2 [evaluation]  x₀ = 0,  f(x₀) = 0,  coef = 1<br>
+Paso 3 [evaluation]  x₁ = 1.0472,  f(x₁) = 0.8660,  coef = 3<br>
+Paso 4 [evaluation]  x₂ = 2.0944,  f(x₂) = 0.8660,  coef = 3<br>
+Paso 5 [evaluation]  x₃ = 3.1416,  f(x₃) ≈ 0,  coef = 1<br>
+Paso 6 [weighted_sum]  Σ(cᵢ·f(xᵢ)) = 5.1962<br>
+Paso 7 [result]  I ≈ (3·1.0472/8) · 5.1962 = 2.0405<br>
+Paso 8 [error_est]  Richardson con n_ref=9 → error ≈ 2.7e-03
+</div>
+
+<h3>Convergencia O(h⁴)</h3>
+<table>
+<tr><th>n</th><th>I aproximada</th><th>Error</th><th>Mejora</th></tr>
+<tr><td>3</td><td class="mono">2.040524285</td><td class="mono">4.05e-02</td><td>—</td></tr>
+<tr><td>6</td><td class="mono">2.002009847</td><td class="mono">2.01e-03</td><td>20.2x</td></tr>
+<tr><td>12</td><td class="mono">2.000119386</td><td class="mono">1.19e-04</td><td>16.8x</td></tr>
+<tr><td>30</td><td class="mono">2.000003014</td><td class="mono">3.01e-06</td><td>39.6x</td></tr>
+<tr><td>60</td><td class="mono">2.000000188</td><td class="mono">1.88e-07</td><td>16.0x</td></tr>
+</table>
+<p style="font-size:.8rem;color:#4ade80;margin-top:4px">✓ Convergencia O(h⁴) verificada — el error decrece ~16x al duplicar n</p>
+</div>
+
+<!-- ============== VALIDACIONES ============== -->
+<div class="section">
+<h2>3. Validaciones adicionales y manejo de errores</h2>
+<table>
+<tr><th>Test</th><th>Descripción</th><th>Estado</th></tr>
+<tr><td>Vandermonde</td><td>Rechaza x duplicados → ValueError</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>Vandermonde</td><td>Rechaza tamaños distintos X e Y</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>Vandermonde</td><td>Rechaza un solo punto (n < 2)</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>Vandermonde</td><td>Polinomio lineal (2 pts): p(x)=1+2x</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>Vandermonde</td><td>Polinomio cuadrático (3 pts): y=x²</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>Vandermonde</td><td>Evaluación en punto externo p(5)=25</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>Simpson 3/8</td><td>Ajusta n=4 → n=6 (múltiplo de 3)</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>Simpson 3/8</td><td>n=6 se mantiene sin ajuste</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>Simpson 3/8</td><td>Rechaza a > b → ValueError</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>Estructura</td><td>Vandermonde: 6 fases en los pasos</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>Estructura</td><td>Simpson 3/8: 5 fases en los pasos</td><td><span class="badge badge-pass">PASS</span></td></tr>
+</table>
+</div>
+
+<p style="text-align:center;color:#64748b;font-size:.75rem;margin-top:12px">
+  Generado automáticamente · test_vandermonde_simpson38.py · 55/55 PASS
+</p>
+
+</body>
+</html>

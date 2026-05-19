@@ -1,0 +1,34 @@
+Algorithm NewtonInterpolation(X, Y)
+
+Input:
+    X → interpolation nodes
+    Y → function values
+
+Output:
+    Coef → Newton polynomial coefficients
+
+1. n ← length(X)
+
+2. Create matrix D of size n × n filled with zeros
+
+3. For i ← 0 to n-1 do
+       D[i][0] ← Y[i]
+   EndFor
+
+4. For j ← 1 to n-1 do
+       For i ← j to n-1 do
+
+           D[i][j] ←
+           (D[i][j-1] - D[i-1][j-1]) /
+           (X[i] - X[i-j])
+
+       EndFor
+   EndFor
+
+5. For i ← 0 to n-1 do
+       Coef[i] ← D[i][i]
+   EndFor
+
+6. Print divided differences table
+
+7. Return Coef

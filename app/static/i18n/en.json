@@ -1,6 +1,7 @@
 {
     "app_title": "Numerical Methods Calculator",
     "nav_systems": "Linear Systems",
+    "nav_interp": "Interpolation",
     "nav_roots": "Root Finding",
     "hero_title": "Numerical Methods Calculator",
     "hero_subtitle": "Welcome to the interactive environment for solving linear systems and finding roots of equations.",
@@ -17,13 +18,17 @@
     "vector_label": "Vector b",
     "btn_solve": "Solve System",
     "btn_find_root": "Find Root",
+    "btn_interpolate": "Interpolate",
     "solution_title": "Solution",
     "root_title": "Root Found",
+    "interp_title": "Interpolated value",
     "steps_title": "Steps",
     "btn_copy": "📋 Copy",
     "btn_copied": "✓ Copied",
     "error_fill_fields": "Please fill all matrix and vector fields.",
     "error_fill_expr": "Please enter a valid f(x) expression.",
+    "error_fill_points": "Please enter valid numeric values for every node (x, y).",
+    "error_fill_x_eval": "Please enter a valid evaluation point x.",
     "expr_label": "Function f(x):",
     "expr_hint": "Available functions: sin, cos, tan, exp, log, sqrt, abs, pi, e",
     "iterations_label": "Iterations",
@@ -60,5 +65,10 @@
     "col_solution": "Solution",
     "lang_es": "Español",
     "lang_en": "English",
-    "steps_suffix": "steps"
+    "steps_suffix": "steps",
+    "num_points_label": "Number of nodes (n):",
+    "points_label": "Nodes (xᵢ, yᵢ)",
+    "x_eval_label": "Evaluate P(x) at x =",
+    "interp_col_x": "x",
+    "interp_col_y": "y"
 }

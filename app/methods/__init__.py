@@ -1,1 +1,1 @@
-# Métodos numéricos — cada archivo es autodescubierto por el registry
+# Numerical methods package — modules are auto-discovered by the registry.

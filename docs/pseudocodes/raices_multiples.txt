@@ -1,36 +1,35 @@
-Inicio
+Begin
 
-Definir función derivada_aprox(f, x):
-    h ← 1e-5
-    retornar (f(x + h) - f(x - h)) / (2*h)
+Define function approx_derivative(f, x):
+    h ← 1e-6
+    return (f(x + h) - f(x - h)) / (2*h)
 
-Definir función segunda_derivada_aprox(f, x):
-    h ← 1e-5
-    retornar (f(x + h) - 2*f(x) + f(x - h)) / (h^2)
+Define function approx_second_derivative(f, x):
+    h ← 1e-6
+    return (f(x + h) - 2*f(x) + f(x - h)) / (h*h)
 
-Definir función raices_multiples(f, x0, tolerancia, max_iter):
+Define function multiple_roots(f, x0, tolerance, max_iter):
     x ← x0
 
-    Para i desde 1 hasta max_iter:
+    For i from 1 to max_iter:
         fx ← f(x)
-        dfx ← derivada_aprox(f, x)
-        d2fx ← segunda_derivada_aprox(f, x)
+        dfx ← approx_derivative(f, x)
+        ddfx ← approx_second_derivative(f, x)
+        denom ← dfx*dfx - fx*ddfx
 
-        denominador ← (dfx^2 - fx * d2fx)
+        If denom = 0:
+            Print "Error: division by zero"
+            Return None
 
-        Si denominador = 0:
-            Mostrar "Error: división por cero"
-            Retornar None
+        x_new ← x - (fx * dfx) / denom
 
-        x_nuevo ← x - (fx * dfx) / denominador
+        If |x_new - x| < tolerance:
+            Print "Converged in i iterations"
+            Return x_new
 
-        Si |x_nuevo - x| < tolerancia:
-            Mostrar "Convergió en i iteraciones"
-            Retornar x_nuevo
+        x ← x_new
 
-        x ← x_nuevo
+    Print "Did not converge"
+    Return None
 
-    Mostrar "No convergió"
-    Retornar None
-
-Fin
+End

@@ -1,6 +1,5 @@
 """
-Método de Newton-Raphson — búsqueda de raíces con derivada numérica.
-Basado en la implementación de Camilo (metodosCamilo).
+Newton–Raphson root finding with a numerical derivative.
 """
 from app.core.base_method import NumericalMethod
 from app.core.safe_eval import make_function
@@ -23,9 +22,9 @@ class Newton(NumericalMethod):
     @property
     def params_schema(self) -> list:
         return [
-            {"key": "x0", "label_es": "Valor inicial (x₀)", "label_en": "Initial value (x₀)", "type": "float", "default": 1.5},
-            {"key": "tol", "label_es": "Tolerancia", "label_en": "Tolerance", "type": "float", "default": 1e-7},
-            {"key": "max_iter", "label_es": "Máx. iteraciones", "label_en": "Max iterations", "type": "int", "default": 100},
+            {"key": "x0", "label_es": "Initial value (x₀)", "label_en": "Initial value (x₀)", "type": "float", "default": 1.5},
+            {"key": "tol", "label_es": "Tolerance", "label_en": "Tolerance", "type": "float", "default": 1e-7},
+            {"key": "max_iter", "label_es": "Max iterations", "label_en": "Max iterations", "type": "int", "default": 100},
         ]
 
     @property
@@ -33,10 +32,10 @@ class Newton(NumericalMethod):
         return {
             "es": (
                 "<ul>"
-                "<li>Ingrese <code>f(x)</code> y un valor inicial <code>x₀</code> cercano a la raíz.</li>"
-                "<li>Usa la fórmula <code>x_{n+1} = x_n - f(x_n)/f'(x_n)</code> con derivada numérica aproximada.</li>"
-                "<li>💡 <strong>Ventaja:</strong> Convergencia cuadrática cuando el valor inicial es cercano a la raíz.</li>"
-                "<li>⚠️ Puede fallar si la derivada es cero o si el valor inicial está lejos de la raíz.</li>"
+                "<li>Enter <code>f(x)</code> and an initial <code>x₀</code> near the root.</li>"
+                "<li>Uses <code>x_{n+1} = x_n - f(x_n)/f'(x_n)</code> with a numerical derivative.</li>"
+                "<li>💡 Often quadratic convergence when <code>x₀</code> is good.</li>"
+                "<li>⚠️ Can fail if the derivative vanishes or the guess is poor.</li>"
                 "</ul>"
             ),
             "en": (
@@ -65,7 +64,7 @@ class Newton(NumericalMethod):
             dfx = self._numerical_derivative(f, x)
 
             if abs(dfx) < 1e-15:
-                raise ValueError(f"Derivada cero en x = {x:.10g}. No se puede continuar.")
+                raise ValueError(f"Zero derivative at x = {x:.10g}; cannot continue.")
 
             x_new = x - fx / dfx
             E = abs(x_new - x)

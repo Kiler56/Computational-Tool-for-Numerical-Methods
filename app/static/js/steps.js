@@ -1,5 +1,5 @@
 /**
- * steps.js — Renderiza los pasos intermedios y la solución final.
+ * steps.js — Render intermediate steps.
  */
 
 let globalSteps = [];
@@ -17,6 +17,7 @@ function renderSteps(steps, containerId) {
 
 function updateStepsView(containerId = 'steps-container') {
     const container = document.getElementById(containerId);
+    if (!container) return;
     container.innerHTML = '';
     
     const stepControls = document.getElementById('step-controls');
@@ -93,6 +94,14 @@ function createStepElement(step, index) {
     else if (step.phase === 'extract') phaseLabel = 'Extracción';
     else if (step.phase === 'reorder') phaseLabel = 'Reorden';
     else if (step.phase === 'analysis') phaseLabel = 'Análisis';
+    else if (step.phase === 'lagrange_setup') phaseLabel = 'Configuración Lagrange';
+    else if (step.phase === 'lagrange_basis') phaseLabel = 'Base L_j';
+    else if (step.phase === 'lagrange_sum') phaseLabel = 'Suma de Términos';
+    else if (step.phase === 'setup') phaseLabel = 'Configuración';
+    else if (step.phase === 'evaluation') phaseLabel = 'Evaluación';
+    else if (step.phase === 'weighted_sum') phaseLabel = 'Suma Ponderada';
+    else if (step.phase === 'result') phaseLabel = 'Resultado';
+    else if (step.phase === 'error_estimation') phaseLabel = 'Estimación de Error';
 
     stepEl.innerHTML = `
         <div class="step-header">
@@ -122,9 +131,7 @@ function createStepElement(step, index) {
     return stepEl;
 }
 
-/**
- * Construye una tabla HTML a partir de una matriz 2D.
- */
+/** Build HTML table from a 2D matrix. */
 function buildMatrixTable(matrix) {
     const table = document.createElement('table');
     table.className = 'matrix-table';
@@ -147,6 +154,7 @@ function buildMatrixTable(matrix) {
  */
 function renderSolution(result, containerId) {
     const container = document.getElementById(containerId);
+    if (!container) return;
     container.innerHTML = '';
     
     // Propiedades de la matriz

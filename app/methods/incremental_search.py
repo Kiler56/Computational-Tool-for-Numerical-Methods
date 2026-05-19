@@ -71,7 +71,7 @@ class IncrementalSearch(NumericalMethod):
 
             if f_prev * f_curr < 0:
                 step["phase"] = "root_found"
-                step["description"] += f" ← Raíz en [{x_prev:.6g}, {x_curr:.6g}]"
+                step["description"] += f" ← Root bracket [{x_prev:.6g}, {x_curr:.6g}]"
                 found_intervals.append([x_prev, x_curr])
 
             steps.append(step)
@@ -89,4 +89,4 @@ class IncrementalSearch(NumericalMethod):
                 "method": self.name,
             }
         else:
-            raise ValueError("No se encontró ningún intervalo con cambio de signo en el rango explorado.")
+            raise ValueError("No sign-change bracket was found in the explored range.")

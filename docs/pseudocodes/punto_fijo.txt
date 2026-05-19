@@ -1,18 +1,18 @@
-Inicio
+Begin
 
-Definir función punto_fijo(g, x0, tolerancia, max_iter):
+Define function fixed_point(g, x0, tolerance, max_iter):
     x ← x0
 
-    Para i desde 1 hasta max_iter:
-        x_nuevo ← g(x)
+    For i from 1 to max_iter:
+        x_new ← g(x)
 
-        Si |x_nuevo - x| < tolerancia:
-            Mostrar "Convergió en i iteraciones"
-            Retornar x_nuevo
+        If |x_new - x| < tolerance:
+            Print "Converged in i iterations"
+            Return x_new
 
-        x ← x_nuevo
+        x ← x_new
 
-    Mostrar "No convergió"
-    Retornar None
+    Print "Did not converge"
+    Return None
 
-Fin
+End

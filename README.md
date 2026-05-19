@@ -1,6 +1,6 @@
 # Numerical Methods Calculator
 
-Web-based computational tool to solve and analyze linear systems of equations and root-finding algorithms using different numerical methods. It visualizes each intermediate step of the solution and provides a dynamic, user-friendly interface.
+Web-based computational tool to solve and analyze linear systems of equations, root-finding algorithms, and interpolation using different numerical methods. It visualizes each intermediate step of the solution and provides a dynamic, user-friendly interface.
 
 ## Architecture — Modular Monolith
 
@@ -30,7 +30,7 @@ app/
 | **Roots** | Newton | `newton.py` | Numerical derivative optimization |
 | **Roots** | Secant | `secante.py` | Two-point approximation |
 | **Roots** | Fixed Point | `punto_fijo.py` | Functional iteration (x = g(x)) |
-| **Roots** | Multiple Roots | `raices_multiples.py` | Handles multiplicy > 1 |
+| **Roots** | Multiple Roots | `raices_multiples.py` | Handles multiplicity > 1 |
 | **Roots** | Steffensen | `steffensen.py` | Value-added: Newton-like |
 | **Roots** | Aitken | `aitken.py` | Value-added: Convergence acceleration |
 | **Roots** | Müller | `muller.py` | Value-added: Quadratic interpolation |
@@ -38,6 +38,8 @@ app/
 | **Systems** | Partial Pivoting| `gaussian_pivoting.py` | Column max swapping |
 | **Systems** | Total Pivoting | `gaussian_pivoting.py` | Matrix max swapping |
 | **Systems** | Tridiagonal | `gauss_tridiagonal.py` | Value-added: Thomas algorithm |
+| **Interpolation** | Lagrange | `lagrange.py` | Constructs polynomial passing through distinct nodes |
+| **Interpolation** | Vandermonde | `vandermonde.py` | Solves Vandermonde system to obtain interpolating coefficients |
 
 ## Quick Start
 
@@ -73,10 +75,13 @@ curl http://localhost:5000/api/methods
 
 ### `POST /api/solve`
 
-Resolves a numerical problem (either a matrix system or an algebraic equation).
+Resolves a numerical problem (either a matrix system, an algebraic equation, or interpolation).
+
+Payload depends on `method_type`:
+
+**Linear system** (`matrix`, `b`):
 
 ```bash
-# Example System
 curl -X POST http://localhost:5000/api/solve \
   -H "Content-Type: application/json" \
   -d '{
@@ -84,8 +89,11 @@ curl -X POST http://localhost:5000/api/solve \
     "matrix": [[2,1,-1],[-3,-1,2],[-2,1,2]],
     "b": [8,-11,-3]
   }'
+```
 
-# Example Root Finding
+**Root finding** (`expr`, `params`):
+
+```bash
 curl -X POST http://localhost:5000/api/solve \
   -H "Content-Type: application/json" \
   -d '{
@@ -93,6 +101,14 @@ curl -X POST http://localhost:5000/api/solve \
     "expr": "exp(x) - 2",
     "params": {"x0": 1.0, "tol": 1e-7, "max_iter": 100}
   }'
+```
+
+**Lagrange interpolation** (`points`, `x_eval`):
+
+```bash
+curl -X POST http://localhost:5000/api/solve \
+  -H "Content-Type: application/json" \
+  -d '{"method":"lagrange","points":[[0,1],[1,2],[2,5]],"x_eval":1.5}'
 ```
 
 ### `GET /api/health`
@@ -117,7 +133,7 @@ class MyMethod(NumericalMethod):
     def description(self): return "My Custom Method"
 
     @property
-    def method_type(self): return "root" # or "linear_system"
+    def method_type(self): return "root" # or "linear_system" or "interpolation"
 
     # ... schema and instructions properties ...
 

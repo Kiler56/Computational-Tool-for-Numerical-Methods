@@ -1,8 +1,8 @@
 """
-Eliminación Gaussiana Simple — sin pivoteo.
+Gaussian elimination without pivoting.
 
-Resuelve Ax=b mediante eliminación hacia adelante y sustitución regresiva.
-Guarda un snapshot de la matriz aumentada en cada paso.
+Solves Ax = b by forward elimination and back substitution.
+Snapshots the augmented matrix each step.
 """
 from app.core.base_method import NumericalMethod
 
@@ -15,16 +15,16 @@ class GaussianSimple(NumericalMethod):
 
     @property
     def description(self) -> str:
-        return "Eliminación Gaussiana Simple"
+        return "Gaussian elimination (simple)"
 
     @property
     def instructions(self) -> dict:
         return {
             "es": (
                 "<ul>"
-                "<li>Ingrese una matriz cuadrada <code>A</code> de coeficientes y un vector <code>b</code> de términos independientes.</li>"
-                "<li>Este método no realiza intercambio de filas.</li>"
-                "<li>⚠️ <strong>Restricción:</strong> Si algún pivote (elemento de la diagonal) es cero o cercano a cero, el método fallará. En ese caso, utilice un método con pivoteo.</li>"
+                "<li>Enter a square coefficient matrix <code>A</code> and RHS vector <code>b</code>.</li>"
+                "<li>This variant does not swap rows.</li>"
+                "<li>⚠️ <strong>Restriction:</strong> A zero or tiny diagonal pivot makes the method fail — use a pivoting variant instead.</li>"
                 "</ul>"
             ),
             "en": (
@@ -38,23 +38,23 @@ class GaussianSimple(NumericalMethod):
 
     def solve(self, A: list, b: list) -> dict:
         n = len(b)
-        # Construir matriz aumentada [A|b]
+        # Augmented matrix [A|b]
         M = [row[:] + [b[i]] for i, row in enumerate(A)]
         steps = []
 
-        # --- Eliminación hacia adelante ---
+        # --- Forward elimination ---
         for k in range(n - 1):
             pivot = M[k][k]
             if abs(pivot) < 1e-12:
                 raise ValueError(
-                    f"Pivote cero (o casi cero) en la fila {k}. "
-                    "Use un método con pivoteo."
+                    f"Zero (or near-zero) pivot at row {k}. "
+                    "Use a pivoting method."
                 )
 
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "elimination",
-                "description": f"Pivote en posición ({k},{k}) = {pivot:.6g}",
+                "description": f"Pivot at ({k},{k}) = {pivot:.6g}",
                 "pivot": pivot,
                 "matrix_state": self._snapshot(M),
             })
@@ -68,18 +68,18 @@ class GaussianSimple(NumericalMethod):
                     "step": len(steps) + 1,
                     "phase": "elimination",
                     "description": (
-                        f"F{i+1} ← F{i+1} - ({factor:.6g})·F{k+1}  →  "
-                        f"Se elimina M[{i}][{k}]"
+                        f"R{i+1} ← R{i+1} - ({factor:.6g})·R{k+1}  →  "
+                        f"zero entry M[{i}][{k}]"
                     ),
                     "factor": factor,
                     "matrix_state": self._snapshot(M),
                 })
 
-        # --- Sustitución regresiva ---
+        # --- Back substitution ---
         x = [0.0] * n
         for i in range(n - 1, -1, -1):
             if abs(M[i][i]) < 1e-12:
-                raise ValueError(f"Sistema singular: pivote cero en fila {i} durante sustitución regresiva.")
+                raise ValueError(f"Singular system: zero pivot at row {i} during back substitution.")
             s = sum(M[i][j] * x[j] for j in range(i + 1, n))
             x[i] = (M[i][n] - s) / M[i][i]
 

@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Historial — NumCalc{% endblock %}
+{% block title %}History — NumCalc{% endblock %}
 
 {% block content %}
 <section class="history-container">
     <div class="history-header">
-        <h1 data-i18n="history_title">Mi Historial de Cálculos</h1>
+        <h1 data-i18n="history_title">My calculation history</h1>
     </div>
 
     {% if calculations %}
@@ -12,11 +12,11 @@
         <table class="history-table">
             <thead>
                 <tr>
-                    <th data-i18n="col_date">Fecha</th>
-                    <th data-i18n="col_method">Método</th>
-                    <th data-i18n="col_size">Tamaño</th>
-                    <th data-i18n="col_steps">Pasos</th>
-                    <th data-i18n="col_solution">Solución</th>
+                    <th data-i18n="col_date">Date</th>
+                    <th data-i18n="col_method">Method</th>
+                    <th data-i18n="col_size">Size</th>
+                    <th data-i18n="col_steps">Steps</th>
+                    <th data-i18n="col_solution">Solution</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,7 +26,16 @@
                     <td>
                         <a href="/solver/{{ calc.method_name }}" class="method-link">{{ calc.method_description or calc.method_name }}</a>
                     </td>
-                    <td class="center-cell">{{ calc.get_matrix()|length }}×{{ calc.get_matrix()|length }}</td>
+                    <td class="center-cell">
+                        {% set mat = calc.get_matrix() %}
+                        {% if calc.method_name == 'lagrange' %}
+                            {{ mat|length }} nodes
+                        {% elif mat is mapping %}
+                            —
+                        {% else %}
+                            {{ mat|length }}×{{ mat|length }}
+                        {% endif %}
+                    </td>
                     <td class="center-cell">{{ calc.steps_count }}</td>
                     <td class="solution-cell"><code>{{ calc.get_solution() }}</code></td>
                 </tr>
@@ -37,7 +46,7 @@
     {% else %}
     <div class="history-empty">
         <span class="empty-icon">📊</span>
-        <p data-i18n="history_empty">Aún no has realizado ningún cálculo. ¡Prueba algún método!</p>
+        <p data-i18n="history_empty">You haven't run any calculations yet. Try a method!</p>
         <a href="/" class="btn btn-primary">← Dashboard</a>
     </div>
     {% endif %}

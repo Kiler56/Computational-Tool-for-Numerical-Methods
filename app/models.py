@@ -1,5 +1,5 @@
 """
-Modelos de base de datos — User y CalculationHistory.
+Database models — User and CalculationHistory.
 """
 import json
 from datetime import datetime, timezone
@@ -11,7 +11,7 @@ from app.extensions import db
 
 
 class User(UserMixin, db.Model):
-    """Usuario de la plataforma."""
+    """Application user."""
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -19,7 +19,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     display_name = db.Column(db.String(120), default="")
-    preferred_lang = db.Column(db.String(5), default="es")
+    preferred_lang = db.Column(db.String(5), default="en")
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     calculations = db.relationship(
@@ -37,7 +37,7 @@ class User(UserMixin, db.Model):
 
 
 class CalculationHistory(db.Model):
-    """Registro de cada cálculo realizado por un usuario."""
+    """One saved calculation per authenticated user."""
     __tablename__ = "calculation_history"
 
     id = db.Column(db.Integer, primary_key=True)

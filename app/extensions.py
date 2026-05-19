@@ -1,5 +1,5 @@
 """
-Extensiones Flask — se inicializan aquí para evitar importaciones circulares.
+Flask extensions — centralized to avoid circular imports.
 """
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy

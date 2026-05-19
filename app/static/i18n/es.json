@@ -1,6 +1,7 @@
 {
     "app_title": "Calculadora de Métodos Numéricos",
     "nav_systems": "Sistemas Lineales",
+    "nav_interp": "Interpolación",
     "nav_roots": "Búsqueda de Raíces",
     "hero_title": "Calculadora de Métodos Numéricos",
     "hero_subtitle": "Bienvenido al entorno interactivo para la resolución de sistemas de ecuaciones lineales y búsqueda de raíces.",
@@ -17,13 +18,17 @@
     "vector_label": "Vector b",
     "btn_solve": "Resolver Sistema",
     "btn_find_root": "Encontrar Raíz",
+    "btn_interpolate": "Interpolar",
     "solution_title": "Solución",
     "root_title": "Raíz Encontrada",
+    "interp_title": "Valor interpolado",
     "steps_title": "Pasos",
     "btn_copy": "📋 Copiar",
     "btn_copied": "✓ Copiado",
     "error_fill_fields": "Completa todos los campos de la matriz y el vector.",
     "error_fill_expr": "Ingresa una expresión f(x) válida.",
+    "error_fill_points": "Ingresa valores numéricos válidos para cada nodo (x, y).",
+    "error_fill_x_eval": "Ingresa un punto x válido para evaluar.",
     "expr_label": "Función f(x):",
     "expr_hint": "Funciones disponibles: sin, cos, tan, exp, log, sqrt, abs, pi, e",
     "iterations_label": "Iteraciones",
@@ -60,5 +65,10 @@
     "col_solution": "Solución",
     "lang_es": "Español",
     "lang_en": "English",
-    "steps_suffix": "pasos"
+    "steps_suffix": "pasos",
+    "num_points_label": "Número de nodos (n):",
+    "points_label": "Nodos (xᵢ, yᵢ)",
+    "x_eval_label": "Evaluar P(x) en x =",
+    "interp_col_x": "x",
+    "interp_col_y": "y"
 }

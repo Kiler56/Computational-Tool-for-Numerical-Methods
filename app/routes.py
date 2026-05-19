@@ -72,12 +72,13 @@ def api_solve():
         return jsonify({"error": str(e)}), 400
 
     try:
-        if method.method_type == "root":
-            # Métodos de búsqueda de raíces: f(x) = 0
+        if method.method_type in ("root", "ode"):
+            # Root finding f(x)=0 or ODE integration y'=f(t,y)
             expr = data.get("expr")
             params = data.get("params", {})
             if not expr:
-                return jsonify({"error": "Campo 'expr' requerido para métodos de raíces."}), 400
+                kind = "ODE" if method.method_type == "ode" else "root"
+                return jsonify({"error": f"'expr' field required for {kind} methods."}), 400
             result = method.solve(expr, params)
         else:
             # Métodos de sistemas lineales: Ax = b
@@ -106,7 +107,7 @@ def api_solve():
                 steps_count=len(result.get("steps", [])),
             )
 
-            if method.method_type == "root":
+            if method.method_type in ("root", "ode"):
                 calc.set_matrix({"expr": data.get("expr"), "params": data.get("params", {})})
                 calc.set_vector([])
             else:

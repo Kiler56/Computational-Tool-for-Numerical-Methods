@@ -1,0 +1,15 @@
+EULER'S METHOD (ODE: y' = f(t, y), y(t0) = y0)
+================================================
+
+INPUT:  f, t0, y0, tf, h
+OUTPUT: approximate (t, y) pairs
+
+t <- t0
+y <- y0
+WHILE t < tf DO
+    h_eff <- min(h, tf - t)
+    y_new <- y + h_eff * f(t, y)
+    t <- t + h_eff
+    y <- y_new
+    RECORD (t, y)
+END WHILE

@@ -1,0 +1,17 @@
+HEUN'S METHOD (improved Euler, ODE: y' = f(t, y))
+=================================================
+
+INPUT:  f, t0, y0, tf, h
+OUTPUT: approximate (t, y) pairs
+
+t <- t0
+y <- y0
+WHILE t < tf DO
+    h_eff <- min(h, tf - t)
+    k1 <- f(t, y)
+    k2 <- f(t + h_eff, y + h_eff * k1)
+    y_new <- y + (h_eff / 2) * (k1 + k2)
+    t <- t + h_eff
+    y <- y_new
+    RECORD (t, y)
+END WHILE

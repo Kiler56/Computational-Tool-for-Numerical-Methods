@@ -51,3 +51,17 @@ def make_function(expr: str):
     def f(x):
         return safe_eval_expr(expr, x)
     return f
+
+
+def safe_eval_ode(expr: str, t: float, y: float) -> float:
+    """Safely evaluate f(t, y) for an ODE right-hand side."""
+    allowed = {"t": t, "y": y, "x": y, "__builtins__": {}}
+    allowed.update(_SAFE_MATH)
+    return float(eval(expr, allowed))
+
+
+def make_ode_function(expr: str):
+    """Build f(t, y) from a string expression (variables t and y)."""
+    def f(t: float, y: float) -> float:
+        return safe_eval_ode(expr, t, y)
+    return f

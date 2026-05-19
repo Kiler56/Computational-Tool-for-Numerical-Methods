@@ -37,6 +37,19 @@
                     {% endfor %}
                 </ul>
 
+                <div class="nav-section-title" data-i18n="nav_odes" style="margin-top:1.5rem;">Ecuaciones Diferenciales</div>
+                <ul class="nav-list">
+                    {% for m in methods %}
+                    {% if m.method_type is defined and m.method_type == 'ode' %}
+                    <li>
+                        <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}">
+                            {{ m.description }}
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+
                 <div class="nav-section-title" data-i18n="nav_roots" style="margin-top:1.5rem;">Búsqueda de Raíces</div>
                 <ul class="nav-list">
                     {% for m in methods %}

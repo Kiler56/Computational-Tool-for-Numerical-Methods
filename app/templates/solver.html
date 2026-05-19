@@ -25,14 +25,21 @@
 
 <section class="solver-body">
 
-{% if method.method_type == "root" %}
-    <!-- ════════ Formulario para métodos de raíces ════════ -->
+{% if method.method_type in ["root", "ode"] %}
+    <!-- Root finding or ODE: expression + parameters -->
     <div class="root-form">
         <div class="form-group">
+            {% if method.method_type == "ode" %}
+            <label for="expr-input" data-i18n="expr_ode_label">Function f(t, y):</label>
+            <input type="text" id="expr-input" class="form-input form-input-expr"
+                   placeholder="e.g. y - t**2 + 1" value="y - t**2 + 1" autocomplete="off">
+            <small class="expr-hint" data-i18n="expr_ode_hint">Use variables t and y. Available: sin, cos, tan, exp, log, sqrt, abs, pi, e</small>
+            {% else %}
             <label for="expr-input" data-i18n="expr_label">Función f(x):</label>
             <input type="text" id="expr-input" class="form-input form-input-expr"
                    placeholder="ej: x**2 - 2" value="x**2 - 2" autocomplete="off">
             <small class="expr-hint" data-i18n="expr_hint">Funciones disponibles: sin, cos, tan, exp, log, sqrt, abs, pi, e</small>
+            {% endif %}
         </div>
 
         <div class="root-params-grid">
@@ -94,8 +101,8 @@
 {% endif %}
 
     <button id="btn-solve" class="btn btn-primary btn-solve" onclick="handleSolve()">
-        <span class="btn-text" data-i18n="{{ 'btn_find_root' if method.method_type == 'root' else 'btn_solve' }}">
-            {{ 'Encontrar Raíz' if method.method_type == 'root' else 'Resolver Sistema' }}
+        <span class="btn-text" data-i18n="{{ 'btn_integrate_ode' if method.method_type == 'ode' else ('btn_find_root' if method.method_type == 'root' else 'btn_solve') }}">
+            {{ 'Integrate ODE' if method.method_type == 'ode' else ('Encontrar Raíz' if method.method_type == 'root' else 'Resolver Sistema') }}
         </span>
         <span class="btn-spinner" style="display:none;">⟳</span>
     </button>
@@ -106,8 +113,8 @@
     <!-- Resultados -->
     <section id="results-section" class="results" style="display:none;">
         <div class="result-solution">
-            <h2 data-i18n="{{ 'root_title' if method.method_type == 'root' else 'solution_title' }}">
-                {{ 'Raíz Encontrada' if method.method_type == 'root' else 'Solución' }}
+            <h2 data-i18n="{{ 'ode_title' if method.method_type == 'ode' else ('root_title' if method.method_type == 'root' else 'solution_title') }}">
+                {{ 'ODE Solution' if method.method_type == 'ode' else ('Raíz Encontrada' if method.method_type == 'root' else 'Solución') }}
             </h2>
             <div id="solution-container" class="solution-display"></div>
             <button class="btn btn-sm btn-copy" id="btn-copy-solution" onclick="copySolution()" data-i18n="btn_copy">📋 Copiar</button>
@@ -164,8 +171,8 @@
         try {
             let result;
 
-            if (METHOD_TYPE === 'root') {
-                // Modo raíces: enviar expresión + parámetros
+            if (METHOD_TYPE === 'root' || METHOD_TYPE === 'ode') {
+                // Root finding or ODE: send expression + parameters
                 const expr = document.getElementById('expr-input').value.trim();
                 if (!expr) throw new Error(I18n.t('error_fill_expr'));
 
@@ -206,7 +213,9 @@
             if (result.error) throw new Error(result.error);
 
             // Renderizar solución
-            if (METHOD_TYPE === 'root') {
+            if (METHOD_TYPE === 'ode') {
+                renderOdeSolution(result, 'solution-container');
+            } else if (METHOD_TYPE === 'root') {
                 renderRootSolution(result, 'solution-container');
             } else {
                 renderSolution(result, 'solution-container');
@@ -225,6 +234,20 @@
             btnSpinner.style.display = 'none';
             btn.disabled = false;
         }
+    }
+
+    function renderOdeSolution(result, containerId) {
+        const container = document.getElementById(containerId);
+        const pairs = result.solution || [];
+        let html = '<div class="solution-vector"><table class="ode-table"><thead><tr><th>t</th><th>y (approx.)</th></tr></thead><tbody>';
+        pairs.forEach(([t, y]) => {
+            html += `<tr><td>${Number(t).toFixed(6)}</td><td>${Number(y).toFixed(8)}</td></tr>`;
+        });
+        html += '</tbody></table></div>';
+        if (result.final_y !== undefined) {
+            html += `<p style="margin-top:0.75rem;"><strong>y(${Number(result.final_t).toFixed(4)})</strong> = ${Number(result.final_y).toFixed(10)}</p>`;
+        }
+        container.innerHTML = html;
     }
 
     function renderRootSolution(result, containerId) {
@@ -283,7 +306,7 @@
             params: {}
         };
 
-        if (METHOD_TYPE === 'root') {
+        if (METHOD_TYPE === 'root' || METHOD_TYPE === 'ode') {
             const exprEl = document.getElementById('expr-input');
             if (exprEl) state.expr = exprEl.value;
         } else {
@@ -307,7 +330,7 @@
         try {
             const state = JSON.parse(stateStr);
 
-            if (METHOD_TYPE === 'root') {
+            if (METHOD_TYPE === 'root' || METHOD_TYPE === 'ode') {
                 if (state.expr) {
                     const exprEl = document.getElementById('expr-input');
                     if (exprEl) exprEl.value = state.expr;
@@ -353,7 +376,7 @@
 
     // Inicializar al cargar
     document.addEventListener('DOMContentLoaded', () => {
-        if (METHOD_TYPE !== 'root') {
+        if (METHOD_TYPE !== 'root' && METHOD_TYPE !== 'ode') {
             buildMatrixGrid(currentSize, 'matrix-container');
             buildVectorGrid(currentSize, 'vector-container');
         }

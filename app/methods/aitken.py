@@ -1,9 +1,8 @@
 """
-Método de la Secante Modificado por Aitken (o proceso delta-cuadrado de Aitken).
-Acelera la convergencia de una sucesión. Lo aplicaremos sobre una secuencia generada
-por punto fijo o Newton-like approach. Para ser un método base de búsqueda de raíces,
-lo enfocaremos como un punto fijo acelerado.
+Método de la Secante Modificado por Aitken (proceso delta-cuadrado).
+Acelera la convergencia de punto fijo.
 """
+import math
 from app.core.base_method import NumericalMethod
 from app.core.safe_eval import make_function
 
@@ -48,22 +47,86 @@ class Aitken(NumericalMethod):
         }
 
     def solve(self, expr: str, params: dict) -> dict:
-        g = make_function(expr)
-        x0 = float(params.get("x0", 0.5))
-        tol = float(params.get("tol", 1e-7))
-        N = int(params.get("max_iter", 100))
-        steps = []
+        # ── Parse function ────────────────────────────────────────────────
+        try:
+            g = make_function(expr)
+        except Exception as e:
+            raise ValueError(f"Invalid expression '{expr}': {e}") from e
 
+        # ── Parse parameters ──────────────────────────────────────────────
+        try:
+            x0 = float(params.get("x0", 0.5))
+            tol = float(params.get("tol", 1e-7))
+            N = int(params.get("max_iter", 100))
+        except (TypeError, ValueError) as e:
+            raise ValueError(f"Invalid parameter: {e}") from e
+
+        if tol <= 0:
+            raise ValueError("Tolerance must be positive.")
+        if N <= 0:
+            raise ValueError("max_iter must be a positive integer.")
+
+        steps = []
         x = x0
+        x_new = x0
+
         for i in range(1, N + 1):
-            x1 = g(x)
-            x2 = g(x1)
-            
+            # ── Compute x1 = g(x) ─────────────────────────────────────────
+            try:
+                x1 = g(x)
+            except ZeroDivisionError:
+                raise ValueError(f"Division by zero in g({x:.10g}) at iteration {i}, computing x₁.")
+            except OverflowError:
+                raise ValueError(
+                    f"Overflow in g({x:.10g}) at iteration {i}. "
+                    "The sequence is diverging — |g'(x)| may be ≥ 1."
+                )
+            except Exception as e:
+                raise ValueError(f"Error evaluating g({x:.10g}) at iteration {i}: {e}") from e
+
+            if not math.isfinite(x1):
+                raise ValueError(
+                    f"g({x:.10g}) = {x1} is not finite at iteration {i}. "
+                    "The sequence is diverging."
+                )
+
+            # ── Compute x2 = g(x1) ────────────────────────────────────────
+            try:
+                x2 = g(x1)
+            except ZeroDivisionError:
+                raise ValueError(f"Division by zero in g({x1:.10g}) at iteration {i}, computing x₂.")
+            except OverflowError:
+                raise ValueError(
+                    f"Overflow in g({x1:.10g}) at iteration {i}, computing x₂. "
+                    "The sequence diverged after one step."
+                )
+            except Exception as e:
+                raise ValueError(f"Error evaluating g({x1:.10g}) at iteration {i}: {e}") from e
+
+            if not math.isfinite(x2):
+                raise ValueError(
+                    f"g(x₁) = g({x1:.10g}) = {x2} is not finite at iteration {i}. "
+                    "The sequence is diverging."
+                )
+
+            # ── Aitken denominator ─────────────────────────────────────────
             denom = x2 - 2 * x1 + x
-            if denom == 0:
-                raise ValueError("División por cero en el denominador de Aitken.")
+            if abs(denom) < 1e-15:
+                raise ValueError(
+                    f"Division by zero at iteration {i}: Δ²x = x₂ - 2x₁ + x = {denom:.2e}. "
+                    "The three consecutive iterates are nearly collinear — "
+                    "Aitken's acceleration cannot be applied. "
+                    "Try a different initial value or use Fixed Point directly."
+                )
 
             x_new = x - ((x1 - x) ** 2) / denom
+
+            if not math.isfinite(x_new):
+                raise ValueError(
+                    f"x_new = {x_new} is not finite at iteration {i}. "
+                    "The acceleration formula produced an undefined result."
+                )
+
             E = abs(x_new - x)
 
             steps.append({
@@ -75,8 +138,17 @@ class Aitken(NumericalMethod):
             if E < tol:
                 steps[-1]["phase"] = "converged"
                 break
-            
+
             x = x_new
+        else:
+            steps.append({
+                "step": N + 1, "phase": "max_iter_reached",
+                "description": (
+                    f"Maximum iterations ({N}) reached. "
+                    f"Last approximation: x = {x_new:.10g}. "
+                    "Try a different initial value or increase max_iter."
+                ),
+            })
 
         return {
             "solution": [x_new],

@@ -4,6 +4,7 @@ Gaussian elimination without pivoting.
 Solves Ax = b by forward elimination and back substitution.
 Snapshots the augmented matrix each step.
 """
+import math
 from app.core.base_method import NumericalMethod
 
 
@@ -37,7 +38,36 @@ class GaussianSimple(NumericalMethod):
         }
 
     def solve(self, A: list, b: list) -> dict:
-        n = len(b)
+        # ── Input validation ──────────────────────────────────────────────
+        try:
+            n = len(b)
+            if n == 0:
+                raise ValueError("Vector b cannot be empty.")
+            if len(A) != n:
+                raise ValueError(
+                    f"Matrix A has {len(A)} rows but b has {n} elements. "
+                    "The system must be square (n×n matrix with n-element vector b)."
+                )
+            for i, row in enumerate(A):
+                if len(row) != n:
+                    raise ValueError(
+                        f"Row {i} of A has {len(row)} elements but expected {n}. "
+                        "Matrix A must be square."
+                    )
+            # Convert to float and check for non-numeric values
+            A = [[float(v) for v in row] for row in A]
+            b = [float(v) for v in b]
+        except (TypeError, ValueError) as e:
+            raise ValueError(f"Invalid input: {e}") from e
+
+        for i, row in enumerate(A):
+            for j, v in enumerate(row):
+                if not math.isfinite(v):
+                    raise ValueError(f"A[{i}][{j}] = {v} is not a finite number.")
+        for i, v in enumerate(b):
+            if not math.isfinite(v):
+                raise ValueError(f"b[{i}] = {v} is not a finite number.")
+
         # Augmented matrix [A|b]
         M = [row[:] + [b[i]] for i, row in enumerate(A)]
         steps = []
@@ -47,8 +77,9 @@ class GaussianSimple(NumericalMethod):
             pivot = M[k][k]
             if abs(pivot) < 1e-12:
                 raise ValueError(
-                    f"Zero (or near-zero) pivot at row {k}. "
-                    "Use a pivoting method."
+                    f"Zero (or near-zero) pivot at row {k+1} (diagonal element = {pivot:.2e}). "
+                    "The system may be singular or nearly singular. "
+                    "Use Gaussian Elimination with Partial or Total Pivoting instead."
                 )
 
             steps.append({
@@ -79,9 +110,19 @@ class GaussianSimple(NumericalMethod):
         x = [0.0] * n
         for i in range(n - 1, -1, -1):
             if abs(M[i][i]) < 1e-12:
-                raise ValueError(f"Singular system: zero pivot at row {i} during back substitution.")
+                raise ValueError(
+                    f"Singular system detected during back substitution at row {i+1} "
+                    f"(diagonal element ≈ {M[i][i]:.2e}). "
+                    "The system has no unique solution — it may be inconsistent or underdetermined."
+                )
             s = sum(M[i][j] * x[j] for j in range(i + 1, n))
             x[i] = (M[i][n] - s) / M[i][i]
+
+            if not math.isfinite(x[i]):
+                raise ValueError(
+                    f"x[{i}] = {x[i]} is not finite during back substitution. "
+                    "Numerical instability detected — consider using a pivoting method."
+                )
 
             steps.append({
                 "step": len(steps) + 1,

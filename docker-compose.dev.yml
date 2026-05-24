@@ -1,0 +1,40 @@
+# ═══════════════════════════════════════════════════════════════
+# Docker Compose — Development Override
+# ═══════════════════════════════════════════════════════════════
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+#
+# Features:
+#   - Source code mounted for hot-reload
+#   - Flask debug mode enabled
+#   - Port 5000 exposed directly (no Nginx)
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: numcalc-dev
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - SECRET_KEY=dev-secret-key
+    volumes:
+      - ./app:/app/app:ro         # Mount source (read-only)
+      - ./run.py:/app/run.py:ro
+      - dev_data:/app/instance
+    command: ["python", "run.py"]  # Override gunicorn with Flask dev server
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  # Disable Nginx in dev
+  nginx:
+    profiles:
+      - production-only
+
+volumes:
+  dev_data:
+    name: numcalc-dev-data

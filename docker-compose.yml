@@ -1,11 +1,73 @@
-version: '3.9'
+# ═══════════════════════════════════════════════════════════════
+# Docker Compose — Production
+# Numerical Methods Calculator
+# ═══════════════════════════════════════════════════════════════
+# Usage:
+#   cp .env.example .env    # edit secrets
+#   docker compose up --build -d
+#   docker compose logs -f
 
 services:
+
+  # ── Flask Application ───────────────────────────────────────
   app:
-    build: .
-    ports:
-      - "5000:5000"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: numcalc-app
+    restart: unless-stopped
+    env_file: .env
     environment:
       - FLASK_ENV=production
-      - SECRET_KEY=change-this-in-production
+    volumes:
+      - app_data:/app/instance    # SQLite persistence
+    networks:
+      - calcnet
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+        reservations:
+          memory: 128M
+
+  # ── Nginx Reverse Proxy ─────────────────────────────────────
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: numcalc-nginx
     restart: unless-stopped
+    ports:
+      - "${NGINX_PORT:-80}:80"
+    volumes:
+      - nginx_logs:/var/log/nginx
+    networks:
+      - calcnet
+    depends_on:
+      app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+# ── Volumes ───────────────────────────────────────────────────
+volumes:
+  app_data:
+    name: numcalc-app-data
+  nginx_logs:
+    name: numcalc-nginx-logs
+
+# ── Networks ──────────────────────────────────────────────────
+networks:
+  calcnet:
+    name: numcalc-network
+    driver: bridge

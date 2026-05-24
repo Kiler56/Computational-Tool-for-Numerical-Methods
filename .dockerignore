@@ -1,0 +1,59 @@
+# Version control
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+dist/
+build/
+.pytest_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Database (will be in Docker volume)
+instance/
+
+# Documentation & tests (not needed in runtime image)
+docs/
+capturas_pruebas/
+*.pdf
+*.rar
+*.tex
+*.txt
+!requirements.txt
+
+# Test files
+test_*.py
+run_tests*.py
+run_tests*.js
+check_methods.py
+prueba.txt
+
+# Docker files (avoid recursive context)
+docker-compose*.yml
+Dockerfile
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Reports
+reporte_*.html
+generar_pdf_reporte.py

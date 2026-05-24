@@ -2,6 +2,7 @@
 Trisección — búsqueda de raíces dividiendo el intervalo en 3.
 Basado en la implementación de Jul (MetodosJul).
 """
+import math
 from app.core.base_method import NumericalMethod
 from app.core.safe_eval import make_function
 
@@ -49,11 +50,49 @@ class Trisection(NumericalMethod):
         }
 
     def solve(self, expr: str, params: dict) -> dict:
-        f = make_function(expr)
-        a = float(params.get("a", 0))
-        b = float(params.get("b", 2))
-        tol = float(params.get("tol", 1e-7))
-        N = int(params.get("max_iter", 100))
+        # ── Parse function ────────────────────────────────────────────────
+        try:
+            f = make_function(expr)
+        except Exception as e:
+            raise ValueError(f"Invalid expression '{expr}': {e}") from e
+
+        # ── Parse parameters ──────────────────────────────────────────────
+        try:
+            a = float(params.get("a", 0))
+            b = float(params.get("b", 2))
+            tol = float(params.get("tol", 1e-7))
+            N = int(params.get("max_iter", 100))
+        except (TypeError, ValueError) as e:
+            raise ValueError(f"Invalid parameter: {e}") from e
+
+        if tol <= 0:
+            raise ValueError("Tolerance must be positive.")
+        if N <= 0:
+            raise ValueError("max_iter must be a positive integer.")
+        if a >= b:
+            raise ValueError(f"Interval error: a ({a}) must be strictly less than b ({b}).")
+
+        # ── Validate sign change ──────────────────────────────────────────
+        try:
+            fa = f(a)
+            fb = f(b)
+        except ZeroDivisionError:
+            raise ValueError("Division by zero evaluating f at an endpoint.")
+        except OverflowError:
+            raise ValueError("f overflows at an endpoint — try a smaller interval.")
+        except Exception as e:
+            raise ValueError(f"Error evaluating f at endpoints: {e}") from e
+
+        if not math.isfinite(fa) or not math.isfinite(fb):
+            raise ValueError(
+                f"f(a) = {fa} or f(b) = {fb} is not finite. "
+                "Choose an interval where f is well-defined."
+            )
+        if fa * fb > 0:
+            raise ValueError(
+                f"No sign change: f({a}) = {fa:.6g} and f({b}) = {fb:.6g} have the same sign. "
+                "Trisection requires f(a) · f(b) < 0."
+            )
 
         steps = []
         E = None
@@ -62,17 +101,34 @@ class Trisection(NumericalMethod):
             x1 = a + (b - a) / 3
             x2 = b - (b - a) / 3
 
+            try:
+                fx1 = f(x1)
+                fx2 = f(x2)
+                fa_cur = f(a)
+            except ZeroDivisionError:
+                raise ValueError(f"Division by zero evaluating f at the trisection points at iteration {i}.")
+            except OverflowError:
+                raise ValueError(f"Overflow evaluating f at iteration {i}. The interval may need to be smaller.")
+            except Exception as e:
+                raise ValueError(f"Error evaluating f at iteration {i}: {e}") from e
+
+            for val, label in [(fx1, f"f(x₁={x1:.6g})"), (fx2, f"f(x₂={x2:.6g})")]:
+                if not math.isfinite(val):
+                    raise ValueError(
+                        f"{label} = {val} is not finite at iteration {i}. "
+                        "The function has a singularity in this interval."
+                    )
+
             steps.append({
                 "step": i, "phase": "trisection",
                 "a": a, "b": b, "x1": x1, "x2": x2,
-                "f_x1": f(x1), "f_x2": f(x2), "error": E,
+                "f_x1": fx1, "f_x2": fx2, "error": E,
                 "description": f"Iter {i}: a={a:.8g}, x1={x1:.8g}, x2={x2:.8g}, b={b:.8g}" + (f", E={E:.6e}" if E else ""),
             })
 
-            fa = f(a)
-            if fa * f(x1) < 0:
+            if fa_cur * fx1 < 0:
                 b = x1
-            elif f(x1) * f(x2) < 0:
+            elif fx1 * fx2 < 0:
                 a = x1
                 b = x2
             else:
@@ -83,10 +139,15 @@ class Trisection(NumericalMethod):
                 break
 
         xm = (a + b) / 2
+        try:
+            fxm = f(xm)
+        except Exception:
+            fxm = None
+
         steps.append({
             "step": len(steps) + 1, "phase": "converged",
             "description": f"Converged: root ≈ {xm:.10g}, E = {E:.6e}",
-            "a": a, "b": b, "xm": xm, "f_xm": f(xm), "error": E,
+            "a": a, "b": b, "xm": xm, "f_xm": fxm, "error": E,
         })
 
         return {

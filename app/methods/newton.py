@@ -1,6 +1,7 @@
 """
 Newton–Raphson root finding with a numerical derivative.
 """
+import math
 from app.core.base_method import NumericalMethod
 from app.core.safe_eval import make_function
 
@@ -53,20 +54,90 @@ class Newton(NumericalMethod):
         return (f(x + h) - f(x - h)) / (2 * h)
 
     def solve(self, expr: str, params: dict) -> dict:
-        f = make_function(expr)
-        x = float(params.get("x0", 1.5))
-        tol = float(params.get("tol", 1e-7))
-        N = int(params.get("max_iter", 100))
+        # ── Parse function ────────────────────────────────────────────────
+        try:
+            f = make_function(expr)
+        except Exception as e:
+            raise ValueError(f"Invalid expression '{expr}': {e}") from e
+
+        # ── Parse parameters ──────────────────────────────────────────────
+        try:
+            x = float(params.get("x0", 1.5))
+            tol = float(params.get("tol", 1e-7))
+            N = int(params.get("max_iter", 100))
+        except (TypeError, ValueError) as e:
+            raise ValueError(f"Invalid parameter: {e}") from e
+
+        if tol <= 0:
+            raise ValueError("Tolerance must be positive.")
+        if N <= 0:
+            raise ValueError("max_iter must be a positive integer.")
+        if not math.isfinite(x):
+            raise ValueError("Initial value x₀ must be a finite number.")
+
         steps = []
+        x_new = x  # Initialize so it's defined if N=0
 
         for i in range(1, N + 1):
-            fx = f(x)
-            dfx = self._numerical_derivative(f, x)
+            # ── Evaluate f(x) ─────────────────────────────────────────────
+            try:
+                fx = f(x)
+            except ZeroDivisionError:
+                raise ValueError(f"Division by zero in f({x:.10g}) at iteration {i}.")
+            except OverflowError:
+                raise ValueError(
+                    f"Overflow in f({x:.10g}) at iteration {i}. "
+                    "The function grows too large — try a closer initial guess."
+                )
+            except Exception as e:
+                raise ValueError(f"Error evaluating f({x:.10g}) at iteration {i}: {e}") from e
 
+            if not math.isfinite(fx):
+                raise ValueError(
+                    f"f({x:.10g}) = {fx} is not finite at iteration {i}. "
+                    "The function may have a singularity near x₀."
+                )
+
+            # Check if already at root
+            if abs(fx) < 1e-15:
+                steps.append({
+                    "step": i, "phase": "converged",
+                    "x": x, "f_x": fx, "df_x": 0.0, "x_new": x, "error": 0.0,
+                    "description": f"Iter {i}: f({x:.10g}) ≈ 0 — exact root found.",
+                })
+                x_new = x
+                break
+
+            # ── Evaluate f'(x) numerically ────────────────────────────────
+            try:
+                dfx = self._numerical_derivative(f, x)
+            except ZeroDivisionError:
+                raise ValueError(f"Division by zero computing f'({x:.10g}) at iteration {i}.")
+            except OverflowError:
+                raise ValueError(f"Overflow computing f'({x:.10g}) at iteration {i}.")
+            except Exception as e:
+                raise ValueError(f"Error computing f'({x:.10g}) at iteration {i}: {e}") from e
+
+            if not math.isfinite(dfx):
+                raise ValueError(
+                    f"f'({x:.10g}) = {dfx} is not finite at iteration {i}. "
+                    "The derivative cannot be computed reliably at this point."
+                )
             if abs(dfx) < 1e-15:
-                raise ValueError(f"Zero derivative at x = {x:.10g}; cannot continue.")
+                raise ValueError(
+                    f"Zero derivative at x = {x:.10g} (iteration {i}): f'(x) ≈ {dfx:.2e}. "
+                    "Newton-Raphson cannot continue — try a different starting point."
+                )
 
             x_new = x - fx / dfx
+
+            if not math.isfinite(x_new):
+                raise ValueError(
+                    f"x_new = {x_new} is not finite at iteration {i} "
+                    f"(x={x:.10g}, f(x)={fx:.6e}, f'(x)={dfx:.6e}). "
+                    "The method is diverging."
+                )
+
             E = abs(x_new - x)
 
             steps.append({
@@ -80,6 +151,16 @@ class Newton(NumericalMethod):
                 break
 
             x = x_new
+        else:
+            steps.append({
+                "step": N + 1, "phase": "max_iter_reached",
+                "description": (
+                    f"Maximum iterations ({N}) reached. "
+                    f"Last approximation: x = {x_new:.10g}. "
+                    "Try a closer initial guess or increase max_iter."
+                ),
+                "x": x_new,
+            })
 
         return {
             "solution": [x_new],

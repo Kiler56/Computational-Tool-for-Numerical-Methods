@@ -2,6 +2,8 @@ __pycache__/
 *.pyc
 *.pyo
 .env
+.env.*
+!.env.example
 .venv/
 venv/
 *.egg-info/
@@ -9,3 +11,10 @@ dist/
 build/
 .pytest_cache/
 instance/
+
+# Docker
+nginx/ssl/
+certbot/
+
+# Logs
+*.log

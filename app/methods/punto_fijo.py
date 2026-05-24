@@ -2,6 +2,7 @@
 Método de Punto Fijo — iteración funcional.
 Basado en la implementación de Camilo (metodosCamilo).
 """
+import math
 from app.core.base_method import NumericalMethod
 from app.core.safe_eval import make_function
 
@@ -50,14 +51,66 @@ class PuntoFijo(NumericalMethod):
         }
 
     def solve(self, expr: str, params: dict) -> dict:
-        g = make_function(expr)
-        x = float(params.get("x0", 1.5))
-        tol = float(params.get("tol", 1e-7))
-        N = int(params.get("max_iter", 100))
+        # ── Parse function ────────────────────────────────────────────────
+        try:
+            g = make_function(expr)
+        except Exception as e:
+            raise ValueError(f"Invalid expression '{expr}': {e}") from e
+
+        # ── Parse parameters ──────────────────────────────────────────────
+        try:
+            x = float(params.get("x0", 1.5))
+            tol = float(params.get("tol", 1e-7))
+            N = int(params.get("max_iter", 100))
+        except (TypeError, ValueError) as e:
+            raise ValueError(f"Invalid parameter: {e}") from e
+
+        if tol <= 0:
+            raise ValueError("Tolerance must be positive.")
+        if N <= 0:
+            raise ValueError("max_iter must be a positive integer.")
+        if not math.isfinite(x):
+            raise ValueError("Initial value x₀ must be a finite number.")
+
+        # ── Evaluate at x0 to validate ────────────────────────────────────
+        try:
+            _ = g(x)
+        except ZeroDivisionError:
+            raise ValueError(
+                f"Division by zero in g({x}). "
+                "The iteration function is undefined at x₀ — try a different starting value."
+            )
+        except OverflowError:
+            raise ValueError(f"g({x}) overflows. Try a different starting value.")
+        except Exception as e:
+            raise ValueError(f"Error evaluating g({x}): {e}") from e
+
         steps = []
+        x_new = x
 
         for i in range(1, N + 1):
-            x_new = g(x)
+            try:
+                x_new = g(x)
+            except ZeroDivisionError:
+                raise ValueError(
+                    f"Division by zero in g({x:.10g}) at iteration {i}. "
+                    "The iteration function has a singularity at this point."
+                )
+            except OverflowError:
+                raise ValueError(
+                    f"Overflow in g({x:.10g}) at iteration {i}. "
+                    "The method is diverging — |g'(x)| may be ≥ 1 near the root."
+                )
+            except Exception as e:
+                raise ValueError(f"Error evaluating g({x:.10g}) at iteration {i}: {e}") from e
+
+            if not math.isfinite(x_new):
+                raise ValueError(
+                    f"g({x:.10g}) = {x_new} is not finite at iteration {i}. "
+                    "The method is diverging. Ensure |g'(x)| < 1 near the root, "
+                    "or reformulate g(x)."
+                )
+
             E = abs(x_new - x)
 
             steps.append({
@@ -71,6 +124,16 @@ class PuntoFijo(NumericalMethod):
                 break
 
             x = x_new
+        else:
+            steps.append({
+                "step": N + 1, "phase": "max_iter_reached",
+                "description": (
+                    f"Maximum iterations ({N}) reached without convergence. "
+                    f"Last approximation: x = {x_new:.10g}. "
+                    "Verify that |g'(x)| < 1 near the root, or choose a better g(x)."
+                ),
+                "x": x_new,
+            })
 
         return {
             "solution": [x_new],

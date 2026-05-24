@@ -1,6 +1,7 @@
 """
 Bisection — bracketing root finder.
 """
+import math
 from app.core.base_method import NumericalMethod
 from app.core.safe_eval import make_function
 
@@ -48,23 +49,71 @@ class Bisection(NumericalMethod):
         }
 
     def solve(self, expr: str, params: dict) -> dict:
-        f = make_function(expr)
-        a = float(params.get("a", 0))
-        b = float(params.get("b", 2))
-        tol = float(params.get("tol", 1e-7))
-        N = int(params.get("max_iter", 100))
+        # ── Parse function ────────────────────────────────────────────────
+        try:
+            f = make_function(expr)
+        except Exception as e:
+            raise ValueError(f"Invalid expression '{expr}': {e}") from e
 
-        fa = f(a)
-        fb = f(b)
+        # ── Parse parameters ──────────────────────────────────────────────
+        try:
+            a = float(params.get("a", 0))
+            b = float(params.get("b", 2))
+            tol = float(params.get("tol", 1e-7))
+            N = int(params.get("max_iter", 100))
+        except (TypeError, ValueError) as e:
+            raise ValueError(f"Invalid parameter: {e}") from e
+
+        if tol <= 0:
+            raise ValueError("Tolerance must be positive.")
+        if N <= 0:
+            raise ValueError("max_iter must be a positive integer.")
+        if a >= b:
+            raise ValueError(f"Interval error: a ({a}) must be strictly less than b ({b}).")
+
+        # ── Evaluate endpoints ────────────────────────────────────────────
+        try:
+            fa = f(a)
+            fb = f(b)
+        except ZeroDivisionError:
+            raise ValueError("f(x) produces a division by zero at one of the endpoints.")
+        except OverflowError:
+            raise ValueError("f(x) overflows at one of the endpoints — try a smaller interval.")
+        except Exception as e:
+            raise ValueError(f"Error evaluating f at endpoints: {e}") from e
+
+        if not math.isfinite(fa) or not math.isfinite(fb):
+            raise ValueError(
+                f"f(a) = {fa} or f(b) = {fb} is not finite (NaN/Inf). "
+                "Check your function and interval."
+            )
         if fa * fb > 0:
-            raise ValueError("f(a) y f(b) deben tener signos opuestos.")
+            raise ValueError(
+                f"Bolzano condition not met: f({a}) = {fa:.6g} and f({b}) = {fb:.6g} "
+                "have the same sign. No sign change in [a, b] — the interval may not contain a root."
+            )
 
+        # ── Bisection iterations ──────────────────────────────────────────
         steps = []
         xm = (a + b) / 2
         E = None
 
         for i in range(1, N + 1):
-            fxm = f(xm)
+            try:
+                fxm = f(xm)
+            except ZeroDivisionError:
+                raise ValueError(f"Division by zero evaluating f({xm:.10g}) at iteration {i}.")
+            except OverflowError:
+                raise ValueError(f"Overflow evaluating f({xm:.10g}) at iteration {i}. The function grows too fast.")
+            except Exception as e:
+                raise ValueError(f"Error evaluating f({xm:.10g}) at iteration {i}: {e}") from e
+
+            if not math.isfinite(fxm):
+                raise ValueError(
+                    f"f({xm:.10g}) = {fxm} is not finite at iteration {i}. "
+                    "The function may have a singularity in this interval."
+                )
+
             step = {
                 "step": i,
                 "phase": "bisection",
@@ -79,19 +128,36 @@ class Bisection(NumericalMethod):
                 b = xm
             else:
                 a = xm
-                fa = f(a)
+                try:
+                    fa = f(a)
+                except Exception as e:
+                    raise ValueError(f"Error re-evaluating f(a) at iteration {i}: {e}") from e
 
             x_old = xm
             xm = (a + b) / 2
             E = abs(xm - x_old)
 
             if E < tol:
+                try:
+                    fxm_final = f(xm)
+                except Exception:
+                    fxm_final = None
                 steps.append({
                     "step": i + 1, "phase": "converged",
                     "description": f"Converged: xm = {xm:.10g}, E = {E:.6e}",
-                    "a": a, "b": b, "xm": xm, "f_xm": f(xm), "error": E,
+                    "a": a, "b": b, "xm": xm, "f_xm": fxm_final, "error": E,
                 })
                 break
+        else:
+            steps.append({
+                "step": N + 1, "phase": "max_iter_reached",
+                "description": (
+                    f"Maximum iterations ({N}) reached without convergence. "
+                    f"Last approximation: xm = {xm:.10g}, E = {E:.6e}. "
+                    "Try increasing max_iter or adjusting the interval."
+                ),
+                "xm": xm, "error": E,
+            })
 
         return {
             "solution": [xm],

@@ -2,9 +2,9 @@
 Método de Müller — Encuentra raíces interpolando una parábola por 3 puntos.
 Puede encontrar raíces complejas, aunque aquí limitaremos a reales por UI.
 """
+import math
 from app.core.base_method import NumericalMethod
 from app.core.safe_eval import make_function
-import math
 
 
 class Muller(NumericalMethod):
@@ -49,53 +49,115 @@ class Muller(NumericalMethod):
         }
 
     def solve(self, expr: str, params: dict) -> dict:
-        f = make_function(expr)
-        x0 = float(params.get("x0", 0.0))
-        x1 = float(params.get("x1", 0.5))
-        x2 = float(params.get("x2", 1.0))
-        tol = float(params.get("tol", 1e-7))
-        N = int(params.get("max_iter", 100))
+        # ── Parse function ────────────────────────────────────────────────
+        try:
+            f = make_function(expr)
+        except Exception as e:
+            raise ValueError(f"Invalid expression '{expr}': {e}") from e
+
+        # ── Parse parameters ──────────────────────────────────────────────
+        try:
+            x0 = float(params.get("x0", 0.0))
+            x1 = float(params.get("x1", 0.5))
+            x2 = float(params.get("x2", 1.0))
+            tol = float(params.get("tol", 1e-7))
+            N = int(params.get("max_iter", 100))
+        except (TypeError, ValueError) as e:
+            raise ValueError(f"Invalid parameter: {e}") from e
+
+        if tol <= 0:
+            raise ValueError("Tolerance must be positive.")
+        if N <= 0:
+            raise ValueError("max_iter must be a positive integer.")
+
+        # Check that initial points are distinct
+        if abs(x1 - x0) < 1e-14:
+            raise ValueError(f"x₀ ({x0}) and x₁ ({x1}) are too close or identical. All three points must be distinct.")
+        if abs(x2 - x1) < 1e-14:
+            raise ValueError(f"x₁ ({x1}) and x₂ ({x2}) are too close or identical. All three points must be distinct.")
+        if abs(x2 - x0) < 1e-14:
+            raise ValueError(f"x₀ ({x0}) and x₂ ({x2}) are too close or identical. All three points must be distinct.")
+
+        # ── Evaluate initial points ────────────────────────────────────────
+        try:
+            _ = f(x0), f(x1), f(x2)
+        except ZeroDivisionError:
+            raise ValueError("Division by zero evaluating f at the initial points.")
+        except OverflowError:
+            raise ValueError("f overflows at one of the initial points — try different starting values.")
+        except Exception as e:
+            raise ValueError(f"Error evaluating f at initial points: {e}") from e
+
         steps = []
+        x3 = x2
 
         for i in range(1, N + 1):
-            f0 = f(x0)
-            f1 = f(x1)
-            f2 = f(x2)
-            
+            # ── Evaluate f at current triple ──────────────────────────────
+            try:
+                f0, f1, f2 = f(x0), f(x1), f(x2)
+            except ZeroDivisionError:
+                raise ValueError(f"Division by zero evaluating f at iteration {i}.")
+            except OverflowError:
+                raise ValueError(f"Overflow evaluating f at iteration {i}.")
+            except Exception as e:
+                raise ValueError(f"Error evaluating f at iteration {i}: {e}") from e
+
+            for val, name in [(f0, "f(x₀)"), (f1, "f(x₁)"), (f2, "f(x₂)")]:
+                if not math.isfinite(val):
+                    raise ValueError(f"{name} = {val} is not finite at iteration {i}.")
+
             h1 = x1 - x0
             h2 = x2 - x1
-            
-            if h1 == 0 or h2 == 0 or (h1 + h2) == 0:
-                raise ValueError("Puntos coincidentes, no se puede construir la parábola.")
+
+            if abs(h1) < 1e-14 or abs(h2) < 1e-14:
+                raise ValueError(
+                    f"Points coincide at iteration {i}: h1={h1:.2e}, h2={h2:.2e}. "
+                    "Cannot construct the parabola — points collapsed to the same value."
+                )
 
             d1 = (f1 - f0) / h1
             d2 = (f2 - f1) / h2
-            d = (d2 - d1) / (h2 + h1)
-            
+            denom_d = h2 + h1
+            if abs(denom_d) < 1e-14:
+                raise ValueError(f"h₁ + h₂ ≈ 0 at iteration {i}. Cannot build divided difference.")
+
+            d = (d2 - d1) / denom_d
             b = d2 + h2 * d
-            
-            # Raíz del discriminante
+
+            # ── Discriminant ──────────────────────────────────────────────
             disc = b**2 - 4 * f2 * d
+
             if disc < 0:
-                # Müller puede generar raíces complejas.
-                raise ValueError("El discriminante es negativo; el método de Müller generaría una raíz compleja "
-                                 "(nuestra interfaz actual se centra en reales). ¡Intente otros puntos iniciales!")
-            
+                raise ValueError(
+                    f"Negative discriminant at iteration {i}: disc = {disc:.6g}. "
+                    "Müller's method would produce complex roots with the current triple. "
+                    "This interface is limited to real roots — try different initial points "
+                    "closer to a real root of f."
+                )
+
             sqrt_disc = math.sqrt(disc)
-            
-            # Denominador de mayor magnitud
-            if abs(b + sqrt_disc) > abs(b - sqrt_disc):
-                E = b + sqrt_disc
-            else:
-                E = b - sqrt_disc
-                
-            if E == 0:
-                raise ValueError("El denominador es cero.")
-            
-            h = -2 * f2 / E
+
+            # ── Denominator: pick the larger magnitude ────────────────────
+            E_plus = b + sqrt_disc
+            E_minus = b - sqrt_disc
+            denom_E = E_plus if abs(E_plus) > abs(E_minus) else E_minus
+
+            if abs(denom_E) < 1e-15:
+                raise ValueError(
+                    f"Zero denominator at iteration {i}: both (b ± √disc) ≈ 0. "
+                    "The quadratic term d ≈ 0 — the three points may be nearly collinear. "
+                    "Try more spread-out initial points."
+                )
+
+            h = -2 * f2 / denom_E
             x3 = x2 + h
-            
             err = abs(x3 - x2)
+
+            if not math.isfinite(x3):
+                raise ValueError(
+                    f"x_new = {x3} is not finite at iteration {i}. "
+                    "The method is diverging — choose initial points closer to the root."
+                )
 
             steps.append({
                 "step": i, "phase": "muller",
@@ -106,11 +168,17 @@ class Muller(NumericalMethod):
             if err < tol:
                 steps[-1]["phase"] = "converged"
                 break
-                
-            # Desplazar variables
-            x0 = x1
-            x1 = x2
-            x2 = x3
+
+            x0, x1, x2 = x1, x2, x3
+        else:
+            steps.append({
+                "step": N + 1, "phase": "max_iter_reached",
+                "description": (
+                    f"Maximum iterations ({N}) reached. "
+                    f"Last approximation: x = {x3:.10g}. "
+                    "Try different initial points or increase max_iter."
+                ),
+            })
 
         return {
             "solution": [x3],

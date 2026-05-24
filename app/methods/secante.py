@@ -2,6 +2,7 @@
 Método de la Secante — búsqueda de raíces sin derivada.
 Implementado desde el pseudocódigo de Camilo (metodosCamilo).
 """
+import math
 from app.core.base_method import NumericalMethod
 from app.core.safe_eval import make_function
 
@@ -51,22 +52,68 @@ class Secante(NumericalMethod):
         }
 
     def solve(self, expr: str, params: dict) -> dict:
-        f = make_function(expr)
-        x0 = float(params.get("x0", 0))
-        x1 = float(params.get("x1", 2))
-        tol = float(params.get("tol", 1e-7))
-        N = int(params.get("max_iter", 100))
-        steps = []
+        # ── Parse function ────────────────────────────────────────────────
+        try:
+            f = make_function(expr)
+        except Exception as e:
+            raise ValueError(f"Invalid expression '{expr}': {e}") from e
 
-        for i in range(1, N + 1):
+        # ── Parse parameters ──────────────────────────────────────────────
+        try:
+            x0 = float(params.get("x0", 0))
+            x1 = float(params.get("x1", 2))
+            tol = float(params.get("tol", 1e-7))
+            N = int(params.get("max_iter", 100))
+        except (TypeError, ValueError) as e:
+            raise ValueError(f"Invalid parameter: {e}") from e
+
+        if tol <= 0:
+            raise ValueError("Tolerance must be positive.")
+        if N <= 0:
+            raise ValueError("max_iter must be a positive integer.")
+        if abs(x1 - x0) < 1e-15:
+            raise ValueError(
+                f"x₀ ({x0}) and x₁ ({x1}) are identical or too close. "
+                "The Secant method requires two distinct initial points."
+            )
+
+        # ── Evaluate initial points ────────────────────────────────────────
+        try:
             f0 = f(x0)
             f1 = f(x1)
+        except ZeroDivisionError:
+            raise ValueError("Division by zero evaluating f at the initial points.")
+        except OverflowError:
+            raise ValueError("f overflows at the initial points — try different starting values.")
+        except Exception as e:
+            raise ValueError(f"Error evaluating f at initial points: {e}") from e
 
+        if not math.isfinite(f0) or not math.isfinite(f1):
+            raise ValueError(
+                f"f(x₀) = {f0} or f(x₁) = {f1} is not finite. "
+                "Choose initial points where f is well-defined."
+            )
+
+        steps = []
+        x2 = x1  # Initialize
+
+        for i in range(1, N + 1):
             denom = f1 - f0
             if abs(denom) < 1e-15:
-                raise ValueError(f"Division by zero: f(x₁) - f(x₀) ≈ 0 at iteration {i}.")
+                raise ValueError(
+                    f"Division by zero at iteration {i}: f(x₁) - f(x₀) ≈ {denom:.2e}. "
+                    "The secant line is nearly horizontal — the method has stagnated. "
+                    "Try different initial points."
+                )
 
             x2 = x1 - f1 * (x1 - x0) / denom
+
+            if not math.isfinite(x2):
+                raise ValueError(
+                    f"x₂ = {x2} is not finite at iteration {i}. "
+                    "The method is diverging — choose initial points closer to the root."
+                )
+
             E = abs(x2 - x1)
 
             steps.append({
@@ -80,8 +127,35 @@ class Secante(NumericalMethod):
                 steps[-1]["phase"] = "converged"
                 break
 
-            x0 = x1
+            x0, f0 = x1, f1
             x1 = x2
+            try:
+                f1 = f(x1)
+            except ZeroDivisionError:
+                raise ValueError(f"Division by zero evaluating f({x1:.10g}) at iteration {i+1}.")
+            except OverflowError:
+                raise ValueError(
+                    f"Overflow evaluating f({x1:.10g}) at iteration {i+1}. "
+                    "The method may be diverging."
+                )
+            except Exception as e:
+                raise ValueError(f"Error evaluating f({x1:.10g}) at iteration {i+1}: {e}") from e
+
+            if not math.isfinite(f1):
+                raise ValueError(
+                    f"f({x1:.10g}) = {f1} is not finite at iteration {i+1}. "
+                    "The function has a singularity near this point."
+                )
+        else:
+            steps.append({
+                "step": N + 1, "phase": "max_iter_reached",
+                "description": (
+                    f"Maximum iterations ({N}) reached. "
+                    f"Last approximation: x₂ = {x2:.10g}. "
+                    "Try different initial points or increase max_iter."
+                ),
+                "x2": x2,
+            })
 
         return {
             "solution": [x2],

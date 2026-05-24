@@ -2,6 +2,7 @@
 Búsqueda Incremental — localización de intervalos con raíz.
 Basado en la implementación de Jul (MetodosJul).
 """
+import math
 from app.core.base_method import NumericalMethod
 from app.core.safe_eval import make_function
 
@@ -48,19 +49,71 @@ class IncrementalSearch(NumericalMethod):
         }
 
     def solve(self, expr: str, params: dict) -> dict:
-        f = make_function(expr)
-        x0 = float(params.get("x0", -3))
-        h = float(params.get("h", 0.5))
-        N = int(params.get("max_iter", 100))
+        # ── Parse function ────────────────────────────────────────────────
+        try:
+            f = make_function(expr)
+        except Exception as e:
+            raise ValueError(f"Invalid expression '{expr}': {e}") from e
+
+        # ── Parse parameters ──────────────────────────────────────────────
+        try:
+            x0 = float(params.get("x0", -3))
+            h = float(params.get("h", 0.5))
+            N = int(params.get("max_iter", 100))
+        except (TypeError, ValueError) as e:
+            raise ValueError(f"Invalid parameter: {e}") from e
+
+        if h == 0:
+            raise ValueError("Step size h cannot be zero.")
+        if N <= 0:
+            raise ValueError("max_iter must be a positive integer.")
+
+        # ── Evaluate starting point ───────────────────────────────────────
+        try:
+            f_prev = f(x0)
+        except ZeroDivisionError:
+            raise ValueError(f"Division by zero evaluating f({x0}). Try a different starting point.")
+        except OverflowError:
+            raise ValueError(f"f({x0}) overflows. Try a different starting point.")
+        except Exception as e:
+            raise ValueError(f"Error evaluating f({x0}): {e}") from e
+
+        if not math.isfinite(f_prev):
+            raise ValueError(
+                f"f({x0}) = {f_prev} is not finite. The function may have a singularity at x₀."
+            )
 
         x_prev = x0
-        f_prev = f(x_prev)
         steps = []
         found_intervals = []
 
         for i in range(1, N + 1):
             x_curr = x_prev + h
-            f_curr = f(x_curr)
+
+            try:
+                f_curr = f(x_curr)
+            except ZeroDivisionError:
+                # Log the step as a singularity and skip
+                steps.append({
+                    "step": i, "phase": "singularity",
+                    "x_prev": x_prev, "x_curr": x_curr,
+                    "f_prev": f_prev, "f_curr": None,
+                    "description": f"Iter {i}: [{x_prev:.6g}, {x_curr:.6g}] — division by zero at x={x_curr:.6g}, skipping.",
+                })
+                x_prev = x_curr
+                f_prev = float("nan")
+                continue
+            except OverflowError:
+                steps.append({
+                    "step": i, "phase": "overflow",
+                    "x_prev": x_prev, "x_curr": x_curr,
+                    "description": f"Iter {i}: overflow at x={x_curr:.6g}, skipping.",
+                })
+                x_prev = x_curr
+                f_prev = float("nan")
+                continue
+            except Exception as e:
+                raise ValueError(f"Error evaluating f({x_curr:.6g}) at iteration {i}: {e}") from e
 
             step = {
                 "step": i, "phase": "search",
@@ -69,7 +122,7 @@ class IncrementalSearch(NumericalMethod):
                 "description": f"Iter {i}: [{x_prev:.6g}, {x_curr:.6g}], f = [{f_prev:.6e}, {f_curr:.6e}]",
             }
 
-            if f_prev * f_curr < 0:
+            if math.isfinite(f_prev) and math.isfinite(f_curr) and f_prev * f_curr < 0:
                 step["phase"] = "root_found"
                 step["description"] += f" ← Root bracket [{x_prev:.6g}, {x_curr:.6g}]"
                 found_intervals.append([x_prev, x_curr])
@@ -89,4 +142,8 @@ class IncrementalSearch(NumericalMethod):
                 "method": self.name,
             }
         else:
-            raise ValueError("No sign-change bracket was found in the explored range.")
+            raise ValueError(
+                f"No sign-change bracket was found in [{x0}, {x0 + N * h:.6g}] "
+                f"with step h = {h}. "
+                "Try a wider range (larger N or smaller |h|), or a different starting point."
+            )

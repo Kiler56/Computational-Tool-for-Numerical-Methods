@@ -1,7 +1,9 @@
 """
 Método Iterativo SOR (Successive Over-Relaxation)
 """
+import math
 from app.core.base_method import NumericalMethod
+
 
 class SOR(NumericalMethod):
     @property
@@ -40,27 +42,69 @@ class SOR(NumericalMethod):
 
     def solve(self, A: list, b: list, params: dict = None) -> dict:
         params = params or {}
-        w = float(params.get("w", 1.5))
-        tol = float(params.get("tol", 1e-4))
-        max_iter = int(params.get("max_iter", 100))
-        x0_str = params.get("x0", "0")
-        
-        n = len(A)
+
+        # ── Parse parameters ──────────────────────────────────────────
         try:
-            x0 = [float(x.strip()) for x in x0_str.split(',')]
+            w = float(params.get("w", 1.5))
+            tol = float(params.get("tol", 1e-4))
+            max_iter = int(params.get("max_iter", 100))
+        except (TypeError, ValueError) as e:
+            raise ValueError(f"Invalid parameter: {e}") from e
+        if tol <= 0:
+            raise ValueError("Tolerance must be positive.")
+        if max_iter <= 0:
+            raise ValueError("max_iter must be a positive integer.")
+        if not (0 < w < 2):
+            raise ValueError(
+                f"Relaxation parameter ω = {w} is out of range. "
+                "SOR converges only when 0 < ω < 2. "
+                "Typical values: ω = 1.0 (Gauss-Seidel), 1.0 < ω < 2.0 (over-relaxation)."
+            )
+
+        x0_str = params.get("x0", "0")
+        n = len(A)
+
+        # ── Validate matrix ──────────────────────────────────────────
+        if n == 0:
+            raise ValueError("Matrix A is empty.")
+        if len(b) != n:
+            raise ValueError(
+                f"Matrix A has {n} rows but b has {len(b)} elements. "
+                "The system must be square."
+            )
+        try:
+            A = [[float(v) for v in row] for row in A]
+            b = [float(v) for v in b]
+        except (TypeError, ValueError) as e:
+            raise ValueError(f"Non-numeric value in A or b: {e}") from e
+        for i, row in enumerate(A):
+            if len(row) != n:
+                raise ValueError(f"Row {i} of A has {len(row)} elements, expected {n}.")
+
+        # ── Parse initial vector ─────────────────────────────────────
+        try:
+            x0 = [float(xi.strip()) for xi in str(x0_str).split(',')]
             if len(x0) == 1 and n > 1:
                 x0 = [x0[0]] * n
             elif len(x0) != n:
-                raise ValueError
-        except:
-            raise ValueError(f"El vector inicial debe ser una lista de {n} números separados por coma.")
-            
-        x = x0[:]
-        steps = []
-        
+                raise ValueError(f"Expected {n} values, got {len(x0)}.")
+        except (ValueError, AttributeError) as e:
+            raise ValueError(
+                f"Invalid initial vector x0: '{x0_str}'. "
+                f"Provide {n} comma-separated numbers (e.g., '0,0,0')."
+            ) from e
+
+        # ── Check diagonal ──────────────────────────────────────────
         for i in range(n):
             if abs(A[i][i]) < 1e-12:
-                raise ValueError(f"Fallo en SOR: el elemento diagonal A[{i}][{i}] es cero.")
+                raise ValueError(
+                    f"Zero diagonal element at A[{i}][{i}] = {A[i][i]:.2e}. "
+                    "SOR requires all diagonal elements to be non-zero."
+                )
+
+
+        x = x0[:]
+        steps = []
 
         steps.append({
             "step": 0,

@@ -19,6 +19,10 @@ class GaussianSimple(NumericalMethod):
         return "Gaussian elimination (simple)"
 
     @property
+    def plot_type(self) -> str:
+        return "gaussian_elim"
+
+    @property
     def instructions(self) -> dict:
         return {
             "es": (
@@ -136,6 +140,7 @@ class GaussianSimple(NumericalMethod):
             "steps": steps,
             "iterations": len(steps),
             "method": self.name,
+            "plot_type": self.plot_type,
         }
 
 

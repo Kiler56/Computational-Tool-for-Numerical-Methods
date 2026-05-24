@@ -15,6 +15,10 @@ class GaussSeidel(NumericalMethod):
         return "Método Iterativo de Gauss-Seidel"
 
     @property
+    def plot_type(self) -> str:
+        return "iterative_matrix"
+
+    @property
     def instructions(self) -> dict:
         return {
             "es": (
@@ -161,4 +165,5 @@ class GaussSeidel(NumericalMethod):
             "steps": steps,
             "iterations": len(steps) - 1,
             "method": self.name,
+            "plot_type": self.plot_type,
         }

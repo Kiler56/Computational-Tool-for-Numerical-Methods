@@ -14,6 +14,10 @@ class Crout(NumericalMethod):
         return "Factorización LU (Crout)"
 
     @property
+    def plot_type(self) -> str:
+        return "lu_factorization"
+
+    @property
     def instructions(self) -> dict:
         return {
             "es": (
@@ -98,4 +102,5 @@ class Crout(NumericalMethod):
             "steps": steps,
             "iterations": len(steps),
             "method": self.name,
+            "plot_type": self.plot_type,
         }

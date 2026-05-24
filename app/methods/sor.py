@@ -15,6 +15,10 @@ class SOR(NumericalMethod):
         return "Método Iterativo SOR (Relajación)"
 
     @property
+    def plot_type(self) -> str:
+        return "iterative_matrix"
+
+    @property
     def instructions(self) -> dict:
         return {
             "es": (
@@ -166,4 +170,5 @@ class SOR(NumericalMethod):
             "steps": steps,
             "iterations": len(steps) - 1,
             "method": self.name,
+            "plot_type": self.plot_type,
         }

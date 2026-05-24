@@ -22,6 +22,10 @@ class IncrementalSearch(NumericalMethod):
         return "root"
 
     @property
+    def plot_type(self) -> str:
+        return "incremental"
+
+    @property
     def params_schema(self) -> list:
         return [
             {"key": "x0", "label_es": "Valor inicial (x₀)", "label_en": "Initial value (x₀)", "type": "float", "default": -3},
@@ -140,6 +144,7 @@ class IncrementalSearch(NumericalMethod):
                 "steps": steps,
                 "iterations": len(steps),
                 "method": self.name,
+            "plot_type": self.plot_type,
             }
         else:
             raise ValueError(

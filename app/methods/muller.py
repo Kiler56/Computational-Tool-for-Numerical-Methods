@@ -22,6 +22,10 @@ class Muller(NumericalMethod):
         return "root"
 
     @property
+    def plot_type(self) -> str:
+        return "root_convergence"
+
+    @property
     def params_schema(self) -> list:
         return [
             {"key": "x0", "label_es": "x₀", "label_en": "x₀", "type": "float", "default": 0.0},
@@ -186,4 +190,5 @@ class Muller(NumericalMethod):
             "steps": steps,
             "iterations": len(steps),
             "method": self.name,
+            "plot_type": self.plot_type,
         }

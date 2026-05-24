@@ -15,6 +15,10 @@ class MatrixAnalysis(NumericalMethod):
         return "Análisis de Propiedades de Matriz"
 
     @property
+    def plot_type(self) -> str:
+        return "matrix_analysis"
+
+    @property
     def instructions(self) -> dict:
         return {
             "es": (
@@ -110,4 +114,5 @@ class MatrixAnalysis(NumericalMethod):
             "steps": steps,
             "iterations": 1,
             "method": self.name,
+            "plot_type": self.plot_type,
         }

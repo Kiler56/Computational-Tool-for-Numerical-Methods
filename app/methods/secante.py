@@ -22,6 +22,10 @@ class Secante(NumericalMethod):
         return "root"
 
     @property
+    def plot_type(self) -> str:
+        return "root_convergence"
+
+    @property
     def params_schema(self) -> list:
         return [
             {"key": "x0", "label_es": "x₀ (primer punto)", "label_en": "x₀ (first point)", "type": "float", "default": 0},
@@ -163,4 +167,5 @@ class Secante(NumericalMethod):
             "steps": steps,
             "iterations": len(steps),
             "method": self.name,
+            "plot_type": self.plot_type,
         }

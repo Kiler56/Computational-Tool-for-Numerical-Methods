@@ -14,6 +14,10 @@ class Doolittle(NumericalMethod):
         return "Factorización LU (Doolittle)"
 
     @property
+    def plot_type(self) -> str:
+        return "lu_factorization"
+
+    @property
     def instructions(self) -> dict:
         return {
             "es": (
@@ -94,4 +98,5 @@ class Doolittle(NumericalMethod):
             "steps": steps,
             "iterations": len(steps),
             "method": self.name,
+            "plot_type": self.plot_type,
         }

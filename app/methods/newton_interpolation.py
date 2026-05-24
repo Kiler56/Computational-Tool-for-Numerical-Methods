@@ -31,6 +31,10 @@ class NewtonInterpolation(NumericalMethod):
         return "interpolation"
 
     @property
+    def plot_type(self) -> str:
+        return "interpolation"
+
+    @property
     def instructions(self) -> dict:
         html_es = (
             "<ul>"
@@ -200,4 +204,5 @@ class NewtonInterpolation(NumericalMethod):
             "steps": steps,
             "iterations": len(steps),
             "method": self.name,
+            "plot_type": self.plot_type,
         }

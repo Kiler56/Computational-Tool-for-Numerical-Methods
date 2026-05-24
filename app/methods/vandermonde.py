@@ -29,6 +29,10 @@ class VandermondeInterpolation(NumericalMethod):
         return "interpolation"
 
     @property
+    def plot_type(self) -> str:
+        return "interpolation"
+
+    @property
     def params_schema(self) -> list:
         return [
             {
@@ -313,4 +317,5 @@ class VandermondeInterpolation(NumericalMethod):
             "steps": steps,
             "iterations": len(steps),
             "method": self.name,
+            "plot_type": self.plot_type,
         }

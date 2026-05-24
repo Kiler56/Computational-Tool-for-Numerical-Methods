@@ -19,6 +19,10 @@ class LagrangeInterpolation(NumericalMethod):
         return "interpolation"
 
     @property
+    def plot_type(self) -> str:
+        return "interpolation"
+
+    @property
     def instructions(self) -> dict:
         html = (
             "<ul>"
@@ -112,4 +116,5 @@ class LagrangeInterpolation(NumericalMethod):
             },
             "steps": steps,
             "method": self.name,
+            "plot_type": self.plot_type,
         }

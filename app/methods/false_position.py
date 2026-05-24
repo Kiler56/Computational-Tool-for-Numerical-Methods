@@ -22,6 +22,10 @@ class FalsePosition(NumericalMethod):
         return "root"
 
     @property
+    def plot_type(self) -> str:
+        return "root_finding"
+
+    @property
     def params_schema(self) -> list:
         return [
             {"key": "a", "label_es": "Extremo izquierdo (a)", "label_en": "Left endpoint (a)", "type": "float", "default": 0},
@@ -172,4 +176,5 @@ class FalsePosition(NumericalMethod):
             "steps": steps,
             "iterations": len(steps),
             "method": self.name,
+            "plot_type": self.plot_type,
         }

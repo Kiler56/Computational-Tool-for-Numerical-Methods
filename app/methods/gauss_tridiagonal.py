@@ -18,6 +18,10 @@ class GaussTridiagonal(NumericalMethod):
         return "Gauss Tridiagonal — Algoritmo de Thomas"
 
     @property
+    def plot_type(self) -> str:
+        return "tridiagonal"
+
+    @property
     def instructions(self) -> dict:
         return {
             "es": (
@@ -125,6 +129,7 @@ class GaussTridiagonal(NumericalMethod):
             "lower": self._snapshot(a),
             "upper": self._snapshot(c),
             "method": self.name,
+            "plot_type": self.plot_type,
         }
 
 

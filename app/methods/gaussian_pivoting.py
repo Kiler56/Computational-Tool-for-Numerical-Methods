@@ -19,6 +19,10 @@ class GaussianPartialPivoting(NumericalMethod):
         return "Eliminación Gaussiana con Pivoteo Parcial"
 
     @property
+    def plot_type(self) -> str:
+        return "gaussian_elim"
+
+    @property
     def instructions(self) -> dict:
         return {
             "es": (
@@ -235,6 +239,7 @@ class GaussianTotalPivoting(NumericalMethod):
             "steps": steps,
             "iterations": len(steps),
             "method": self.name,
+            "plot_type": self.plot_type,
         }
 
 

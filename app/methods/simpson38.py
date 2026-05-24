@@ -31,6 +31,10 @@ class Simpson38(NumericalMethod):
         return "Simpson 3/8 (Integración Numérica)"
 
     @property
+    def plot_type(self) -> str:
+        return "integration"
+
+    @property
     def method_type(self) -> str:
         return "root"           # Reutiliza el flujo "root" (expr + params)
 
@@ -223,4 +227,5 @@ class Simpson38(NumericalMethod):
             "steps": steps,
             "iterations": len(steps),
             "method": self.name,
+            "plot_type": self.plot_type,
         }

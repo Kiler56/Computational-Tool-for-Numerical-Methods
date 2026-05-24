@@ -6,6 +6,8 @@ from flask import Blueprint, jsonify, render_template, request
 from flask_login import current_user
 
 from app.core.method_registry import registry
+from app.core.safe_eval import make_function          # ← NUEVO
+from app.core.universal_plotter import UniversalPlotter  # ← NUEVO
 
 main_bp = Blueprint("main", __name__)
 
@@ -14,14 +16,12 @@ main_bp = Blueprint("main", __name__)
 
 @main_bp.route("/")
 def index():
-    """Home dashboard."""
     methods = registry.list_all()
     return render_template("index.html", methods=methods)
 
 
 @main_bp.route("/solver/<method_name>")
 def solver(method_name: str):
-    """Solver page for a specific method."""
     try:
         method = registry.get(method_name)
     except KeyError:
@@ -35,7 +35,6 @@ def solver(method_name: str):
 
 @main_bp.route("/history")
 def history():
-    """Authenticated user's calculation history."""
     if not current_user.is_authenticated:
         from flask import redirect, url_for
         return redirect(url_for("auth.login"))
@@ -55,9 +54,38 @@ def history():
 
 @main_bp.route("/api/methods", methods=["GET"])
 def api_methods():
-    """List available numerical methods."""
     return jsonify(registry.list_all())
 
+
+# ── Helper ────────────────────────────────────────────────────────────────────
+
+def _attach_plot(result: dict, expr: str | None) -> dict:
+    """
+    Agrega la gráfica al result como imagen base64 PNG.
+    Si el plot falla (datos insuficientes, etc.) simplemente no agrega nada.
+    """
+    try:
+        import io, base64
+        import matplotlib
+        matplotlib.use("Agg")  # sin GUI, obligatorio en servidor
+
+        f = make_function(expr) if expr else None
+        fig = UniversalPlotter(result, f=f).plot()
+
+        buf = io.BytesIO()
+        fig.savefig(buf, format="png", bbox_inches="tight", dpi=120)
+        buf.seek(0)
+        result["plot"] = base64.b64encode(buf.read()).decode("utf-8")
+
+        import matplotlib.pyplot as plt
+        plt.close(fig)
+    except Exception:
+        pass   # la gráfica es opcional — nunca rompe el endpoint
+
+    return result
+
+
+# ── Endpoint principal ────────────────────────────────────────────────────────
 
 @main_bp.route("/api/solve", methods=["POST"])
 def api_solve():
@@ -76,21 +104,21 @@ def api_solve():
         return jsonify({"error": str(e)}), 400
 
     try:
+        expr = None   # se guarda para pasárselo al plotter
+
         if method.method_type == "root":
             expr = data.get("expr")
             params = data.get("params", {})
             if not expr:
                 return jsonify({"error": "Field 'expr' is required for root-finding methods."}), 400
             result = method.solve(expr, params)
+
         elif method.method_type == "interpolation":
-            # Can receive either:
-            # 1. x (list of floats) and y (list of floats) with optional params (containing eval_x / x_eval)
-            # 2. points (list of [x, y] lists) and x_eval
             x_points = data.get("x")
             y_points = data.get("y")
-            points = data.get("points")
-            x_eval = data.get("x_eval")
-            params = data.get("params", {})
+            points   = data.get("points")
+            x_eval   = data.get("x_eval")
+            params   = data.get("params", {})
 
             if points is not None:
                 if not x_points or not y_points:
@@ -102,7 +130,6 @@ def api_solve():
             else:
                 return jsonify({"error": "Fields 'x' and 'y' (or 'points') are required for interpolation."}), 400
 
-            # Determine x_eval
             if x_eval is None and params and params.get("eval_x") is not None:
                 x_eval = params["eval_x"]
             if x_eval is not None:
@@ -119,19 +146,24 @@ def api_solve():
                     result = method.solve(x_points, y_points, params=params)
                 else:
                     result = method.solve(x_points, y_points)
-        else:
+
+        else:  # linear_system
             matrix = data.get("matrix")
-            b = data.get("b")
+            b      = data.get("b")
             params = data.get("params", {})
             if matrix is None or b is None:
                 return jsonify({"error": "Fields 'matrix' and 'b' are required for linear systems."}), 400
-            
+
             import inspect
             sig = inspect.signature(method.solve)
             if 'params' in sig.parameters:
                 result = method.solve(matrix, b, params=params)
             else:
                 result = method.solve(matrix, b)
+
+        # ── GRÁFICA ──────────────────────────────────────────────────────────
+        result = _attach_plot(result, expr)          # ← ÚNICA LÍNEA NUEVA
+        # ─────────────────────────────────────────────────────────────────────
 
         if current_user.is_authenticated:
             from app.extensions import db
@@ -159,6 +191,7 @@ def api_solve():
             db.session.commit()
 
         return jsonify(result)
+
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
@@ -167,7 +200,6 @@ def api_solve():
 
 @main_bp.route("/api/history", methods=["GET"])
 def api_history():
-    """Return the user's history as JSON."""
     if not current_user.is_authenticated:
         return jsonify({"error": "Not authenticated."}), 401
 

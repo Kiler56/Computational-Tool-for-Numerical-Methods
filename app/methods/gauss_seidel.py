@@ -112,32 +112,40 @@ class GaussSeidel(NumericalMethod):
             "description": f"Valores iniciales: x = {self._snapshot(x)}"
         })
 
-        for k in range(max_iter):
-            x_old = x[:]
-            error = 0.0
-            
-            for i in range(n):
-                s = sum(A[i][j] * x[j] for j in range(n) if j != i)
-                x[i] = (b[i] - s) / A[i][i]
+        try:
+            for k in range(max_iter):
+                x_old = x[:]
+                error = 0.0
                 
-            error = max(abs(x[i] - x_old[i]) for i in range(n))
-            
-            desc = f"Iteración {k+1}: x = [" + ", ".join(f"{v:.6g}" for v in x) + f"], Error = {error:.6g}"
-            steps.append({
-                "step": k + 1,
-                "phase": "elimination",
-                "description": desc
-            })
-            
-            if error < tol:
-                break
+                for i in range(n):
+                    s = sum(A[i][j] * x[j] for j in range(n) if j != i)
+                    x[i] = (b[i] - s) / A[i][i]
+                    
+                error = max(abs(x[i] - x_old[i]) for i in range(n))
                 
-        if error >= tol:
-            steps.append({
-                "step": max_iter + 1,
-                "phase": "analysis",
-                "description": "ADVERTENCIA: El método no convergió."
-            })
+                desc = f"Iteración {k+1}: x = [" + ", ".join(f"{v:.6g}" for v in x) + f"], Error = {error:.6g}"
+                steps.append({
+                    "step": k + 1,
+                    "phase": "elimination",
+                    "description": desc
+                })
+                
+                if error < tol:
+                    break
+                    
+            if error >= tol:
+                steps.append({
+                    "step": max_iter + 1,
+                    "phase": "analysis",
+                    "description": "ADVERTENCIA: El método no convergió."
+                })
+        except OverflowError:
+            raise ValueError(
+                f"Desbordamiento numérico (Overflow) en la iteración {k+1}. "
+                "El método divergió porque la matriz probablemente no es diagonalmente dominante."
+            )
+        except ZeroDivisionError:
+            raise ValueError(f"División por cero en la iteración {k+1}.")
 
         props = {}
         try:

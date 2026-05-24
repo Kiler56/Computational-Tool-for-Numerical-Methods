@@ -16,6 +16,7 @@ Implementado por: Andrés Yue — rama feature/vandermonde-simpson38
 """
 from app.core.base_method import NumericalMethod
 from app.core.safe_eval import make_function
+import math
 
 
 class Simpson38(NumericalMethod):
@@ -144,7 +145,18 @@ class Simpson38(NumericalMethod):
         coefs = []
 
         for i, xi in enumerate(nodes):
-            fxi = f(xi)
+            try:
+                fxi = f(xi)
+            except ZeroDivisionError:
+                raise ValueError(f"División por cero evaluando f({xi:.10g}) en el nodo x_{i}.")
+            except OverflowError:
+                raise ValueError(f"Desbordamiento evaluando f({xi:.10g}) en el nodo x_{i}.")
+            except Exception as e:
+                raise ValueError(f"Error evaluando f({xi:.10g}) en el nodo x_{i}: {e}") from e
+                
+            if not math.isfinite(fxi):
+                raise ValueError(f"f({xi:.10g}) no es un valor finito. Puede haber una asíntota vertical en el intervalo.")
+                
             ci = self._coefficient(i, n)
             f_vals.append(fxi)
             coefs.append(ci)

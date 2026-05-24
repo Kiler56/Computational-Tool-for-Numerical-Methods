@@ -129,6 +129,7 @@
             <div id="solution-container" class="solution-display"></div>
             <button type="button" class="btn btn-sm btn-copy" id="btn-copy-solution" onclick="copySolution()" data-i18n="btn_copy">📋 Copy</button>
         </div>
+        <div id="plot-container" class="result-plot" style="display:none; margin-bottom: 2rem; text-align: center;"></div>
         <div class="result-steps">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
                 <h2 style="margin: 0;"><span data-i18n="steps_title">Pasos</span> <span id="step-count" class="badge"></span></h2>
@@ -296,6 +297,16 @@
             }
 
             renderSteps(result.steps, 'steps-container');
+            // ── Gráfica ──────────────────────────────────────────────────
+            const plotContainer = document.getElementById('plot-container');
+            if (result.plot) {
+                plotContainer.innerHTML = `<img src="data:image/png;base64,${result.plot}"
+                    alt="Gráfica del método" style="max-width:100%; border-radius:8px;">`;
+                plotContainer.style.display = 'block';
+            } else {
+                plotContainer.style.display = 'none';
+            }
+            // ─────────────────────────────────────────────────────────────
             document.getElementById('step-count').textContent = result.steps.length + ' ' + (I18n.t('steps_suffix') || 'Pasos');
             document.getElementById('results-section').style.display = 'block';
             document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });

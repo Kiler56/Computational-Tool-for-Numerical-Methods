@@ -19,11 +19,15 @@ class MatrixAnalysis(NumericalMethod):
         return "matrix_analysis"
 
     @property
+    def requires_vector_b(self) -> bool:
+        return False
+
+    @property
     def instructions(self) -> dict:
         return {
             "es": (
                 "<ul>"
-                "<li>Ingrese una matriz cuadrada <code>A</code>. El vector <code>b</code> será ignorado pero debe llenarlo con cualquier valor.</li>"
+                "<li>Ingrese una matriz cuadrada <code>A</code>. No necesita el vector <code>b</code>.</li>"
                 "<li>Calcula el determinante de la matriz.</li>"
                 "<li>Verifica si es Estrictamente Diagonal Dominante.</li>"
                 "<li>Verifica si es Definida Positiva.</li>"
@@ -31,7 +35,7 @@ class MatrixAnalysis(NumericalMethod):
             ),
             "en": (
                 "<ul>"
-                "<li>Enter a square matrix <code>A</code>. Vector <code>b</code> will be ignored but you must fill it.</li>"
+                "<li>Enter a square matrix <code>A</code>. Vector <code>b</code> is not required.</li>"
                 "<li>Calculates the determinant of the matrix.</li>"
                 "<li>Checks if it is Strictly Diagonally Dominant.</li>"
                 "<li>Checks if it is Positive Definite.</li>"

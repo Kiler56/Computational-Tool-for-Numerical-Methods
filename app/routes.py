@@ -151,8 +151,12 @@ def api_solve():
             matrix = data.get("matrix")
             b      = data.get("b")
             params = data.get("params", {})
-            if matrix is None or b is None:
-                return jsonify({"error": "Fields 'matrix' and 'b' are required for linear systems."}), 400
+            if matrix is None:
+                return jsonify({"error": "Field 'matrix' is required for linear systems."}), 400
+            if b is None:
+                if method.requires_vector_b:
+                    return jsonify({"error": "Field 'b' is required for this method."}), 400
+                b = [0.0] * len(matrix)
 
             import inspect
             sig = inspect.signature(method.solve)

@@ -37,6 +37,11 @@ class NumericalMethod(ABC):
         """Root-method form fields: [{"key", "label_es", "label_en", "type", "default"}, ...]."""
         return []
 
+    @property
+    def requires_vector_b(self) -> bool:
+        """If False, the UI hides vector b and the API may default it to zeros."""
+        return True
+
     @abstractmethod
     def solve(self, *args, **kwargs) -> dict:
         """

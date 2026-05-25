@@ -86,11 +86,13 @@
             <h3 data-i18n="matrix_label">Matrix A</h3>
             <div id="matrix-container" class="matrix-grid"></div>
         </div>
+        {% if method.requires_vector_b %}
         <div class="equals-sign">=</div>
         <div class="vector-section">
             <h3 data-i18n="vector_label">Vector b</h3>
             <div id="vector-container" class="vector-grid"></div>
         </div>
+        {% endif %}
     </div>
     
     {% if method.params_schema %}
@@ -155,6 +157,7 @@
 <script>
     const METHOD_NAME = "{{ method.name }}";
     const METHOD_TYPE = "{{ method.method_type }}";
+    const METHOD_REQUIRES_VECTOR_B = {{ 'true' if method.requires_vector_b else 'false' }};
     let currentSize = 3;
     let interpNumPoints = 3;
 
@@ -170,9 +173,25 @@
         currentSize = newSize;
         document.getElementById('size-display').textContent = currentSize;
         buildMatrixGrid(currentSize, 'matrix-container');
-        buildVectorGrid(currentSize, 'vector-container');
+        if (METHOD_REQUIRES_VECTOR_B) {
+            buildVectorGrid(currentSize, 'vector-container');
+        }
         hideResults();
         saveState();
+    }
+
+    function zeroVector(n) {
+        return Array.from({ length: n }, () => 0);
+    }
+
+    function readLinearSystemInputs() {
+        const matrix = readMatrix('matrix-container', currentSize);
+        if (!matrix) return null;
+        const b = METHOD_REQUIRES_VECTOR_B
+            ? readVector('vector-container', currentSize)
+            : zeroVector(currentSize);
+        if (METHOD_REQUIRES_VECTOR_B && !b) return null;
+        return { matrix, b };
     }
 
     function changeInterpSize(delta) {
@@ -292,9 +311,9 @@
                 });
                 result = await response.json();
             } else {
-                const matrix = readMatrix('matrix-container', currentSize);
-                const b = readVector('vector-container', currentSize);
-                if (!matrix || !b) throw new Error(I18n.t('error_fill_fields') || 'Please fill in all fields.');
+                const linear = readLinearSystemInputs();
+                if (!linear) throw new Error(I18n.t('error_fill_fields') || 'Please fill in all fields.');
+                const { matrix, b } = linear;
                 
                 const params = {};
                 document.querySelectorAll('.root-param-input').forEach(input => {
@@ -476,10 +495,11 @@
             if (xEvalEl) state.x_eval = xEvalEl.value;
         } else {
             state.size = currentSize;
-            const matrix = readMatrix('matrix-container', currentSize);
-            const b = readVector('vector-container', currentSize);
-            if (matrix) state.matrix = matrix;
-            if (b) state.b = b;
+            const linear = readLinearSystemInputs();
+            if (linear) {
+                state.matrix = linear.matrix;
+                if (METHOD_REQUIRES_VECTOR_B) state.b = linear.b;
+            }
         }
 
         document.querySelectorAll('.root-param-input').forEach(input => {
@@ -524,7 +544,9 @@
                     currentSize = state.size;
                     document.getElementById('size-display').textContent = currentSize;
                     buildMatrixGrid(currentSize, 'matrix-container');
-                    buildVectorGrid(currentSize, 'vector-container');
+                    if (METHOD_REQUIRES_VECTOR_B) {
+                        buildVectorGrid(currentSize, 'vector-container');
+                    }
                 }
                 if (state.matrix && state.matrix.length === currentSize) {
                     for (let i = 0; i < currentSize; i++) {
@@ -536,7 +558,7 @@
                         }
                     }
                 }
-                if (state.b && state.b.length === currentSize) {
+                if (METHOD_REQUIRES_VECTOR_B && state.b && state.b.length === currentSize) {
                     for (let i = 0; i < currentSize; i++) {
                         const el = document.getElementById(`b-${i}`);
                         if (el && state.b[i] !== null && state.b[i] !== undefined) {
@@ -561,7 +583,9 @@
     document.addEventListener('DOMContentLoaded', () => {
         if (METHOD_TYPE === 'linear_system' || METHOD_TYPE === undefined || METHOD_TYPE === '') {
             buildMatrixGrid(currentSize, 'matrix-container');
-            buildVectorGrid(currentSize, 'vector-container');
+            if (METHOD_REQUIRES_VECTOR_B) {
+                buildVectorGrid(currentSize, 'vector-container');
+            }
         } else if (METHOD_TYPE === 'interpolation') {
             buildInterpRows();
         }

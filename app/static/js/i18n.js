@@ -95,6 +95,8 @@ const I18n = (() => {
 
         // Traducir instrucciones del método si existe
         applyMethodInstructions();
+
+        document.dispatchEvent(new CustomEvent('numcalc:langchange', { detail: { lang } }));
     }
 
     /**

@@ -21,50 +21,93 @@
                 </a>
                 <button class="mobile-menu-close" id="menu-close" data-i18n-aria="close_menu" aria-label="Close menu">×</button>
             </div>
-            
-            <nav class="sidebar-nav">
-                <div class="nav-section-title" data-i18n="nav_systems">Linear systems</div>
+
+            <nav class="sidebar-nav" aria-label="Numerical methods">
+                <div class="sidebar-search-wrap">
+                    <span class="sidebar-search-icon" aria-hidden="true">⌕</span>
+                    <input
+                        type="search"
+                        id="method-search"
+                        class="sidebar-search-input"
+                        data-i18n-placeholder="search_methods"
+                        placeholder="Search methods…"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                    <button
+                        type="button"
+                        id="method-search-clear"
+                        class="sidebar-search-clear"
+                        data-i18n-aria="search_clear"
+                        aria-label="Clear search"
+                    >×</button>
+                </div>
+
                 {% if methods is defined %}
-                <ul class="nav-list">
-                    {% for m in methods %}
-                    {% if m.method_type is not defined or m.method_type == 'linear_system' %}
-                    <li>
-                        <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}">
-                            {{ m.description }}
-                        </a>
-                    </li>
-                    {% endif %}
-                    {% endfor %}
-                </ul>
+                <div class="method-nav-groups" id="method-nav-groups">
 
-                <div class="nav-section-title" data-i18n="nav_interp" style="margin-top:1.5rem;">Interpolation</div>
-                <ul class="nav-list">
-                    {% for m in methods %}
-                    {% if m.method_type is defined and m.method_type == 'interpolation' %}
-                    <li>
-                        <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}">
-                            {{ m.description }}
-                        </a>
-                    </li>
-                    {% endif %}
-                    {% endfor %}
-                </ul>
+                    <div class="nav-group" data-category="linear_system">
+                        <button type="button" class="nav-group-toggle" aria-expanded="true" aria-controls="nav-panel-systems">
+                            <span class="nav-group-label" data-i18n="nav_systems">Linear systems</span>
+                            <span class="nav-group-meta">
+                                <span class="nav-group-count"></span>
+                                <span class="nav-group-chevron" aria-hidden="true"></span>
+                            </span>
+                        </button>
+                        <ul class="nav-list nav-group-panel" id="nav-panel-systems">
+                            {% for m in methods %}
+                            {% if m.method_type is not defined or m.method_type == 'linear_system' %}
+                            <li class="nav-item" data-search="{{ m.description }} {{ m.name }}">
+                                <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}">{{ m.description }}</a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
 
-                <div class="nav-section-title" data-i18n="nav_roots" style="margin-top:1.5rem;">Root finding</div>
-                <ul class="nav-list">
-                    {% for m in methods %}
-                    {% if m.method_type is defined and m.method_type == 'root' %}
-                    <li>
-                        <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}">
-                            {{ m.description }}
-                        </a>
-                    </li>
-                    {% endif %}
-                    {% endfor %}
-                </ul>
+                    <div class="nav-group" data-category="interpolation">
+                        <button type="button" class="nav-group-toggle" aria-expanded="false" aria-controls="nav-panel-interp">
+                            <span class="nav-group-label" data-i18n="nav_interp">Interpolation</span>
+                            <span class="nav-group-meta">
+                                <span class="nav-group-count"></span>
+                                <span class="nav-group-chevron" aria-hidden="true"></span>
+                            </span>
+                        </button>
+                        <ul class="nav-list nav-group-panel" id="nav-panel-interp">
+                            {% for m in methods %}
+                            {% if m.method_type is defined and m.method_type == 'interpolation' %}
+                            <li class="nav-item" data-search="{{ m.description }} {{ m.name }}">
+                                <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}">{{ m.description }}</a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="nav-group" data-category="root">
+                        <button type="button" class="nav-group-toggle" aria-expanded="false" aria-controls="nav-panel-roots">
+                            <span class="nav-group-label" data-i18n="nav_roots">Root finding</span>
+                            <span class="nav-group-meta">
+                                <span class="nav-group-count"></span>
+                                <span class="nav-group-chevron" aria-hidden="true"></span>
+                            </span>
+                        </button>
+                        <ul class="nav-list nav-group-panel" id="nav-panel-roots">
+                            {% for m in methods %}
+                            {% if m.method_type is defined and m.method_type == 'root' %}
+                            <li class="nav-item" data-search="{{ m.description }} {{ m.name }}">
+                                <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}">{{ m.description }}</a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                </div>
+                <p class="nav-no-results" id="nav-no-results" data-i18n="search_no_results">No methods match your search.</p>
                 {% endif %}
             </nav>
-            
+
             <!-- User Section in Sidebar -->
             <div class="sidebar-user">
                 {% if current_user.is_authenticated %}
@@ -95,7 +138,7 @@
         <main class="main-content">
             <header class="topbar">
                 <button class="mobile-menu-toggle" id="menu-toggle" data-i18n-aria="open_menu" aria-label="Open menu">☰</button>
-                
+
                 <!-- Language Toggle -->
                 <div class="lang-toggle">
                     <button id="lang-es" class="lang-btn" onclick="I18n.setLang('es')" title="Español">ES</button>
@@ -116,8 +159,8 @@
     <script src="{{ url_for('static', filename='js/api.js') }}"></script>
     <script src="{{ url_for('static', filename='js/matrix.js') }}"></script>
     <script src="{{ url_for('static', filename='js/steps.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
     <script>
-        // Responsive sidebar UI
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
         const toggleBtn = document.getElementById('menu-toggle');
@@ -136,17 +179,6 @@
         toggleBtn.addEventListener('click', openMenu);
         closeBtn.addEventListener('click', closeMenu);
         overlay.addEventListener('click', closeMenu);
-
-        // Highlight active link in sidebar
-        document.addEventListener("DOMContentLoaded", () => {
-            const currentPath = window.location.pathname;
-            const links = document.querySelectorAll('.nav-link');
-            links.forEach(link => {
-                if (link.getAttribute('href') === currentPath) {
-                    link.classList.add('active');
-                }
-            });
-        });
     </script>
     {% block scripts %}{% endblock %}
 </body>

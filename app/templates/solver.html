@@ -209,6 +209,8 @@
         if (window.I18n) I18n.applyTranslations();
     }
 
+    const INTERP_X_EPS = 1e-14;
+
     function readInterpPoints() {
         const xs = document.querySelectorAll('.interp-x');
         const ys = document.querySelectorAll('.interp-y');
@@ -220,6 +222,30 @@
             points.push([xv, yv]);
         }
         return points;
+    }
+
+    /** Returns { value, rows } (1-based row indices) if duplicate x, else null. */
+    function findDuplicateInterpX(points) {
+        for (let i = 0; i < points.length; i++) {
+            for (let j = i + 1; j < points.length; j++) {
+                if (Math.abs(points[i][0] - points[j][0]) < INTERP_X_EPS) {
+                    return { value: points[i][0], rows: [i + 1, j + 1] };
+                }
+            }
+        }
+        return null;
+    }
+
+    function validateInterpPointsUnique(points) {
+        const dup = findDuplicateInterpX(points);
+        if (!dup) return;
+        let msg = I18n.t('error_duplicate_x')
+            || 'Duplicate x values are not allowed in interpolation nodes.';
+        msg = msg
+            .replace('{x}', String(dup.value))
+            .replace('{i}', String(dup.rows[0]))
+            .replace('{j}', String(dup.rows[1]));
+        throw new Error(msg);
     }
 
     async function handleSolve() {
@@ -254,6 +280,7 @@
             } else if (METHOD_TYPE === 'interpolation') {
                 const points = readInterpPoints();
                 if (!points) throw new Error(I18n.t('error_fill_points') || 'Please fill in all points.');
+                validateInterpPointsUnique(points);
                 const xEvalRaw = document.getElementById('x-eval-input').value.trim();
                 const x_eval = parseFloat(xEvalRaw);
                 if (Number.isNaN(x_eval)) throw new Error(I18n.t('error_fill_x_eval') || 'Please enter the evaluation point.');

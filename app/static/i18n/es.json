@@ -29,6 +29,7 @@
     "error_fill_expr": "Ingresa una expresión f(x) válida.",
     "error_fill_points": "Ingresa valores numéricos válidos para cada nodo (x, y).",
     "error_fill_x_eval": "Ingresa un punto x válido para evaluar.",
+    "error_duplicate_x": "Los valores de x deben ser únicos. x = {x} se repite en las filas {i} y {j}.",
     "expr_label": "Función f(x):",
     "expr_hint": "Funciones disponibles: sin, cos, tan, exp, log, sqrt, abs, pi, e",
     "iterations_label": "Iteraciones",

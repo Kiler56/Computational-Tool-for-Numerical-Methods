@@ -29,6 +29,7 @@
     "error_fill_expr": "Please enter a valid f(x) expression.",
     "error_fill_points": "Please enter valid numeric values for every node (x, y).",
     "error_fill_x_eval": "Please enter a valid evaluation point x.",
+    "error_duplicate_x": "All x values must be unique. x = {x} is repeated in rows {i} and {j}.",
     "expr_label": "Function f(x):",
     "expr_hint": "Available functions: sin, cos, tan, exp, log, sqrt, abs, pi, e",
     "iterations_label": "Iterations",

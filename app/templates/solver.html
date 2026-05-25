@@ -63,7 +63,7 @@
 
     <div class="interp-form">
         <h3 data-i18n="points_label">Nodes (x<sub>i</sub>, y<sub>i</sub>)</h3>
-        <div id="interp-points-container" class="interp-points-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; max-width: 300px; margin: 0 auto;"></div>
+        <div id="interp-points-container" class="interp-points-grid"></div>
         <div class="form-group" style="margin-top:1rem; text-align: center;">
             <label for="x-eval-input" data-i18n="x_eval_label">Evaluate P(x) at x =</label>
             <input type="number" id="x-eval-input" class="form-input" step="any" value="1.5" style="max-width: 150px; margin: 0 auto; display: inline-block;">
@@ -198,7 +198,6 @@
         for (let i = 0; i < interpNumPoints; i++) {
             const row = document.createElement('div');
             row.className = 'interp-row';
-            row.style.display = 'contents';
             const def = DEFAULT_INTERP_ROWS[i] || [i, i + 1];
             row.innerHTML = `
                 <input type="number" class="form-input interp-x" step="any" value="${def[0]}" aria-label="x${i}">

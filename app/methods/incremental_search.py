@@ -1,6 +1,5 @@
 """
-Búsqueda Incremental — localización de intervalos con raíz.
-Basado en la implementación de Jul (MetodosJul).
+Búsqueda Incremental — localización de intervalos con cambio de signo.
 """
 import math
 from app.core.base_method import NumericalMethod
@@ -97,7 +96,6 @@ class IncrementalSearch(NumericalMethod):
             try:
                 f_curr = f(x_curr)
             except ZeroDivisionError:
-                # Log the step as a singularity and skip
                 steps.append({
                     "step": i, "phase": "singularity",
                     "x_prev": x_prev, "x_curr": x_curr,
@@ -144,7 +142,7 @@ class IncrementalSearch(NumericalMethod):
                 "steps": steps,
                 "iterations": len(steps),
                 "method": self.name,
-            "plot_type": self.plot_type,
+                "plot_type": self.plot_type,
             }
         else:
             raise ValueError(

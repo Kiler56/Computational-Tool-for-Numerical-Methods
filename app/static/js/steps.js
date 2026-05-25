@@ -7,6 +7,26 @@ let currentStepIndex = 0;
 let currentViewMode = 'all'; // 'all' or 'step'
 
 /**
+ * Limpia pasos, tablas y estado del visor paso a paso (p. ej. tras un error).
+ */
+function resetStepsState() {
+    globalSteps = [];
+    currentStepIndex = 0;
+    currentViewMode = 'all';
+
+    const container = document.getElementById('steps-container');
+    if (container) container.innerHTML = '';
+
+    const stepControls = document.getElementById('step-controls');
+    if (stepControls) stepControls.style.display = 'none';
+
+    const btnViewAll = document.getElementById('btn-view-all');
+    const btnViewStep = document.getElementById('btn-view-step');
+    if (btnViewAll) btnViewAll.classList.add('active');
+    if (btnViewStep) btnViewStep.classList.remove('active');
+}
+
+/**
  * Renderiza la lista de pasos dentro del contenedor indicado.
  */
 function renderSteps(steps, containerId) {

@@ -254,6 +254,7 @@
         const errorDiv = document.getElementById('error-container');
 
         errorDiv.style.display = 'none';
+        clearResults();
         btnText.style.display = 'none';
         btnSpinner.style.display = 'inline-block';
         btn.disabled = true;
@@ -338,6 +339,7 @@
             document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
 
         } catch (err) {
+            clearResults();
             errorDiv.textContent = err.message;
             errorDiv.style.display = 'block';
         } finally {
@@ -416,9 +418,29 @@
         container.innerHTML = html;
     }
 
+    function clearResults() {
+        const resultsSection = document.getElementById('results-section');
+        const solution = document.getElementById('solution-container');
+        const plot = document.getElementById('plot-container');
+        const stepCount = document.getElementById('step-count');
+
+        if (resultsSection) resultsSection.style.display = 'none';
+        if (solution) solution.innerHTML = '';
+        if (plot) {
+            plot.innerHTML = '';
+            plot.style.display = 'none';
+        }
+        if (stepCount) stepCount.textContent = '';
+
+        if (typeof resetStepsState === 'function') {
+            resetStepsState();
+        }
+    }
+
     function hideResults() {
-        document.getElementById('results-section').style.display = 'none';
-        document.getElementById('error-container').style.display = 'none';
+        clearResults();
+        const errorDiv = document.getElementById('error-container');
+        if (errorDiv) errorDiv.style.display = 'none';
     }
 
     function copySolution() {

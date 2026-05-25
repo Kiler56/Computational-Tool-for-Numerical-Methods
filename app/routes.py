@@ -64,6 +64,7 @@ def _attach_plot(result: dict, expr: str | None) -> dict:
     Agrega la gráfica al result como imagen base64 PNG.
     Si el plot falla (datos insuficientes, etc.) simplemente no agrega nada.
     """
+    print("DEBUG: _attach_plot called, expr=", expr, "plot_type=", result.get("plot_type"))
     try:
         import io, base64
         import matplotlib

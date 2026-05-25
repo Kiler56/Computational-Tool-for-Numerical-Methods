@@ -1,54 +1,18 @@
 """
-Graficadora Universal para Métodos Numéricos
-=============================================
+Graficadora Universal para Métodos Numéricos.
 
-Métodos cubiertos por plot_type:
-
-  RAÍCES
-  ──────
-  "root_finding"         bisection, false_position, incremental_search,
-                         trisection, newton, secant, fixed_point,
-                         multiple_roots, steffensen, aitken, muller
-
-  "root_convergence"     cualquier método de raíces (convergencia + error)
-
-  SISTEMAS LINEALES — DIRECTOS
-  ────────────────────────────
-  "gaussian_elim"        gaussian_simple, partial_pivoting, total_pivoting
-  "lu_factorization"     doolittle, crout, cholesky
-  "tridiagonal"          gauss_tridiagonal
-
-  SISTEMAS LINEALES — ITERATIVOS
-  ──────────────────────────────
-  "iterative_matrix"     jacobi, gauss_seidel, sor
-
-  ANÁLISIS DE MATRICES
-  ─────────────────────
-  "matrix_analysis"      matrix_analysis
-
-  INTERPOLACIÓN
-  ─────────────
-  "interpolation"        lagrange, vandermonde, newton_interpolation
-
-  INTEGRACIÓN
-  ───────────
-  "integration"          simpson38  (extensible a otros)
-
-Uso básico:
-    plotter = UniversalPlotter(result, f=mi_funcion)
-    fig = plotter.plot()      # retorna Figure; no llama plt.show()
-    plotter.summary()
-
-Ejemplo de result esperado:
-    result = {
-        "method":    "bisection",
-        "plot_type": "root_finding",
-        "root":      2.0,
-        "steps": [
-            {"step": 0, "x": 3.0, "a": 0.0, "b": 4.0, "error": None},
-            {"step": 1, "x": 2.5, "a": 0.0, "b": 3.0, "error": 0.5},
-        ]
-    }
+plot_type registrados:
+    root_finding      — bisection, false_position, trisection
+    root_convergence  — newton, secant, fixed_point, multiple_roots,
+                        steffensen, aitken, muller
+    incremental       — incremental_search
+    gaussian_elim     — gaussian_simple, partial_pivoting, total_pivoting
+    lu_factorization  — doolittle, crout, cholesky
+    tridiagonal       — gauss_tridiagonal
+    iterative_matrix  — jacobi, gauss_seidel, sor
+    matrix_analysis   — matrix_analysis
+    interpolation     — lagrange, vandermonde, newton_interpolation
+    integration       — simpson38
 """
 
 from __future__ import annotations
@@ -61,11 +25,11 @@ from matplotlib.figure import Figure
 
 
 # ═══════════════════════════════════════════════════════════════
-# EXTRACTOR — lectura flexible de pasos
+# EXTRACTOR
 # ═══════════════════════════════════════════════════════════════
 
 class StepExtractor:
-    """Lee campos de un paso sin importar cómo los nombró el método."""
+    """Extrae campos de un paso usando múltiples claves candidatas."""
 
     _ERROR_KEYS  = ("error", "err", "tolerance", "tol", "residual")
     _VECTOR_KEYS = ("vector", "solution_partial", "x_vector", "x_vec")
@@ -117,11 +81,11 @@ class StepExtractor:
 
 
 # ═══════════════════════════════════════════════════════════════
-# HELPERS PRIVADOS
+# HELPERS
 # ═══════════════════════════════════════════════════════════════
 
 def _safe_eval_array(f: Callable, xs: np.ndarray) -> np.ndarray:
-    """Evalúa f en cada punto; NaN donde falle (no silencia el error)."""
+    """Evalúa f punto a punto; sustituye excepciones por NaN."""
     ys = np.empty_like(xs, dtype=float)
     for i, x in enumerate(xs):
         try:
@@ -132,9 +96,9 @@ def _safe_eval_array(f: Callable, xs: np.ndarray) -> np.ndarray:
 
 
 def _annotate_matrix(ax, mat: np.ndarray, fmt: str = ".2f") -> None:
-    """Escribe los valores numéricos dentro de cada celda del heatmap."""
+    """Escribe el valor numérico en cada celda del heatmap. Omite si >64 celdas."""
     rows, cols = mat.shape
-    if rows * cols > 64:          # omite si es demasiado grande
+    if rows * cols > 64:
         return
     vmax = np.abs(mat).max() or 1
     for i in range(rows):
@@ -145,7 +109,7 @@ def _annotate_matrix(ax, mat: np.ndarray, fmt: str = ".2f") -> None:
 
 
 def _print_swaps(steps: list) -> None:
-    """Imprime en consola los intercambios de filas/columnas."""
+    """Imprime en stdout los intercambios de filas/columnas registrados en steps."""
     row_swaps = [(s.get("step"), s["swap_rows"]) for s in steps if s.get("swap_rows")]
     col_swaps = [(s.get("step"), s["swap_cols"]) for s in steps if s.get("swap_cols")]
     if not row_swaps and not col_swaps:
@@ -159,6 +123,7 @@ def _print_swaps(steps: list) -> None:
 
 
 def _build_x_range(x_iter: list, root, margin_factor: float = 0.4):
+    """Calcula [x_min, x_max] con margen proporcional al rango de los datos."""
     all_x = x_iter + ([root] if root is not None else [])
     if not all_x:
         return -5.0, 5.0
@@ -168,21 +133,18 @@ def _build_x_range(x_iter: list, root, margin_factor: float = 0.4):
 
 
 # ═══════════════════════════════════════════════════════════════
-# ── RAÍCES ───────────────────────────────────────────────────
+# RENDERERS — RAÍCES
 # ═══════════════════════════════════════════════════════════════
 
 def _render_root_finding(result: dict, f: Optional[Callable] = None) -> Figure:
     """
     Grafica f(x) con la trayectoria de iteraciones y la raíz hallada.
 
-    Clave especial en steps:
-      "a", "b"  → intervalo [a,b] (bisección, regla falsa, trisección)
-      "a","b","c" → tres puntos (trisección)
-      "x1","x2" → dos puntos iniciales (secante, Müller)
-      "fm"      → f evaluada en el punto medio (Müller)
-
-    Columnas opcionales mostradas como scatter si están presentes:
-      "x2" para secante/Müller
+    Claves relevantes en steps:
+        "a", "b"       — intervalo activo (bisection, false_position, trisection)
+        "x2"           — segundo punto (secant, muller)
+    Claves relevantes en result:
+        "root"         — raíz hallada
     """
     steps  = result.get("steps", [])
     root   = result.get("root")
@@ -190,7 +152,6 @@ def _render_root_finding(result: dict, f: Optional[Callable] = None) -> Figure:
 
     x_iter = [StepExtractor.root_x(s) for s in steps]
     x_iter = [x for x in x_iter if x is not None]
-
     x_min, x_max = _build_x_range(x_iter, root)
 
     fig, ax = plt.subplots(figsize=(9, 5))
@@ -201,7 +162,6 @@ def _render_root_finding(result: dict, f: Optional[Callable] = None) -> Figure:
         ax.plot(xs, ys, linewidth=1.8, label="f(x)", color="#3266ad", zorder=2)
         ax.axhline(0, color="gray", linewidth=0.8, linestyle="--", alpha=0.5)
 
-        # Intervalos [a, b] — bisección / regla falsa / trisección
         for s in steps:
             if "a" in s and "b" in s:
                 ax.axvspan(s["a"], s["b"], alpha=0.03, color="#3266ad")
@@ -211,12 +171,11 @@ def _render_root_finding(result: dict, f: Optional[Callable] = None) -> Figure:
             ax.scatter(x_iter, y_iter, s=50, zorder=4,
                        label="Iteraciones", color="#d85a30")
 
-        # Punto x2 secundario (secante, Müller)
         x2_list = [s["x2"] for s in steps if "x2" in s]
         if x2_list:
             y2 = _safe_eval_array(f, np.array(x2_list))
             ax.scatter(x2_list, y2, s=30, zorder=4, marker="^",
-                       label="x₂ (secundario)", color="#1d9e75", alpha=0.7)
+                       label="x₂", color="#1d9e75", alpha=0.7)
 
         if root is not None:
             try:
@@ -244,17 +203,14 @@ def _render_root_finding(result: dict, f: Optional[Callable] = None) -> Figure:
 
 def _render_root_convergence(result: dict, f: Optional[Callable] = None) -> Figure:
     """
-    Convergencia de cualquier método de raíces.
+    Convergencia de métodos iterativos de raíces.
 
     Subplots:
-      · Superior: aproximación por iteración
-      · Inferior: |error| en escala logarítmica (si hay errores)
+        [0] aproximación x por iteración
+        [1] |error| en escala logarítmica (si existe)
+        [2] multiplicidad m (si existe, para multiple_roots)
 
-    Métodos especiales:
-      · multiple_roots  → también grafica multiplicidad estimada (clave "m")
-      · aitken          → muestra las tres secuencias Δ, Δ², acelerada
-      · steffensen      → igual que aitken (usa aceleración de Aitken)
-      · muller          → grafica los tres puntos x0,x1,x2 por iteración
+    Caso especial muller: grafica x0, x1, x2 por separado si están en steps.
     """
     steps  = result.get("steps", [])
     method = result.get("method", "")
@@ -272,13 +228,12 @@ def _render_root_convergence(result: dict, f: Optional[Callable] = None) -> Figu
 
     has_errors = any(e is not None for e in errors)
 
-    # ── caso Müller: grafica x0, x1, x2 simultáneamente ──────
     muller_keys = all("x0" in s and "x1" in s and "x2" in s for s in steps[:3])
     if method == "muller" and muller_keys and len(steps) >= 2:
         fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-        for key, label, color in [("x0","x₀","#3266ad"),
-                                   ("x1","x₁","#d85a30"),
-                                   ("x2","x₂","#1d9e75")]:
+        for key, label, color in [("x0", "x₀", "#3266ad"),
+                                   ("x1", "x₁", "#d85a30"),
+                                   ("x2", "x₂", "#1d9e75")]:
             vals = [s[key] for s in steps if key in s]
             its  = [s.get("step", i) for i, s in enumerate(steps) if key in s]
             axes[0].plot(its, vals, marker="o", markersize=4,
@@ -288,7 +243,6 @@ def _render_root_convergence(result: dict, f: Optional[Callable] = None) -> Figu
         axes[0].set_ylabel("x")
         axes[0].legend()
         axes[0].grid(True, alpha=0.3)
-
         if has_errors:
             valid = [(i, e) for i, e in zip(iters, errors) if e is not None]
             ei, ev = zip(*valid)
@@ -301,15 +255,12 @@ def _render_root_convergence(result: dict, f: Optional[Callable] = None) -> Figu
         fig.tight_layout()
         return fig
 
-    # ── caso múltiples raíces: muestra multiplicidad si existe ──
     mult_vals = [s.get("m") for s in steps if "m" in s]
-
     n_rows = 1 + int(has_errors) + int(bool(mult_vals))
     fig, axes = plt.subplots(n_rows, 1, figsize=(8, 3.5 * n_rows), sharex=True)
     if n_rows == 1:
         axes = [axes]
 
-    # aproximación
     axes[0].plot(iters, approx, marker="o", markersize=5,
                  color="#3266ad", linewidth=1.5)
     axes[0].set_ylabel("Aproximación x")
@@ -339,30 +290,30 @@ def _render_root_convergence(result: dict, f: Optional[Callable] = None) -> Figu
 
 
 # ═══════════════════════════════════════════════════════════════
-# ── INCREMENTALES / BÚSQUEDA DE INTERVALO ────────────────────
+# RENDERERS — BÚSQUEDA INCREMENTAL
 # ═══════════════════════════════════════════════════════════════
 
 def _render_incremental(result: dict, f: Optional[Callable] = None) -> Figure:
     """
-    Búsqueda incremental: muestra los subintervalos evaluados y
-    los cambios de signo encontrados.
+    Grafica f(x) con los subintervalos evaluados y los cambios de signo.
 
-    Campos esperados en steps:
-      "a", "b"   → extremos del subintervalo
-      "fa", "fb" → f(a), f(b)
-      "sign_change" : bool  → True si hay cambio de signo
+    Claves relevantes en steps:
+        "a", "b"        — extremos del subintervalo
+        "sign_change"   — bool, True si hay cambio de signo en [a, b]
+    Claves relevantes en result:
+        "intervals"  o  "roots"  — lista de intervalos que contienen raíz
     """
     steps  = result.get("steps", [])
     method = result.get("method", "incremental_search")
-    roots  = result.get("roots", [])       # lista de intervalos con raíz
+    roots  = result.get("intervals", result.get("roots", []))
 
     if not steps:
         raise ValueError("No hay pasos en el resultado.")
 
     fig, ax = plt.subplots(figsize=(10, 5))
 
-    a_vals = [s["a"] for s in steps if "a" in s]
-    b_vals = [s["b"] for s in steps if "b" in s]
+    a_vals = [s.get("a", s.get("x_prev")) for s in steps if "a" in s or "x_prev" in s]
+    b_vals = [s.get("b", s.get("x_curr")) for s in steps if "b" in s or "x_curr" in s]
 
     if f is not None and a_vals and b_vals:
         x_min = min(a_vals) - 0.5
@@ -372,29 +323,27 @@ def _render_incremental(result: dict, f: Optional[Callable] = None) -> Figure:
         ax.plot(xs, ys, linewidth=1.8, color="#3266ad", label="f(x)", zorder=2)
         ax.axhline(0, color="gray", linewidth=0.8, linestyle="--", alpha=0.5)
 
-    # subintervalos con cambio de signo → raíz probable
     for s in steps:
-        if s.get("sign_change") and "a" in s and "b" in s:
-            ax.axvspan(s["a"], s["b"], alpha=0.15, color="#1d9e75",
-                       label="Cambio de signo")
+        a = s.get("a", s.get("x_prev"))
+        b = s.get("b", s.get("x_curr"))
+        if s.get("sign_change") and a is not None and b is not None:
+            ax.axvspan(a, b, alpha=0.15, color="#1d9e75", label="Cambio de signo")
 
-    # todos los intervalos evaluados (líneas en y=0)
     for s in steps:
-        if "a" in s and "b" in s:
-            y_level = 0
-            ax.plot([s["a"], s["b"]], [y_level, y_level],
-                    color="#d85a30", linewidth=2, alpha=0.3)
+        a = s.get("a", s.get("x_prev"))
+        b = s.get("b", s.get("x_curr"))
+        if a is not None and b is not None:
+            ax.plot([a, b], [0, 0], color="#d85a30", linewidth=2, alpha=0.3)
 
     if roots:
         for r in roots:
-            ax.axvline(r, color="#1d9e75", linewidth=1.2,
-                       linestyle=":", label=f"Raíz en [{r[0]:.4f},{r[1]:.4f}]"
+            ax.axvline(r, color="#1d9e75", linewidth=1.2, linestyle=":",
+                       label=f"Raíz en [{r[0]:.4f},{r[1]:.4f}]"
                        if isinstance(r, (list, tuple)) else f"x≈{r:.4f}")
 
     ax.set_title(f"Búsqueda incremental — {method}")
     ax.set_xlabel("x")
     ax.set_ylabel("f(x)")
-    # evitar leyendas duplicadas
     handles, labels = ax.get_legend_handles_labels()
     seen = {}
     for h, l in zip(handles, labels):
@@ -406,16 +355,20 @@ def _render_incremental(result: dict, f: Optional[Callable] = None) -> Figure:
 
 
 # ═══════════════════════════════════════════════════════════════
-# ── SISTEMAS LINEALES DIRECTOS ───────────────────────────────
+# RENDERERS — SISTEMAS LINEALES ITERATIVOS
 # ═══════════════════════════════════════════════════════════════
 
 def _render_iterative_matrix(result: dict, **_) -> Figure:
     """
-    Jacobi, Gauss-Seidel, SOR.
+    Convergencia de métodos iterativos para sistemas lineales.
 
     Subplots:
-      · Izquierda : |error| por iteración (escala log)
-      · Derecha   : evolución de cada componente xᵢ
+        izquierda — |error| por iteración en escala logarítmica
+        derecha   — evolución de cada componente del vector solución
+
+    Claves relevantes en steps:
+        "vector"  — vector solución en la iteración actual
+        "error"   — norma del error
     """
     steps = result.get("steps", [])
     iters, errors, vectors = [], [], []
@@ -469,12 +422,17 @@ def _render_iterative_matrix(result: dict, **_) -> Figure:
     return fig
 
 
+# ═══════════════════════════════════════════════════════════════
+# RENDERERS — FACTORIZACIONES LU
+# ═══════════════════════════════════════════════════════════════
+
 def _render_lu_factorization(result: dict, **_) -> Figure:
     """
-    Doolittle, Crout, Cholesky.
+    Heatmaps de L y U con valores anotados.
+    Para Cholesky añade un panel adicional con la verificación L·Lᵀ.
 
-    Paneles: heatmap de L y U con valores anotados.
-    Cholesky también muestra L·Lᵀ ≈ A para verificación.
+    Claves relevantes en result:
+        "L", "U" — matrices de la factorización
     """
     matrices = {}
     for key in ("L", "U"):
@@ -505,12 +463,11 @@ def _render_lu_factorization(result: dict, **_) -> Figure:
         ax.set_xlabel("Columna")
         ax.set_ylabel("Fila")
 
-    # Para Cholesky: verifica L·Lᵀ
     if is_cholesky and "L" in matrices:
-        L = matrices["L"]
+        L   = matrices["L"]
         LLt = L @ L.T
-        ax = axes[-1]
-        im = ax.imshow(LLt, cmap="Greens", aspect="auto")
+        ax  = axes[-1]
+        im  = ax.imshow(LLt, cmap="Greens", aspect="auto")
         fig.colorbar(im, ax=ax, shrink=0.8)
         _annotate_matrix(ax, LLt)
         ax.set_title("Verificación L·Lᵀ")
@@ -519,8 +476,18 @@ def _render_lu_factorization(result: dict, **_) -> Figure:
     return fig
 
 
+# ═══════════════════════════════════════════════════════════════
+# RENDERERS — ANÁLISIS DE MATRICES
+# ═══════════════════════════════════════════════════════════════
+
 def _render_matrix_analysis(result: dict, **_) -> Figure:
-    """Heatmap + patrón de dispersión de la matriz analizada."""
+    """
+    Heatmap de valores + patrón de dispersión (spy).
+
+    Claves relevantes en result:
+        "A" | "matrix" | "L" | "U" — matriz a analizar
+        "properties"               — dict con propiedades a mostrar como pie de figura
+    """
     mat = None
     for s in result.get("steps", []):
         m = StepExtractor.matrix(s)
@@ -554,14 +521,24 @@ def _render_matrix_analysis(result: dict, **_) -> Figure:
     return fig
 
 
+# ═══════════════════════════════════════════════════════════════
+# RENDERERS — ELIMINACIÓN GAUSSIANA
+# ═══════════════════════════════════════════════════════════════
+
 def _render_gaussian_elim(result: dict, **_) -> Figure:
     """
-    Gauss simple, pivoteo parcial, pivoteo total.
+    Visualiza el estado final de la matriz escalonada y la evolución de pivotes.
 
     Paneles:
-      · Matriz escalonada final con valores
-      · Magnitud |A| heatmap
-      · Evolución de pivotes (si existen)
+        [0] matriz escalonada final con valores anotados
+        [1] magnitud |A| de la matriz final
+        [2] evolución de |pivote| por paso (si existen)
+
+    Claves relevantes en steps:
+        "matrix_state" — estado de la matriz aumentada en cada paso
+        "pivot"        — valor del pivote usado
+        "swap_rows"    — intercambio de filas (pivoteo parcial/total)
+        "swap_cols"    — intercambio de columnas (pivoteo total)
     """
     steps = result.get("steps", [])
     matrices, pivots, iters = [], [], []
@@ -576,9 +553,9 @@ def _render_gaussian_elim(result: dict, **_) -> Figure:
     if not matrices:
         raise ValueError("No hay estados de matriz en los pasos.")
 
-    final = matrices[-1]
+    final      = matrices[-1]
     has_pivots = any(p is not None for p in pivots)
-    n_plots = 3 if has_pivots else 2
+    n_plots    = 3 if has_pivots else 2
 
     fig, axes = plt.subplots(1, n_plots, figsize=(5 * n_plots, 5))
 
@@ -605,8 +582,20 @@ def _render_gaussian_elim(result: dict, **_) -> Figure:
     return fig
 
 
+# ═══════════════════════════════════════════════════════════════
+# RENDERERS — TRIDIAGONAL
+# ═══════════════════════════════════════════════════════════════
+
 def _render_tridiagonal(result: dict, **_) -> Figure:
-    """Gauss tridiagonal / TDMA: estructura de diagonales + solución parcial."""
+    """
+    Grafica la estructura de diagonales y la evolución de la solución parcial.
+
+    Claves relevantes en result:
+        "lower" — subdiagonal
+        "upper" — superdiagonal
+    Claves relevantes en steps:
+        "solution_partial" — vector solución parcial en cada paso
+    """
     lower = result.get("lower")
     upper = result.get("upper")
     steps = result.get("steps", [])
@@ -635,11 +624,11 @@ def _render_tridiagonal(result: dict, **_) -> Figure:
         idx += 1
 
     if has_partial:
-        ax = axes[idx]
-        partials  = [s["solution_partial"] for s in steps if "solution_partial" in s]
-        iters_p   = [s.get("step", i) for i, s in enumerate(steps) if "solution_partial" in s]
-        pmat      = np.array(partials)
-        colors    = plt.cm.tab10(np.linspace(0, 1, pmat.shape[1]))
+        ax       = axes[idx]
+        partials = [s["solution_partial"] for s in steps if "solution_partial" in s]
+        iters_p  = [s.get("step", i) for i, s in enumerate(steps) if "solution_partial" in s]
+        pmat     = np.array(partials)
+        colors   = plt.cm.tab10(np.linspace(0, 1, pmat.shape[1]))
         for j in range(pmat.shape[1]):
             ax.plot(iters_p, pmat[:, j], marker="o", markersize=3,
                     linewidth=1.3, label=f"x{j}", color=colors[j])
@@ -655,88 +644,72 @@ def _render_tridiagonal(result: dict, **_) -> Figure:
 
 
 # ═══════════════════════════════════════════════════════════════
-# ── INTERPOLACIÓN ────────────────────────────────────────────
+# RENDERERS — INTERPOLACIÓN
 # ═══════════════════════════════════════════════════════════════
 
 def _render_interpolation(result: dict, f: Optional[Callable] = None) -> Figure:
     """
-    Lagrange, Vandermonde, Newton interpolación.
+    Grafica el polinomio interpolante sobre los nodos dados.
 
-    Campos esperados en result:
-      "x_points"  : list[float]  → nodos de interpolación
-      "y_points"  : list[float]  → valores en los nodos
-      "polynomial": callable     → polinomio interpolante (opcional)
-      "coeffs"    : list[float]  → coeficientes (Vandermonde/Newton, opcional)
-      "eval_point": float        → punto donde se evaluó (opcional)
-      "eval_value": float        → valor interpolado (opcional)
-
-    Si "polynomial" no está disponible se usa numpy.polyval con "coeffs".
-    Diferencias divididas de Newton se grafica si "divided_diff" está en steps.
+    Claves relevantes en result:
+        "x_points"   — nodos x
+        "y_points"   — valores y en los nodos
+        "polynomial" — callable P(x) (prioritario sobre coeffs)
+        "coeffs"     — coeficientes para numpy.polyval (fallback)
+        "eval_point" — punto de evaluación solicitado
+        "eval_value" — P(eval_point)
+    Claves relevantes en steps:
+        "divided_diff" — tabla de diferencias divididas (Newton); genera heatmap
     """
-    method   = result.get("method", "interpolation")
-    x_pts    = np.asarray(result.get("x_points", []), dtype=float)
-    y_pts    = np.asarray(result.get("y_points", []), dtype=float)
-    poly_fn  = result.get("polynomial")
-    coeffs   = result.get("coeffs")
-    x_eval   = result.get("eval_point")
-    y_eval   = result.get("eval_value")
+    method  = result.get("method", "interpolation")
+    x_pts   = np.asarray(result.get("x_points", []), dtype=float)
+    y_pts   = np.asarray(result.get("y_points", []), dtype=float)
+    poly_fn = result.get("polynomial")
+    coeffs  = result.get("coeffs")
+    x_eval  = result.get("eval_point")
+    y_eval  = result.get("eval_value")
 
     if len(x_pts) == 0:
         raise ValueError("'x_points' requerido para interpolation.")
 
     x_min = x_pts.min() - abs(x_pts.min() - x_pts.max()) * 0.15 - 0.5
     x_max = x_pts.max() + abs(x_pts.min() - x_pts.max()) * 0.15 + 0.5
-    xs = np.linspace(x_min, x_max, 600)
+    xs    = np.linspace(x_min, x_max, 600)
 
-    # Evalúa el polinomio interpolante
     ys_poly = None
     if poly_fn is not None and callable(poly_fn):
         ys_poly = _safe_eval_array(poly_fn, xs)
     elif coeffs is not None:
-        coeffs_arr = np.asarray(coeffs, dtype=float)
-        ys_poly = np.polyval(coeffs_arr, xs)
+        ys_poly = np.polyval(np.asarray(coeffs, dtype=float), xs)
 
-    # Número de subplots
-    has_dd = any("divided_diff" in s for s in result.get("steps", []))
+    has_dd  = any("divided_diff" in s for s in result.get("steps", []))
     n_plots = 1 + int(has_dd)
     fig, axes = plt.subplots(1, n_plots, figsize=(7 * n_plots, 5))
     if n_plots == 1:
         axes = [axes]
 
     ax = axes[0]
-
-    # Función original si se provee
     if f is not None:
-        ys_f = _safe_eval_array(f, xs)
-        ax.plot(xs, ys_f, linewidth=1.2, linestyle="--",
+        ax.plot(xs, _safe_eval_array(f, xs), linewidth=1.2, linestyle="--",
                 color="#888", label="f(x) original", alpha=0.7)
-
-    # Polinomio interpolante
     if ys_poly is not None:
-        ax.plot(xs, ys_poly, linewidth=1.8, color="#3266ad",
-                label="P(x) interpolante")
-
-    # Nodos
+        ax.plot(xs, ys_poly, linewidth=1.8, color="#3266ad", label="P(x) interpolante")
     ax.scatter(x_pts, y_pts, s=70, zorder=5, color="#d85a30",
                label="Nodos", edgecolors="white", linewidths=0.5)
-
-    # Punto evaluado
     if x_eval is not None and y_eval is not None:
         ax.scatter([x_eval], [y_eval], s=120, marker="*", zorder=6,
                    color="#1d9e75", label=f"P({x_eval:.3f}) = {y_eval:.5f}")
-
     ax.set_title(f"Interpolación — {method}")
     ax.set_xlabel("x")
     ax.set_ylabel("P(x)")
     ax.legend(fontsize=9)
     ax.grid(True, alpha=0.3)
 
-    # Diferencias divididas (tabla como heatmap)
     if has_dd:
         dd_steps = [s["divided_diff"] for s in result.get("steps", []) if "divided_diff" in s]
         dd_mat   = np.array(dd_steps, dtype=float)
-        ax2 = axes[1]
-        im  = ax2.imshow(dd_mat, cmap="coolwarm", aspect="auto")
+        ax2      = axes[1]
+        im       = ax2.imshow(dd_mat, cmap="coolwarm", aspect="auto")
         fig.colorbar(im, ax=ax2, shrink=0.8)
         _annotate_matrix(ax2, dd_mat, fmt=".3f")
         ax2.set_title("Diferencias divididas")
@@ -748,25 +721,22 @@ def _render_interpolation(result: dict, f: Optional[Callable] = None) -> Figure:
 
 
 # ═══════════════════════════════════════════════════════════════
-# ── INTEGRACIÓN ──────────────────────────────────────────────
+# RENDERERS — INTEGRACIÓN
 # ═══════════════════════════════════════════════════════════════
 
 def _render_integration(result: dict, f: Optional[Callable] = None) -> Figure:
     """
-    Simpson 3/8 y otros métodos de integración numérica.
+    Grafica f(x) con el área sombreada y los paneles de integración.
 
-    Campos esperados en result:
-      "a"         : float  → límite inferior
-      "b"         : float  → límite superior
-      "n"         : int    → número de subintervalos
-      "integral"  : float  → valor aproximado
-      "exact"     : float  → valor exacto (opcional, para mostrar error)
-      "panels"    : list[dict{"a","b","area"}]  → subpaneles (opcional)
+    Claves relevantes en result:
+        "a"        — límite inferior
+        "b"        — límite superior
+        "integral" — valor aproximado
+        "exact"    — valor exacto (opcional)
+        "panels"   — list[{"a","b","area"}] subpaneles (opcional)
 
-    Visualización:
-      · f(x) con el área sombreada bajo la curva
-      · Paneles individuales de integración (si "panels" existe)
-      · Subplot de error por panel (si "exact" y "panels" existen)
+    Si "exact" y "panels" están presentes genera un subplot adicional
+    con el error absoluto por panel.
     """
     method   = result.get("method", "integration")
     a        = result.get("a")
@@ -786,17 +756,13 @@ def _render_integration(result: dict, f: Optional[Callable] = None) -> Figure:
     if n_plots == 1:
         axes = [axes]
 
-    ax = axes[0]
-
+    ax      = axes[0]
     xs_full = np.linspace(a, b, 600)
+
     if f is not None:
         ys_full = _safe_eval_array(f, xs_full)
         ax.plot(xs_full, ys_full, linewidth=1.8, color="#3266ad", label="f(x)")
-
-        # Área total sombreada
         ax.fill_between(xs_full, ys_full, alpha=0.12, color="#3266ad")
-
-        # Paneles individuales
         panel_colors = plt.cm.tab10(np.linspace(0, 0.5, max(len(panels), 1)))
         for pi, panel in enumerate(panels):
             pa, pb = panel.get("a", a), panel.get("b", b)
@@ -806,10 +772,8 @@ def _render_integration(result: dict, f: Optional[Callable] = None) -> Figure:
                             color=panel_colors[pi % len(panel_colors)])
             ax.axvline(pa, color="gray", linewidth=0.5, alpha=0.4)
         ax.axvline(b, color="gray", linewidth=0.5, alpha=0.4)
-
         ax.axhline(0, color="gray", linewidth=0.6, linestyle="--", alpha=0.4)
 
-    # Anotación del resultado
     label = f"∫f dx ≈ {integral:.6f}" if integral is not None else "Integración"
     if exact is not None:
         err_rel = abs(integral - exact) / abs(exact) * 100 if exact != 0 else 0
@@ -820,15 +784,11 @@ def _render_integration(result: dict, f: Optional[Callable] = None) -> Figure:
     ax.legend(fontsize=9)
     ax.grid(True, alpha=0.3)
 
-    # Error por panel
     if has_error:
-        ax2 = axes[1]
-        panel_areas  = [p.get("area", 0) for p in panels]
-        panel_errors = [abs(p.get("area", 0) - exact / len(panels))
-                        for p in panels]
-        panel_idx    = list(range(len(panels)))
-        ax2.bar(panel_idx, panel_errors, color="#d85a30", alpha=0.7,
-                edgecolor="white")
+        ax2          = axes[1]
+        panel_errors = [abs(p.get("area", 0) - exact / len(panels)) for p in panels]
+        ax2.bar(range(len(panels)), panel_errors, color="#d85a30",
+                alpha=0.7, edgecolor="white")
         ax2.set_title("Error absoluto por panel")
         ax2.set_xlabel("Panel")
         ax2.set_ylabel("|Error|")
@@ -839,84 +799,64 @@ def _render_integration(result: dict, f: Optional[Callable] = None) -> Figure:
 
 
 # ═══════════════════════════════════════════════════════════════
-# REGISTRO — vincula plot_type a su renderer
+# REGISTRO DE RENDERERS
 # ═══════════════════════════════════════════════════════════════
 
 _RENDERERS: dict[str, Callable] = {
-    # raíces
     "root_finding":     _render_root_finding,
     "root_convergence": _render_root_convergence,
     "incremental":      _render_incremental,
-    # sistemas lineales directos
     "gaussian_elim":    _render_gaussian_elim,
     "lu_factorization": _render_lu_factorization,
     "tridiagonal":      _render_tridiagonal,
-    # sistemas lineales iterativos
     "iterative_matrix": _render_iterative_matrix,
-    # análisis
     "matrix_analysis":  _render_matrix_analysis,
-    # interpolación
     "interpolation":    _render_interpolation,
-    # integración
     "integration":      _render_integration,
 }
 
 
 # ═══════════════════════════════════════════════════════════════
-# TABLA: método → plot_type recomendado
+# TABLA DE INFERENCIA method → plot_type
 # ═══════════════════════════════════════════════════════════════
 
 METHOD_TO_PLOT_TYPE: dict[str, str] = {
-    # raíces
-    "bisection":          "root_finding",
-    "false_position":     "root_finding",
-    "trisection":         "root_finding",
-    "incremental_search": "incremental",
-    "newton":             "root_convergence",
-    "secant":             "root_convergence",
-    "fixed_point":        "root_convergence",
-    "multiple_roots":     "root_convergence",
-    "steffensen":         "root_convergence",
-    "aitken":             "root_convergence",
-    "muller":             "root_convergence",
-    # sistemas lineales directos
-    "gaussian_simple":    "gaussian_elim",
-    "partial_pivoting":   "gaussian_elim",
-    "total_pivoting":     "gaussian_elim",
-    "doolittle":          "lu_factorization",
-    "crout":              "lu_factorization",
-    "cholesky":           "lu_factorization",
-    "gauss_tridiagonal":  "tridiagonal",
-    # sistemas lineales iterativos
-    "jacobi":             "iterative_matrix",
-    "gauss_seidel":       "iterative_matrix",
-    "sor":                "iterative_matrix",
-    # análisis
-    "matrix_analysis":    "matrix_analysis",
-    # interpolación
+    "bisection":              "root_finding",
+    "false_position":         "root_finding",
+    "trisection":             "root_finding",
+    "incremental_search":     "incremental",
+    "newton":                 "root_convergence",
+    "secante":                "root_convergence",
+    "punto_fijo":             "root_convergence",
+    "raices_multiples":       "root_convergence",
+    "steffensen":             "root_convergence",
+    "aitken":                 "root_convergence",
+    "muller":                 "root_convergence",
+    "gaussian_simple":        "gaussian_elim",
+    "gaussian_partial_pivoting": "gaussian_elim",
+    "gaussian_total_pivoting":   "gaussian_elim",
+    "doolittle":              "lu_factorization",
+    "crout":                  "lu_factorization",
+    "cholesky":               "lu_factorization",
+    "gauss_tridiagonal":      "tridiagonal",
+    "jacobi":                 "iterative_matrix",
+    "gauss_seidel":           "iterative_matrix",
+    "sor":                    "iterative_matrix",
+    "matrix_analysis":        "matrix_analysis",
     "lagrange":               "interpolation",
     "vandermonde":            "interpolation",
     "newton_interpolation":   "interpolation",
-    # integración
-    "simpson38":          "integration",
+    "simpson38":              "integration",
 }
 
 
 def suggest_plot_type(method_name: str) -> str:
-    """
-    Devuelve el plot_type recomendado para un nombre de método.
-    Útil si tu método todavía no incluye la clave 'plot_type'.
-
-    Ejemplo:
-        pt = suggest_plot_type("lagrange")   # → "interpolation"
-    """
+    """Devuelve el plot_type correspondiente a un nombre de método."""
     key = method_name.lower().replace(" ", "_")
     pt  = METHOD_TO_PLOT_TYPE.get(key)
     if pt is None:
         available = ", ".join(sorted(METHOD_TO_PLOT_TYPE.keys()))
-        raise KeyError(
-            f"Método '{method_name}' no reconocido.\nMétodos disponibles: {available}"
-        )
+        raise KeyError(f"Método '{method_name}' no reconocido. Disponibles: {available}")
     return pt
 
 
@@ -928,17 +868,16 @@ class UniversalPlotter:
     """
     Graficadora desacoplada para métodos numéricos.
 
-    Parámetros
+    Parameters
     ----------
     result : dict
         Diccionario devuelto por el método numérico.
-        Debe incluir "plot_type" (ver METHOD_TO_PLOT_TYPE si no lo tienes).
+        Debe incluir "plot_type"; si no está se intenta inferir de "method".
     f : callable, opcional
-        Función matemática f(x). Requerida para root_finding,
-        incremental, interpolation e integration.
+        Función f(x). Requerida para root_finding, incremental,
+        interpolation e integration.
     show : bool
-        Si True llama plt.show() al final de plot().
-        Déjalo en False para notebooks o pipelines.
+        Si True llama plt.show() tras generar la figura.
     """
 
     def __init__(
@@ -951,7 +890,6 @@ class UniversalPlotter:
         self.f         = f
         self.show      = show
         self.method    = result.get("method", "unknown")
-        # Si no viene plot_type, intenta inferirlo del nombre del método
         if "plot_type" not in result:
             try:
                 result["plot_type"] = suggest_plot_type(self.method)
@@ -960,12 +898,12 @@ class UniversalPlotter:
         self.plot_type = result.get("plot_type", "")
 
     def plot(self) -> Figure:
-        """Renderiza y retorna la Figure del plot_type declarado."""
+        """Selecciona el renderer por plot_type y retorna la Figure generada."""
         renderer = _RENDERERS.get(self.plot_type)
         if renderer is None:
             available = ", ".join(_RENDERERS.keys())
             raise ValueError(
-                f"plot_type '{self.plot_type}' no está registrado.\n"
+                f"plot_type '{self.plot_type}' no registrado. "
                 f"Valores válidos: {available}"
             )
         fig = renderer(self.result, f=self.f)
@@ -974,20 +912,16 @@ class UniversalPlotter:
         return fig
 
     def summary(self) -> None:
-        """Imprime un resumen textual del resultado."""
+        """Imprime un resumen textual del resultado en stdout."""
         print("\n========== RESUMEN ==========")
         print(f"  Método     : {self.method}")
         print(f"  Plot type  : {self.plot_type}")
         print(f"  Iteraciones: {self.result.get('iterations', '—')}")
         if "solution" in self.result:
-            sol = np.asarray(self.result["solution"])
-            print(f"  Solución   : {np.array2string(sol, precision=6)}")
-        if "root" in self.result:
-            print(f"  Raíz       : {self.result['root']}")
-        if "integral" in self.result:
-            print(f"  Integral   : {self.result['integral']}")
-        if "eval_value" in self.result:
-            print(f"  P(x_eval)  : {self.result['eval_value']}")
+            print(f"  Solución   : {np.array2string(np.asarray(self.result['solution']), precision=6)}")
+        if "root"       in self.result: print(f"  Raíz       : {self.result['root']}")
+        if "integral"   in self.result: print(f"  Integral   : {self.result['integral']}")
+        if "eval_value" in self.result: print(f"  P(x_eval)  : {self.result['eval_value']}")
         if "properties" in self.result:
             print("  Propiedades:")
             for k, v in self.result["properties"].items():
@@ -996,147 +930,12 @@ class UniversalPlotter:
 
     @staticmethod
     def register(plot_type: str, renderer: Callable) -> None:
-        """
-        Registra un renderer personalizado para un plot_type nuevo.
-
-        Ejemplo
-        -------
-        >>> def mi_renderer(result, f=None):
-        ...     fig, ax = plt.subplots()
-        ...     ax.plot([1, 2, 3])
-        ...     return fig
-        >>> UniversalPlotter.register("mi_metodo", mi_renderer)
-        """
+        """Registra un renderer externo para un plot_type nuevo."""
         if not callable(renderer):
             raise TypeError("El renderer debe ser callable.")
         _RENDERERS[plot_type] = renderer
 
     @staticmethod
     def available_plot_types() -> list[str]:
-        """Lista de plot_types registrados."""
+        """Retorna la lista de plot_types registrados."""
         return list(_RENDERERS.keys())
-
-
-# ═══════════════════════════════════════════════════════════════
-# EJEMPLOS DE USO
-# ═══════════════════════════════════════════════════════════════
-
-if __name__ == "__main__":
-
-    # ── 1. Bisección ─────────────────────────────────────────
-    res_biseccion = {
-        "method": "bisection",
-        "root": 2.0,
-        "iterations": 4,
-        "steps": [
-            {"step": 0, "x": 3.0, "a": 0.0, "b": 4.0, "error": None},
-            {"step": 1, "x": 2.5, "a": 0.0, "b": 3.0, "error": 0.5},
-            {"step": 2, "x": 2.0, "a": 0.0, "b": 2.5, "error": 0.25},
-            {"step": 3, "x": 2.0, "a": 1.5, "b": 2.5, "error": 0.005},
-        ],
-    }
-    UniversalPlotter(res_biseccion, f=lambda x: x**2 - 4, show=True).plot()
-
-    # ── 2. Newton-Raphson ────────────────────────────────────
-    res_newton = {
-        "method": "newton",
-        "root": 1.4142,
-        "steps": [
-            {"step": 0, "x": 2.0,   "error": None},
-            {"step": 1, "x": 1.5,   "error": 0.5},
-            {"step": 2, "x": 1.417, "error": 0.083},
-            {"step": 3, "x": 1.414, "error": 0.003},
-        ],
-    }
-    UniversalPlotter(res_newton, f=lambda x: x**2 - 2, show=True).plot()
-
-    # ── 3. Müller ────────────────────────────────────────────
-    res_muller = {
-        "method": "muller",
-        "root": 2.0,
-        "steps": [
-            {"step": 0, "x0": 0.0, "x1": 1.0, "x2": 3.0, "x": 2.1, "error": None},
-            {"step": 1, "x0": 1.0, "x1": 3.0, "x2": 2.1, "x": 2.01, "error": 0.09},
-            {"step": 2, "x0": 3.0, "x1": 2.1, "x2": 2.01, "x": 2.001, "error": 0.009},
-        ],
-    }
-    UniversalPlotter(res_muller, f=lambda x: x**2 - 4, show=True).plot()
-
-    # ── 4. Búsqueda incremental ──────────────────────────────
-    res_incr = {
-        "method": "incremental_search",
-        "roots": [[-1.01, -1.0], [0.99, 1.0]],
-        "steps": [
-            {"step": 0, "a": -2.0, "b": -1.5, "sign_change": False},
-            {"step": 1, "a": -1.5, "b": -1.0, "sign_change": True},
-            {"step": 2, "a": -1.0, "b": -0.5, "sign_change": False},
-            {"step": 3, "a":  0.5, "b":  1.0, "sign_change": True},
-        ],
-    }
-    UniversalPlotter(res_incr, f=lambda x: x**2 - 1, show=True).plot()
-
-    # ── 5. Lagrange ──────────────────────────────────────────
-    import numpy as np
-    x_pts = np.array([0.0, 1.0, 2.0, 3.0])
-    y_pts = np.array([1.0, 2.718, 7.389, 20.09])
-
-    def lagrange_poly(x, xp=x_pts, yp=y_pts):
-        n, result = len(xp), 0.0
-        for i in range(n):
-            term = yp[i]
-            for j in range(n):
-                if j != i:
-                    term *= (x - xp[j]) / (xp[i] - xp[j])
-            result += term
-        return result
-
-    res_lagrange = {
-        "method": "lagrange",
-        "x_points": x_pts.tolist(),
-        "y_points": y_pts.tolist(),
-        "polynomial": lagrange_poly,
-        "eval_point": 1.5,
-        "eval_value": lagrange_poly(1.5),
-    }
-    UniversalPlotter(res_lagrange, f=np.exp, show=True).plot()
-
-    # ── 6. Simpson 3/8 ───────────────────────────────────────
-    import math
-    res_simpson = {
-        "method": "simpson38",
-        "a": 0.0,
-        "b": math.pi,
-        "n": 6,
-        "integral": 2.0001,
-        "exact": 2.0,
-        "panels": [
-            {"a": 0.0,             "b": math.pi/2, "area": 1.0002},
-            {"a": math.pi/2,       "b": math.pi,   "area": 0.9999},
-        ],
-    }
-    UniversalPlotter(res_simpson, f=math.sin, show=True).plot()
-
-    # ── 7. Jacobi ────────────────────────────────────────────
-    res_jacobi = {
-        "method": "jacobi",
-        "solution": [1.0, 2.0, 3.0],
-        "steps": [
-            {"step": 0, "vector": [0.0, 0.0, 0.0], "error": None},
-            {"step": 1, "vector": [0.8, 1.7, 2.6],  "error": 0.9},
-            {"step": 2, "vector": [0.95, 1.9, 2.9],  "error": 0.15},
-            {"step": 3, "vector": [1.0,  2.0, 3.0],  "error": 0.02},
-        ],
-    }
-    UniversalPlotter(res_jacobi, show=True).plot()
-
-    # ── 8. Doolittle ─────────────────────────────────────────
-    res_lu = {
-        "method": "doolittle",
-        "L": [[1, 0, 0], [0.5, 1, 0], [0.25, 0.5, 1]],
-        "U": [[4, 3, 2], [0,   2, 1], [0,    0,   1]],
-        "steps": [],
-    }
-    UniversalPlotter(res_lu, show=True).plot()
-
-    print("\nPlot types disponibles:", UniversalPlotter.available_plot_types())
-    print("suggest_plot_type('lagrange'):", suggest_plot_type("lagrange"))

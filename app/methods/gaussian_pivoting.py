@@ -110,6 +110,7 @@ class GaussianPartialPivoting(NumericalMethod):
             "steps": steps,
             "iterations": len(steps),
             "method": self.name,
+            "plot_type": self.plot_type,
         }
 
 
@@ -118,6 +119,10 @@ class GaussianTotalPivoting(NumericalMethod):
     @property
     def name(self) -> str:
         return "gaussian_total_pivoting"
+
+    @property
+    def plot_type(self) -> str:
+        return "gaussian_elim"
 
     @property
     def description(self) -> str:

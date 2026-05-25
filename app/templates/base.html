@@ -57,8 +57,12 @@
                         <ul class="nav-list nav-group-panel" id="nav-panel-systems">
                             {% for m in methods %}
                             {% if m.method_type is not defined or m.method_type == 'linear_system' %}
-                            <li class="nav-item" data-search="{{ m.description }} {{ m.name }}">
-                                <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}">{{ m.description }}</a>
+                            {% set desc_es = m.description.es if m.description is mapping else m.description %}
+                            {% set desc_en = m.description.en if m.description is mapping else m.description %}
+                            <li class="nav-item" data-search="{{ desc_es }} {{ desc_en }} {{ m.name }}">
+                                <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}"
+                                   data-i18n-es="{{ desc_es }}"
+                                   data-i18n-en="{{ desc_en }}">{{ desc_es }}</a>
                             </li>
                             {% endif %}
                             {% endfor %}
@@ -76,8 +80,12 @@
                         <ul class="nav-list nav-group-panel" id="nav-panel-interp">
                             {% for m in methods %}
                             {% if m.method_type is defined and m.method_type == 'interpolation' %}
-                            <li class="nav-item" data-search="{{ m.description }} {{ m.name }}">
-                                <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}">{{ m.description }}</a>
+                            {% set desc_es = m.description.es if m.description is mapping else m.description %}
+                            {% set desc_en = m.description.en if m.description is mapping else m.description %}
+                            <li class="nav-item" data-search="{{ desc_es }} {{ desc_en }} {{ m.name }}">
+                                <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}"
+                                   data-i18n-es="{{ desc_es }}"
+                                   data-i18n-en="{{ desc_en }}">{{ desc_es }}</a>
                             </li>
                             {% endif %}
                             {% endfor %}
@@ -95,8 +103,12 @@
                         <ul class="nav-list nav-group-panel" id="nav-panel-roots">
                             {% for m in methods %}
                             {% if m.method_type is defined and m.method_type == 'root' %}
-                            <li class="nav-item" data-search="{{ m.description }} {{ m.name }}">
-                                <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}">{{ m.description }}</a>
+                            {% set desc_es = m.description.es if m.description is mapping else m.description %}
+                            {% set desc_en = m.description.en if m.description is mapping else m.description %}
+                            <li class="nav-item" data-search="{{ desc_es }} {{ desc_en }} {{ m.name }}">
+                                <a href="/solver/{{ m.name }}" class="nav-link" id="nav-{{ m.name }}"
+                                   data-i18n-es="{{ desc_es }}"
+                                   data-i18n-en="{{ desc_en }}">{{ desc_es }}</a>
                             </li>
                             {% endif %}
                             {% endfor %}

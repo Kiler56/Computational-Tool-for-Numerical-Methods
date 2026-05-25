@@ -79,6 +79,14 @@ const I18n = (() => {
             }
         });
 
+        // Aplicar a elementos con data-i18n-es / data-i18n-en (nombres de métodos, títulos bilingües)
+        document.querySelectorAll("[data-i18n-es]").forEach((el) => {
+            const text = currentLang === "es"
+                ? el.getAttribute("data-i18n-es")
+                : el.getAttribute("data-i18n-en");
+            if (text) el.textContent = text;
+        });
+
         // Actualizar lang del HTML
         document.documentElement.lang = currentLang;
     }

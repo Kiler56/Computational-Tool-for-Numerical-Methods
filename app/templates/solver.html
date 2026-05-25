@@ -4,7 +4,11 @@
 {% block content %}
 <section class="solver-header">
     <div class="header-titles">
-        <h1 class="page-title">{{ method.description }}</h1>
+        <h1 class="page-title"
+            data-i18n-es="{{ method.description.es if method.description is mapping else method.description }}"
+            data-i18n-en="{{ method.description.en if method.description is mapping else method.description }}">
+            {{ method.description.es if method.description is mapping else method.description }}
+        </h1>
         <p class="solver-slug"><span data-i18n="api_slug">API method:</span> <code>{{ method.name }}</code></p>
     </div>
 </section>
@@ -51,7 +55,7 @@
     </div>
 
 {% elif method.method_type == "interpolation" %}
-    <!-- ════════ Formulario para métodos de interpolación ════════ -->
+    <!-- ════════ Form for interpolation methods ════════ -->
     <div class="size-controls">
         <label for="interp-size-display" data-i18n="num_points_label">Number of nodes (n):</label>
         <div class="size-stepper">
@@ -71,7 +75,7 @@
     </div>
 
 {% else %}
-    <!-- ════════ Formulario para sistemas lineales Ax=b ════════ -->
+    <!-- ════════ Form for linear systems Ax=b ════════ -->
     <div class="size-controls">
         <label for="matrix-size" data-i18n="size_label">System size (n):</label>
         <div class="size-stepper">
@@ -136,15 +140,15 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
                 <h2 style="margin: 0;"><span data-i18n="steps_title">Pasos</span> <span id="step-count" class="badge"></span></h2>
                 <div class="view-mode-toggle" style="display: flex; gap: 0.5rem;">
-                    <button class="btn btn-sm btn-outline active" id="btn-view-all" onclick="setViewMode('all')">Ver Todo</button>
-                    <button class="btn btn-sm btn-outline" id="btn-view-step" onclick="setViewMode('step')">Paso a Paso</button>
+                    <button class="btn btn-sm btn-outline active" id="btn-view-all" onclick="setViewMode('all')">Show All</button>
+                    <button class="btn btn-sm btn-outline" id="btn-view-step" onclick="setViewMode('step')">Step by Step</button>
                 </div>
             </div>
             
             <div id="step-controls" class="step-controls" style="display: none; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1.5rem; background: var(--bg-tertiary); padding: 1rem; border-radius: 8px;">
-                <button class="btn btn-primary btn-sm" id="btn-prev-step" onclick="prevStep()">← Anterior</button>
-                <span id="current-step-display" style="font-weight: 600; font-size: 1.1rem; color: var(--text-primary); min-width: 120px; text-align: center;">Paso 1 de X</span>
-                <button class="btn btn-primary btn-sm" id="btn-next-step" onclick="nextStep()">Siguiente →</button>
+                <button class="btn btn-primary btn-sm" id="btn-prev-step" onclick="prevStep()">← Prev</button>
+                <span id="current-step-display" style="font-weight: 600; font-size: 1.1rem; color: var(--text-primary); min-width: 120px; text-align: center;">Step 1 of X</span>
+                <button class="btn btn-primary btn-sm" id="btn-next-step" onclick="nextStep()">Next →</button>
             </div>
 
             <div id="steps-container" class="steps-list"></div>
@@ -343,11 +347,11 @@
             }
 
             renderSteps(result.steps, 'steps-container');
-            // ── Gráfica ──────────────────────────────────────────────────
+            // ── Plot ──────────────────────────────────────────────────
             const plotContainer = document.getElementById('plot-container');
             if (result.plot) {
                 plotContainer.innerHTML = `<img src="data:image/png;base64,${result.plot}"
-                    alt="Gráfica del método" style="max-width:100%; border-radius:8px;">`;
+                    alt="Method plot" style="max-width:100%; border-radius:8px;">`;
                 plotContainer.style.display = 'block';
             } else {
                 plotContainer.style.display = 'none';
@@ -383,7 +387,7 @@
                 px = evStep.eval_y;
             } else {
                 xev = document.getElementById('x-eval-input').value;
-                px = "Ver coeficientes";
+                px = "See coefficients";
             }
         } else {
             // Lagrange returns {"x_eval", "P_x", "nodes_x", "nodes_y"}
@@ -396,9 +400,9 @@
 let polynomial =
     sol.polynomial ||
     result.properties?.["Polinomio"] ||
-    "No disponible";
+    "Not available";
 
-// Convertir exponentes a superíndices
+// Convert exponents to superscripts
 polynomial = polynomial
     .replace(/\*\*5/g, '⁵')
     .replace(/\*\*4/g, '⁴')
@@ -420,7 +424,7 @@ const html = `<div class="solution-vector">
     </div>
 
     <div class="solution-item" style="margin-top:1rem;">
-        <span class="var-name">Polinomio</span>
+        <span class="var-name">Polynomial</span>
         <span class="var-equals">=</span>
         <span class="var-value">${polynomial}</span>
     </div>
@@ -491,7 +495,7 @@ const html = `<div class="solution-vector">
         });
     }
 
-    // Manejar persistencia de estado (guardar al modificar inputs)
+    // Handle state persistence (save on input change)
     document.addEventListener('input', (e) => {
         if (e.target.tagName === 'INPUT') {
             saveState();

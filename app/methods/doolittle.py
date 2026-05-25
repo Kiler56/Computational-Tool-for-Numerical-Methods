@@ -38,8 +38,8 @@ class Doolittle(NumericalMethod):
         return "doolittle"
 
     @property
-    def description(self) -> str:
-        return "Factorización LU (Doolittle)"
+    def description(self) -> dict:
+        return {"es": "Factorización LU (Doolittle)", "en": "LU Factorization (Doolittle)"}
 
     @property
     def plot_type(self) -> str:

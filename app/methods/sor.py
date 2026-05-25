@@ -11,8 +11,8 @@ class SOR(NumericalMethod):
         return "sor"
 
     @property
-    def description(self) -> str:
-        return "Método Iterativo SOR (Relajación)"
+    def description(self) -> dict:
+        return {"es": "Método Iterativo SOR (Relajación)", "en": "SOR Iterative Method (Relaxation)"}
 
     @property
     def plot_type(self) -> str:

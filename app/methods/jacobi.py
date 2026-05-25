@@ -11,8 +11,8 @@ class Jacobi(NumericalMethod):
         return "jacobi"
 
     @property
-    def description(self) -> str:
-        return "Método Iterativo de Jacobi"
+    def description(self) -> dict:
+        return {"es": "Método Iterativo de Jacobi", "en": "Jacobi Iterative Method"}
 
     @property
     def plot_type(self) -> str:

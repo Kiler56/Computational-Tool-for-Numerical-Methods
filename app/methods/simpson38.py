@@ -28,8 +28,8 @@ class Simpson38(NumericalMethod):
         return "simpson38"
 
     @property
-    def description(self) -> str:
-        return "Simpson 3/8 (Integración Numérica)"
+    def description(self) -> dict:
+        return {"es": "Simpson 3/8 (Integración Numérica)", "en": "Simpson 3/8 (Numerical Integration)"}
 
     @property
     def plot_type(self) -> str:

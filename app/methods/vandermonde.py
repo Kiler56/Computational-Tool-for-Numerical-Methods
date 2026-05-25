@@ -34,8 +34,8 @@ class VandermondeMethod(NumericalMethod):
         return "vandermonde"
 
     @property
-    def description(self) -> str:
-        return "Método de Vandermonde"
+    def description(self) -> dict:
+        return {"es": "Método de Vandermonde", "en": "Vandermonde Method"}
 
     @property
     def method_type(self) -> str:

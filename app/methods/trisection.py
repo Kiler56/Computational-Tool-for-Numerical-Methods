@@ -14,8 +14,8 @@ class Trisection(NumericalMethod):
         return "trisection"
 
     @property
-    def description(self) -> str:
-        return "Trisección"
+    def description(self) -> dict:
+        return {"es": "Trisección", "en": "Trisection"}
 
     @property
     def method_type(self) -> str:

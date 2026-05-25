@@ -14,8 +14,8 @@ class Secante(NumericalMethod):
         return "secante"
 
     @property
-    def description(self) -> str:
-        return "Secante"
+    def description(self) -> dict:
+        return {"es": "Secante", "en": "Secant Method"}
 
     @property
     def method_type(self) -> str:

@@ -11,8 +11,8 @@ class GaussSeidel(NumericalMethod):
         return "gauss_seidel"
 
     @property
-    def description(self) -> str:
-        return "Método Iterativo de Gauss-Seidel"
+    def description(self) -> dict:
+        return {"es": "Método Iterativo de Gauss-Seidel", "en": "Gauss-Seidel Iterative Method"}
 
     @property
     def plot_type(self) -> str:

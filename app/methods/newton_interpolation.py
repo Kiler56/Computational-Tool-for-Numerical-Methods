@@ -29,8 +29,8 @@ class NewtonInterpolation(NumericalMethod):
         return "newton_interpolation"
 
     @property
-    def description(self) -> str:
-        return "Interpolación de Newton (Diferencias Divididas)"
+    def description(self) -> dict:
+        return {"es": "Interpolación de Newton (Diferencias Divididas)", "en": "Newton Interpolation (Divided Differences)"}
 
     @property
     def method_type(self) -> str:

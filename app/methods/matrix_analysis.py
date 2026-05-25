@@ -11,8 +11,8 @@ class MatrixAnalysis(NumericalMethod):
         return "matrix_analysis"
 
     @property
-    def description(self) -> str:
-        return "Análisis de Propiedades de Matriz"
+    def description(self) -> dict:
+        return {"es": "Análisis de Propiedades de Matriz", "en": "Matrix Properties Analysis"}
 
     @property
     def plot_type(self) -> str:

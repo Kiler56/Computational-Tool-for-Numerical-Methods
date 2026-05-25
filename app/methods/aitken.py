@@ -14,8 +14,8 @@ class Aitken(NumericalMethod):
         return "aitken"
 
     @property
-    def description(self) -> str:
-        return "Aceleración de Aitken"
+    def description(self) -> dict:
+        return {"es": "Aceleración de Aitken", "en": "Aitken's Acceleration"}
 
     @property
     def method_type(self) -> str:

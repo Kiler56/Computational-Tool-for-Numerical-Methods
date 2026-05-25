@@ -13,8 +13,8 @@ class IncrementalSearch(NumericalMethod):
         return "incremental_search"
 
     @property
-    def description(self) -> str:
-        return "Búsqueda Incremental"
+    def description(self) -> dict:
+        return {"es": "Búsqueda Incremental", "en": "Incremental Search"}
 
     @property
     def method_type(self) -> str:

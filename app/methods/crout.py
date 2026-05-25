@@ -10,8 +10,8 @@ class Crout(NumericalMethod):
         return "crout"
 
     @property
-    def description(self) -> str:
-        return "Factorización LU (Crout)"
+    def description(self) -> dict:
+        return {"es": "Factorización LU (Crout)", "en": "LU Factorization (Crout)"}
 
     @property
     def plot_type(self) -> str:

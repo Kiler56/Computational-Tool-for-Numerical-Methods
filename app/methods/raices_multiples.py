@@ -14,8 +14,8 @@ class RaicesMultiples(NumericalMethod):
         return "raices_multiples"
 
     @property
-    def description(self) -> str:
-        return "Raíces Múltiples"
+    def description(self) -> dict:
+        return {"es": "Raíces Múltiples", "en": "Multiple Roots"}
 
     @property
     def method_type(self) -> str:

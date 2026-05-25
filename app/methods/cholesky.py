@@ -13,8 +13,8 @@ class Cholesky(NumericalMethod):
         return "cholesky"
 
     @property
-    def description(self) -> str:
-        return "Factorización LU (Cholesky)"
+    def description(self) -> dict:
+        return {"es": "Factorización LU (Cholesky)", "en": "LU Factorization (Cholesky)"}
 
     @property
     def plot_type(self) -> str:

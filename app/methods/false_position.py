@@ -14,8 +14,8 @@ class FalsePosition(NumericalMethod):
         return "false_position"
 
     @property
-    def description(self) -> str:
-        return "Posición Falsa (Regula Falsi)"
+    def description(self) -> dict:
+        return {"es": "Posición Falsa (Regula Falsi)", "en": "False Position (Regula Falsi)"}
 
     @property
     def method_type(self) -> str:

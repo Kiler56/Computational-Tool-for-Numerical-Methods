@@ -14,8 +14,8 @@ class PuntoFijo(NumericalMethod):
         return "punto_fijo"
 
     @property
-    def description(self) -> str:
-        return "Punto Fijo"
+    def description(self) -> dict:
+        return {"es": "Punto Fijo", "en": "Fixed Point"}
 
     @property
     def method_type(self) -> str:

@@ -393,18 +393,38 @@
 
         let px_display = typeof px === 'number' ? px.toFixed(10) : px;
 
-        const html = `<div class="solution-vector">
-            <div class="solution-item">
-                <span class="var-name">x</span>
-                <span class="var-equals">=</span>
-                <span class="var-value">${Number(xev).toFixed(10)}</span>
-            </div>
-            <div class="solution-item">
-                <span class="var-name">P(x)</span>
-                <span class="var-equals">=</span>
-                <span class="var-value">${px_display}</span>
-            </div>
-        </div>`;
+let polynomial =
+    sol.polynomial ||
+    result.properties?.["Polinomio"] ||
+    "No disponible";
+
+// Convertir exponentes a superíndices
+polynomial = polynomial
+    .replace(/\*\*5/g, '⁵')
+    .replace(/\*\*4/g, '⁴')
+    .replace(/\*\*3/g, '³')
+    .replace(/\*\*2/g, '²')
+    .replace(/\*\*1/g, '¹');
+
+const html = `<div class="solution-vector">
+    <div class="solution-item">
+        <span class="var-name">x</span>
+        <span class="var-equals">=</span>
+        <span class="var-value">${Number(xev).toFixed(10)}</span>
+    </div>
+
+    <div class="solution-item">
+        <span class="var-name">P(x)</span>
+        <span class="var-equals">=</span>
+        <span class="var-value">${px_display}</span>
+    </div>
+
+    <div class="solution-item" style="margin-top:1rem;">
+        <span class="var-name">Polinomio</span>
+        <span class="var-equals">=</span>
+        <span class="var-value">${polynomial}</span>
+    </div>
+</div>`;
         container.innerHTML = html;
     }
 

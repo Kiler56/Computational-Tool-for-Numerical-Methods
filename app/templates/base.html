@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 </head>
 <body data-user-lang="{{ current_user.preferred_lang if current_user.is_authenticated else 'en' }}">
     <div class="dashboard">
@@ -172,6 +173,7 @@
     <script src="{{ url_for('static', filename='js/matrix.js') }}"></script>
     <script src="{{ url_for('static', filename='js/steps.js') }}"></script>
     <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/plotter.js') }}"></script>
     <script>
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');

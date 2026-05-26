@@ -243,12 +243,8 @@ class NewtonInterpolation(NumericalMethod):
                 ),
 
                 "matrix_state": [
-
-                    [""] * (n - (i + 1))
-                    + row[:i + 1]
-
-                    for i, row in enumerate(D[:j + 1])
-
+                    [D[r + c][c] if r + c < n and c <= j else "" for c in range(n)]
+                    for r in range(n)
                 ],
 
             })

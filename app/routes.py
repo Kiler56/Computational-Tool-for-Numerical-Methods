@@ -104,14 +104,17 @@ def api_solve():
     except KeyError as e:
         return jsonify({"error": str(e)}), 400
 
-    try:
-        expr = None   # se guarda para pasárselo al plotter
+    result = {}
+    error_msg = None
+    status_code = 200
+    expr = None
 
+    try:
         if method.method_type == "root":
             expr = data.get("expr")
             params = data.get("params", {})
             if not expr:
-                return jsonify({"error": "Field 'expr' is required for root-finding methods."}), 400
+                raise ValueError("Field 'expr' is required for root-finding methods.")
             result = method.solve(expr, params)
 
         elif method.method_type == "interpolation":
@@ -129,7 +132,7 @@ def api_solve():
                 if points is None:
                     points = [[x_points[i], y_points[i]] for i in range(len(x_points))]
             else:
-                return jsonify({"error": "Fields 'x' and 'y' (or 'points') are required for interpolation."}), 400
+                raise ValueError("Fields 'x' and 'y' (or 'points') are required for interpolation.")
 
             if x_eval is None and params and params.get("eval_x") is not None:
                 x_eval = params["eval_x"]
@@ -153,10 +156,10 @@ def api_solve():
             b      = data.get("b")
             params = data.get("params", {})
             if matrix is None:
-                return jsonify({"error": "Field 'matrix' is required for linear systems."}), 400
+                raise ValueError("Field 'matrix' is required for linear systems.")
             if b is None:
                 if method.requires_vector_b:
-                    return jsonify({"error": "Field 'b' is required for this method."}), 400
+                    raise ValueError("Field 'b' is required for this method.")
                 b = [0.0] * len(matrix)
 
             import inspect
@@ -166,42 +169,61 @@ def api_solve():
             else:
                 result = method.solve(matrix, b)
 
-        # ── GRÁFICA ──────────────────────────────────────────────────────────
-        result = _attach_plot(result, expr)          # ← ÚNICA LÍNEA NUEVA
-        # ─────────────────────────────────────────────────────────────────────
-
-        if current_user.is_authenticated:
-            from app.extensions import db
-            from app.models import CalculationHistory
-
-            calc = CalculationHistory(
-                user_id=current_user.id,
-                method_name=method.name,
-                method_description=method.description,
-                steps_count=len(result.get("steps", [])),
-            )
-
-            if method.method_type == "root":
-                calc.set_matrix({"expr": data.get("expr"), "params": data.get("params", {})})
-                calc.set_vector([])
-            elif method.method_type == "interpolation":
-                calc.set_matrix({"x": x_points, "y": y_points, "points": points})
-                calc.set_vector([x_eval] if x_eval is not None else [])
-            else:
-                calc.set_matrix(data.get("matrix"))
-                calc.set_vector(data.get("b"))
-
-            calc.set_solution(result.get("solution", []))
-            db.session.add(calc)
-            db.session.commit()
-
-        return jsonify(result)
+        result = _attach_plot(result, expr)
 
     except ValueError as e:
-        return jsonify({"error": str(e)}), 400
+        error_msg = str(e)
+        status_code = 400
+    except ZeroDivisionError:
+        error_msg = "División por cero detectada durante el cálculo. Verifique sus datos de entrada."
+        status_code = 400
+    except OverflowError:
+        error_msg = "Desbordamiento numérico (Overflow). Los valores son demasiado grandes."
+        status_code = 400
     except Exception as e:
-        return jsonify({"error": f"Internal error: {str(e)}"}), 500
+        if "LinAlgError" in type(e).__name__:
+            error_msg = f"Error de álgebra lineal: {str(e)}"
+            status_code = 400
+        else:
+            error_msg = f"Internal error: {str(e)}"
+            status_code = 500
 
+    # --- GUARDAR HISTORIAL SIEMPRE (incluso con errores) ---
+    if current_user.is_authenticated:
+        from app.extensions import db
+        from app.models import CalculationHistory
+
+        calc = CalculationHistory(
+            user_id=current_user.id,
+            method_name=method.name,
+            method_description=method.description,
+            steps_count=len(result.get("steps", [])) if result else 0,
+        )
+
+        if method.method_type == "root":
+            calc.set_matrix({"expr": data.get("expr"), "params": data.get("params", {})})
+            calc.set_vector([])
+        elif method.method_type == "interpolation":
+            calc.set_matrix({"x": data.get("x") or [p[0] for p in data.get("points", [])] if data.get("points") else [], 
+                             "y": data.get("y") or [p[1] for p in data.get("points", [])] if data.get("points") else [], 
+                             "points": data.get("points")})
+            calc.set_vector([data.get("x_eval")] if data.get("x_eval") is not None else [])
+        else:
+            calc.set_matrix(data.get("matrix"))
+            calc.set_vector(data.get("b"))
+
+        if error_msg:
+            calc.set_solution([f"ERROR: {error_msg}"])
+        else:
+            calc.set_solution(result.get("solution", []))
+            
+        db.session.add(calc)
+        db.session.commit()
+
+    if error_msg:
+        return jsonify({"error": error_msg}), status_code
+
+    return jsonify(result)
 
 @main_bp.route("/api/history", methods=["GET"])
 def api_history():

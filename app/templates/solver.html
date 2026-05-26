@@ -349,12 +349,43 @@
             renderSteps(result.steps, 'steps-container');
             // ── Plot ──────────────────────────────────────────────────
             const plotContainer = document.getElementById('plot-container');
-            if (result.plot) {
-                plotContainer.innerHTML = `<img src="data:image/png;base64,${result.plot}"
-                    alt="Method plot" style="max-width:100%; border-radius:8px;">`;
+            plotContainer.innerHTML = '';
+            
+            if (METHOD_TYPE === 'root') {
+                const exprPlot = document.getElementById('expr-input').value.trim();
+                const root = result.root !== undefined ? result.root : (result.solution ? result.solution[0] : null);
                 plotContainer.style.display = 'block';
+                setTimeout(() => {
+                    MathPlotter.plotFunction('plot-container', exprPlot, -10, 10, root);
+                }, 50);
+            } else if (METHOD_TYPE === 'interpolation') {
+                const points = readInterpPoints();
+                if (points) {
+                    const px = points.map(p => p[0]);
+                    const py = points.map(p => p[1]);
+                    const poly = result.solution.polynomial || result.properties?.["Polinomio"] || null;
+                    const evalX = parseFloat(document.getElementById('x-eval-input').value);
+                    const sol = result.solution;
+                    let evalY = null;
+                    if (Array.isArray(sol)) {
+                        const evStep = result.steps.find(s => s.phase === 'evaluation');
+                        if (evStep) evalY = evStep.eval_y;
+                    } else {
+                        evalY = sol.P_x !== undefined ? sol.P_x : sol.p_x;
+                    }
+                    
+                    plotContainer.style.display = 'block';
+                    setTimeout(() => {
+                        MathPlotter.plotInterpolation('plot-container', px, py, poly, evalX, evalY);
+                    }, 50);
+                }
             } else {
-                plotContainer.style.display = 'none';
+                if (result.plot) {
+                    plotContainer.innerHTML = `<img src="data:image/png;base64,${result.plot}" alt="Method plot" style="max-width:100%; border-radius:8px;">`;
+                    plotContainer.style.display = 'block';
+                } else {
+                    plotContainer.style.display = 'none';
+                }
             }
             // ─────────────────────────────────────────────────────────────
             document.getElementById('step-count').textContent = result.steps.length + ' ' + (I18n.t('steps_suffix') || 'Pasos');

@@ -83,7 +83,7 @@ class Trisection(NumericalMethod):
         except ZeroDivisionError:
             raise ValueError("Division by zero evaluating f at an endpoint.")
         except OverflowError:
-            raise ValueError("f overflows at an endpoint — try a smaller interval.")
+            raise ValueError("f desbordamientos at an endpoint — try a smaller interval.")
         except Exception as e:
             raise ValueError(f"Error evaluating f at endpoints: {e}") from e
 
@@ -127,7 +127,7 @@ class Trisection(NumericalMethod):
                 "step": i, "phase": "trisection",
                 "a": a, "b": b, "x1": x1, "x2": x2,
                 "f_x1": fx1, "f_x2": fx2, "error": E,
-                "description": {"es": f"Iter {i}: a={a:.8g}, x1={x1:.8g}, x2={x2:.8g}, b={b:.8g}" + (f", E={E:.6e}" if E else ""), "en": f"Iter{i}:a={a:.8g}, x1={x1:.8g}, x2={x2:.8g}, b={b:.8g}" + (f", E={E:.6e}" if E else "")},
+                "description": {"es": f"Iteración {i}: a={a:.8g}, x1={x1:.8g}, x2={x2:.8g}, b={b:.8g}" + (f", E={E:.6e}" if E else ""), "en": f"Iter{i}:a={a:.8g}, x1={x1:.8g}, x2={x2:.8g}, b={b:.8g}" + (f", E={E:.6e}" if E else "")},
             })
 
             if fa_cur * fx1 < 0:
@@ -150,7 +150,7 @@ class Trisection(NumericalMethod):
 
         steps.append({
             "step": len(steps) + 1, "phase": "converged",
-            "description": {"es": f"Converged: root ≈ {xm:.10g}, E = {E:.6e}", "en": f"Converged: root ≈{xm:.10g}, E ={E:.6e}"},
+            "description": {"es": f"Convergió: root ≈ {xm:.10g}, E = {E:.6e}", "en": f"Converged: root ≈{xm:.10g}, E ={E:.6e}"},
             "a": a, "b": b, "xm": xm, "f_xm": fxm, "error": E,
         })
 

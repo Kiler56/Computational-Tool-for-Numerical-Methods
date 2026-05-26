@@ -85,7 +85,7 @@ class GaussianSimple(NumericalMethod):
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "elimination",
-                "description": {"es": f"Pivot at ({k},{k}) = {pivot:.6g}", "en": f"Pivot at ({k},{k}) ={pivot:.6g}"},
+                "description": {"es": f"Pivote en ({k},{k}) = {pivot:.6g}", "en": f"Pivot at ({k},{k}) ={pivot:.6g}"},
                 "pivot": pivot,
                 "matrix_state": self._snapshot(M),
             })
@@ -100,7 +100,7 @@ class GaussianSimple(NumericalMethod):
                     "phase": "elimination",
                     "description": {"es": (
                         f"R{i+1} ← R{i+1} - ({factor:.6g})·R{k+1}  →  "
-                        f"zero entry M[{i}][{k}]"
+                        f"entrada cero M[{i}][{k}]"
                     ), "en": (
                         f"R{i+1} ← R{i+1} - ({factor:.6g})·R{k+1}  →  "
                         f"zero entry M[{i}][{k}]"

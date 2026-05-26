@@ -88,7 +88,7 @@ class Muller(NumericalMethod):
         except ZeroDivisionError:
             raise ValueError("Division by zero evaluating f at the initial points.")
         except OverflowError:
-            raise ValueError("f overflows at one of the initial points — try different starting values.")
+            raise ValueError("f desbordamientos at one of the initial points — try different starting values.")
         except Exception as e:
             raise ValueError(f"Error evaluating f at initial points: {e}") from e
 
@@ -166,7 +166,7 @@ class Muller(NumericalMethod):
             steps.append({
                 "step": i, "phase": "muller",
                 "x_new": x3, "error": err,
-                "description": {"es": f"Iter {i}: x_new={x3:.6f}, E={err:.6e}", "en": f"Iter{i}: x_new={x3:.6f}, E={err:.6e}"}
+                "description": {"es": f"Iteración {i}: x_new={x3:.6f}, E={err:.6e}", "en": f"Iter{i}: x_new={x3:.6f}, E={err:.6e}"}
             })
 
             if err < tol:

@@ -85,7 +85,7 @@ class PuntoFijo(NumericalMethod):
                 "The iteration function is undefined at x₀ — try a different starting value."
             )
         except OverflowError:
-            raise ValueError(f"g({x}) overflows. Try a different starting value.")
+            raise ValueError(f"g({x}) desbordamientos. Try a different starting value.")
         except Exception as e:
             raise ValueError(f"Error evaluating g({x}): {e}") from e
 
@@ -120,7 +120,7 @@ class PuntoFijo(NumericalMethod):
             steps.append({
                 "step": i, "phase": "fixed_point",
                 "x": x, "g_x": x_new, "error": E,
-                "description": {"es": f"Iter {i}: x = {x:.10g}, g(x) = {x_new:.10g}, E = {E:.6e}", "en": f"Iter{i}: x ={x:.10g}, g(x) ={x_new:.10g}, E ={E:.6e}"},
+                "description": {"es": f"Iteración {i}: x = {x:.10g}, g(x) = {x_new:.10g}, E = {E:.6e}", "en": f"Iter{i}: x ={x:.10g}, g(x) ={x_new:.10g}, E ={E:.6e}"},
             })
 
             if E < tol:

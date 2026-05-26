@@ -136,7 +136,7 @@ class Aitken(NumericalMethod):
             steps.append({
                 "step": i, "phase": "aitken",
                 "x": x, "x1": x1, "x2": x2, "x_new": x_new, "error": E,
-                "description": {"es": f"Iter {i}: x={x:.6f}, x1={x1:.6f}, x2={x2:.6f}, x_new={x_new:.6f}, E={E:.6e}", "en": f"Iter{i}:x={x:.6f}, x1={x1:.6f}, x2={x2:.6f}, x_new={x_new:.6f}, E={E:.6e}"}
+                "description": {"es": f"Iteración {i}: x={x:.6f}, x1={x1:.6f}, x2={x2:.6f}, x_new={x_new:.6f}, E={E:.6e}", "en": f"Iter{i}:x={x:.6f}, x1={x1:.6f}, x2={x2:.6f}, x_new={x_new:.6f}, E={E:.6e}"}
             })
 
             if E < tol:

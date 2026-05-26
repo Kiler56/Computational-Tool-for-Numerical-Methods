@@ -136,7 +136,7 @@ class Simpson38(NumericalMethod):
                 f"Configuración: a={a}, b={b}, n={n}{adjusted_msg}, "
                 f"h=(b-a)/n=({b}-{a})/{n}={h:.8g}"
             ), "en": (
-                f"Configuración: a={a}, b={b}, n={n}{adjusted_msg}, "
+                f"Configuration: a={a}, b={b}, n={n}{adjusted_msg}, "
                 f"h=(b-a)/n=({b}-{a})/{n}={h:.8g}"
             )},
             "a": a, "b": b, "n": n, "h": h,
@@ -171,7 +171,7 @@ class Simpson38(NumericalMethod):
                     f"coeficiente = {ci}"
                 ), "en": (
                     f"x_{i} = {xi:.8g}, f(x_{i}) = {fxi:.10g}, "
-                    f"coeficiente = {ci}"
+                    f"coefficient = {ci}"
                 )},
                 "index": i,
                 "x": xi,
@@ -188,8 +188,8 @@ class Simpson38(NumericalMethod):
                 f"Suma ponderada Σ(c_i · f(x_i)) = {weighted_sum:.10g}  "
                 f"con patrón de coeficientes [1, 3, 3, 2, 3, 3, 2, …, 3, 3, 1]"
             ), "en": (
-                f"Suma ponderada Σ(c_i · f(x_i)) = {weighted_sum:.10g}  "
-                f"con patrón de coeficientes [1, 3, 3, 2, 3, 3, 2, …, 3, 3, 1]"
+                f"Weighted sum Σ(c_i · f(x_i)) = {weighted_sum:.10g}  "
+                f"with coefficient pattern [1, 3, 3, 2, 3, 3, 2, …, 3, 3, 1]"
             )},
             "weighted_sum": weighted_sum,
             "coefficients_pattern": coefs,
@@ -204,7 +204,7 @@ class Simpson38(NumericalMethod):
                 f"Integral ≈ (3h/8) · suma = (3·{h:.8g}/8) · {weighted_sum:.10g} "
                 f"= {integral:.10g}"
             ), "en": (
-                f"Integral ≈ (3h/8) · suma = (3·{h:.8g}/8) · {weighted_sum:.10g} "
+                f"Integral ≈ (3h/8) · sum = (3·{h:.8g}/8) · {weighted_sum:.10g} "
                 f"= {integral:.10g}"
             )},
             "factor": 3 * h / 8,
@@ -228,9 +228,9 @@ class Simpson38(NumericalMethod):
                 f"Estimación de error (extrapolación de Richardson con n_ref={n_ref}): "
                 f"I_ref = {integral_ref:.10g}, error estimado ≈ {error_est:.2e}"
             ), "en": (
-                f"Estimación de error (extrapolación de Richardson con n_ref={n_ref}): "
-                f"I_ref = {integral_ref:.10g}, error estimado ≈ {error_est:.2e}"
-            )},
+                    f"Error estimation (Richardson extrapolation with n_ref={n_ref}): "
+                    f"I_ref = {integral_ref:.10g}, estimated error ≈ {error_est:.2e}"
+                )},
             "n_ref": n_ref,
             "integral_ref": integral_ref,
             "error_estimate": error_est,

@@ -77,7 +77,7 @@ class IncrementalSearch(NumericalMethod):
         except ZeroDivisionError:
             raise ValueError(f"Division by zero evaluating f({x0}). Try a different starting point.")
         except OverflowError:
-            raise ValueError(f"f({x0}) overflows. Try a different starting point.")
+            raise ValueError(f"f({x0}) desbordamientos. Try a different starting point.")
         except Exception as e:
             raise ValueError(f"Error evaluating f({x0}): {e}") from e
 
@@ -100,16 +100,16 @@ class IncrementalSearch(NumericalMethod):
                     "step": i, "phase": "singularity",
                     "x_prev": x_prev, "x_curr": x_curr,
                     "f_prev": f_prev, "f_curr": None,
-                    "description": {"es": f"Iter {i}: [{x_prev:.6g}, {x_curr:.6g}] — division by zero at x={x_curr:.6g}, skipping.", "en": f"Iter{i}:[{x_prev:.6g},{x_curr:.6g}] — division by zero at x={x_curr:.6g}, skipping."},
+                    "description": {"es": f"Iteración {i}: [{x_prev:.6g}, {x_curr:.6g}] — división por cero en x={x_curr:.6g}, saltando.", "en": f"Iter{i}:[{x_prev:.6g},{x_curr:.6g}] — división por cero at x={x_curr:.6g}, saltando."},
                 })
                 x_prev = x_curr
                 f_prev = float("nan")
                 continue
             except OverflowError:
                 steps.append({
-                    "step": i, "phase": "overflow",
+                    "step": i, "phase": "desbordamiento",
                     "x_prev": x_prev, "x_curr": x_curr,
-                    "description": {"es": f"Iter {i}: overflow at x={x_curr:.6g}, skipping.", "en": f"Iter{i}: overflow at x={x_curr:.6g}, skipping."},
+                    "description": {"es": f"Iteración {i}: desbordamiento en x={x_curr:.6g}, saltando.", "en": f"Iter{i}: desbordamiento at x={x_curr:.6g}, saltando."},
                 })
                 x_prev = x_curr
                 f_prev = float("nan")
@@ -121,12 +121,13 @@ class IncrementalSearch(NumericalMethod):
                 "step": i, "phase": "search",
                 "x_prev": x_prev, "x_curr": x_curr,
                 "f_prev": f_prev, "f_curr": f_curr,
-                "description": {"es": f"Iter {i}: [{x_prev:.6g}, {x_curr:.6g}], f = [{f_prev:.6e}, {f_curr:.6e}]", "en": f"Iter{i}:[{x_prev:.6g},{x_curr:.6g}], f = [{f_prev:.6e},{f_curr:.6e}]"},
+                "description": {"es": f"Iteración {i}: [{x_prev:.6g}, {x_curr:.6g}], f = [{f_prev:.6e}, {f_curr:.6e}]", "en": f"Iter{i}:[{x_prev:.6g},{x_curr:.6g}], f = [{f_prev:.6e},{f_curr:.6e}]"},
             }
 
             if math.isfinite(f_prev) and math.isfinite(f_curr) and f_prev * f_curr < 0:
                 step["phase"] = "root_found"
-                step["description"] += f" ← Root bracket [{x_prev:.6g}, {x_curr:.6g}]"
+                step["description"]["es"] += f" ← Intervalo raíz [{x_prev:.6g}, {x_curr:.6g}]"
+                step["description"]["en"] += f" ← Root bracket [{x_prev:.6g}, {x_curr:.6g}]"
                 found_intervals.append([x_prev, x_curr])
 
             steps.append(step)

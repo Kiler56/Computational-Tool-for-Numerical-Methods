@@ -107,7 +107,7 @@ class Newton(NumericalMethod):
                 steps.append({
                     "step": i, "phase": "converged",
                     "x": x, "f_x": fx, "df_x": 0.0, "x_new": x, "error": 0.0,
-                    "description": {"es": f"Iter {i}: f({x:.10g}) ≈ 0 — exact root found.", "en": f"Iter{i}: f({x:.10g}) ≈ 0 — exact root found."},
+                    "description": {"es": f"Iteración {i}: f({x:.10g}) ≈ 0 — exact root found.", "en": f"Iter{i}: f({x:.10g}) ≈ 0 — exact root found."},
                 })
                 x_new = x
                 break
@@ -147,7 +147,7 @@ class Newton(NumericalMethod):
             steps.append({
                 "step": i, "phase": "newton",
                 "x": x, "f_x": fx, "df_x": dfx, "x_new": x_new, "error": E,
-                "description": {"es": f"Iter {i}: x = {x:.10g}, f(x) = {fx:.6e}, f'(x) = {dfx:.6e}, x_new = {x_new:.10g}, E = {E:.6e}", "en": f"Iter{i}: x ={x:.10g}, f(x) ={fx:.6e}, f'(x) ={dfx:.6e}, x_new ={x_new:.10g}, E ={E:.6e}"},
+                "description": {"es": f"Iteración {i}: x = {x:.10g}, f(x) = {fx:.6e}, f'(x) = {dfx:.6e}, x_new = {x_new:.10g}, E = {E:.6e}", "en": f"Iter{i}: x ={x:.10g}, f(x) ={fx:.6e}, f'(x) ={dfx:.6e}, x_new ={x_new:.10g}, E ={E:.6e}"},
             })
 
             if E < tol:

@@ -32,7 +32,7 @@ class GaussianPartialPivoting(NumericalMethod):
                 "<ul>"
                 "<li>Enter the system of equations. Before each elimination step, the algorithm will search for the largest absolute value in the current column.</li>"
                 "<li>If that value is not in the current pivot row, it will swap the relevant rows.</li>"
-                "<li>💡 <strong>Advantage:</strong> Avoids division by zero and significantly reduces rounding errors compared to Simple Gaussian.</li>"
+                "<li>💡 <strong>Advantage:</strong> Avoids división por cero and significantly reduces rounding errors compared to Simple Gaussian.</li>"
                 "</ul>"
             ),
         }

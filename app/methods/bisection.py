@@ -76,9 +76,9 @@ class Bisection(NumericalMethod):
             fa = f(a)
             fb = f(b)
         except ZeroDivisionError:
-            raise ValueError("f(x) produces a division by zero at one of the endpoints.")
+            raise ValueError("f(x) produces a división por cero at one of the endpoints.")
         except OverflowError:
-            raise ValueError("f(x) overflows at one of the endpoints — try a smaller interval.")
+            raise ValueError("f(x) desbordamientos at one of the endpoints — try a smaller interval.")
         except Exception as e:
             raise ValueError(f"Error evaluating f at endpoints: {e}") from e
 
@@ -120,7 +120,7 @@ class Bisection(NumericalMethod):
                 "a": a, "b": b, "xm": xm,
                 "f_xm": fxm,
                 "error": E,
-                "description": {"es": f"Iter {i}: xm = {xm:.10g}, f(xm) = {fxm:.6e}" + (f", E = {E:.6e}" if E is not None else ""), "en": f"Iter{i}: xm ={xm:.10g}, f(xm) ={fxm:.6e}" + (f", E = {E:.6e}" if E is not None else "")},
+                "description": {"es": f"Iteración {i}: xm = {xm:.10g}, f(xm) = {fxm:.6e}" + (f", E = {E:.6e}" if E is not None else ""), "en": f"Iter{i}: xm ={xm:.10g}, f(xm) ={fxm:.6e}" + (f", E = {E:.6e}" if E is not None else "")},
             }
             steps.append(step)
 
@@ -144,7 +144,7 @@ class Bisection(NumericalMethod):
                     fxm_final = None
                 steps.append({
                     "step": i + 1, "phase": "converged",
-                    "description": {"es": f"Converged: xm = {xm:.10g}, E = {E:.6e}", "en": f"Converged: xm ={xm:.10g}, E ={E:.6e}"},
+                    "description": {"es": f"Convergió: xm = {xm:.10g}, E = {E:.6e}", "en": f"Converged: xm ={xm:.10g}, E ={E:.6e}"},
                     "a": a, "b": b, "xm": xm, "f_xm": fxm_final, "error": E,
                 })
                 break

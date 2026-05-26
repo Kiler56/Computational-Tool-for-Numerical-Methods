@@ -137,7 +137,7 @@ class Steffensen(NumericalMethod):
             steps.append({
                 "step": i, "phase": "steffensen",
                 "x": x, "f_x": fx, "f_x_fx": f_x_fx, "x_new": x_new, "error": E,
-                "description": {"es": f"Iter {i}: x={x:.6f}, f(x)={fx:.6e}, x_new={x_new:.6f}, E={E:.6e}", "en": f"Iter{i}:x={x:.6f}, f(x)={fx:.6e}, x_new={x_new:.6f}, E={E:.6e}"}
+                "description": {"es": f"Iteración {i}: x={x:.6f}, f(x)={fx:.6e}, x_new={x_new:.6f}, E={E:.6e}", "en": f"Iter{i}:x={x:.6f}, f(x)={fx:.6e}, x_new={x_new:.6f}, E={E:.6e}"}
             })
 
             if E < tol:

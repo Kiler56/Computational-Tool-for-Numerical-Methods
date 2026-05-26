@@ -74,5 +74,18 @@
     "points_label": "Nodes (xᵢ, yᵢ)",
     "x_eval_label": "Evaluate P(x) at x =",
     "interp_col_x": "x",
-    "interp_col_y": "y"
+    "interp_col_y": "y",
+    "plotter_title": "Interactive Plotter",
+    "plotter_desc": "Plot independent mathematical functions or discrete data points without running a specific method.",
+    "plotter_tab_func": "Function",
+    "plotter_tab_points": "Points",
+    "plotter_func_label": "Function f(x)",
+    "plotter_xmin": "x Min",
+    "plotter_xmax": "x Max",
+    "plotter_btn_func": "Plot Function",
+    "plotter_points_label": "Data Points (x,y)",
+    "plotter_points_hint": "Enter one pair per line, separated by a comma.",
+    "plotter_btn_points": "Plot Points",
+    "plotter_placeholder": "Configure parameters on the left to generate a plot.",
+    "nav_tools": "Tools"
 }

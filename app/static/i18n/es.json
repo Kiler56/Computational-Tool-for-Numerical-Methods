@@ -74,5 +74,18 @@
     "points_label": "Nodos (xᵢ, yᵢ)",
     "x_eval_label": "Evaluar P(x) en x =",
     "interp_col_x": "x",
-    "interp_col_y": "y"
+    "interp_col_y": "y",
+    "plotter_title": "Graficadora Interactiva",
+    "plotter_desc": "Grafica funciones matemáticas independientes o puntos discretos de datos sin ejecutar un método específico.",
+    "plotter_tab_func": "Función",
+    "plotter_tab_points": "Puntos",
+    "plotter_func_label": "Función f(x)",
+    "plotter_xmin": "x Min",
+    "plotter_xmax": "x Max",
+    "plotter_btn_func": "Graficar Función",
+    "plotter_points_label": "Puntos de Datos (x,y)",
+    "plotter_points_hint": "Ingresa un par por línea, separados por una coma.",
+    "plotter_btn_points": "Graficar Puntos",
+    "plotter_placeholder": "Configura los parámetros a la izquierda para generar una gráfica.",
+    "nav_tools": "Herramientas"
 }

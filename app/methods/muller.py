@@ -166,7 +166,7 @@ class Muller(NumericalMethod):
             steps.append({
                 "step": i, "phase": "muller",
                 "x_new": x3, "error": err,
-                "description": f"Iter {i}: x_new={x3:.6f}, E={err:.6e}"
+                "description": {"es": f"Iter {i}: x_new={x3:.6f}, E={err:.6e}", "en": f"Iter{i}: x_new={x3:.6f}, E={err:.6e}"}
             })
 
             if err < tol:
@@ -177,11 +177,15 @@ class Muller(NumericalMethod):
         else:
             steps.append({
                 "step": N + 1, "phase": "max_iter_reached",
-                "description": (
+                "description": {"es": (
                     f"Maximum iterations ({N}) reached. "
                     f"Last approximation: x = {x3:.10g}. "
                     "Try different initial points or increase max_iter."
-                ),
+                ), "en": (
+                    f"Maximum iterations ({N}) reached. "
+                    f"Last approximation: x = {x3:.10g}. "
+                    "Try different initial points or increase max_iter."
+                )},
             })
 
         return {

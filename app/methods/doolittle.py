@@ -130,11 +130,15 @@ class Doolittle(NumericalMethod):
 
                 "phase": "factorization",
 
-                "description": (
+                "description": {"es": (
                     f"Paso {k + 1}: "
                     f"Construcción de fila {k + 1} de U "
                     f"y columna {k + 1} de L."
-                ),
+                ), "en": (
+                    f"Paso {k + 1}: "
+                    f"Construcción de fila {k + 1} de U "
+                    f"y columna {k + 1} de L."
+                )},
 
                 # Separate matrices
                 "L_matrix": [row[:] for row in L],
@@ -151,9 +155,11 @@ class Doolittle(NumericalMethod):
 
             "phase": "result",
 
-            "description": (
+            "description": {"es": (
                 "Factorización LU (Doolittle) completada."
-            ),
+            ), "en": (
+                "LU (Doolittle) factorization completed."
+            )},
 
             "L_matrix": [row[:] for row in L],
 
@@ -182,9 +188,11 @@ class Doolittle(NumericalMethod):
 
                 "phase": "forward_substitution",
 
-                "description": (
+                "description": {"es": (
                     f"z[{i + 1}] = {z[i]:.10g}"
-                ),
+                ), "en": (
+                    f"z[{i + 1}] ={z[i]:.10g}"
+                )},
 
                 "z_vector": z[:]
 
@@ -211,9 +219,11 @@ class Doolittle(NumericalMethod):
 
                 "phase": "back_substitution",
 
-                "description": (
+                "description": {"es": (
                     f"x[{i + 1}] = {x[i]:.10g}"
-                ),
+                ), "en": (
+                    f"x[{i + 1}] ={x[i]:.10g}"
+                )},
 
                 "x_vector": x[:]
 

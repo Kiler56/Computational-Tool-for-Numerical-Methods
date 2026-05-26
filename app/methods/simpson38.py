@@ -132,10 +132,13 @@ class Simpson38(NumericalMethod):
         steps.append({
             "step": 1,
             "phase": "setup",
-            "description": (
+            "description": {"es": (
                 f"Configuración: a={a}, b={b}, n={n}{adjusted_msg}, "
                 f"h=(b-a)/n=({b}-{a})/{n}={h:.8g}"
-            ),
+            ), "en": (
+                f"Configuración: a={a}, b={b}, n={n}{adjusted_msg}, "
+                f"h=(b-a)/n=({b}-{a})/{n}={h:.8g}"
+            )},
             "a": a, "b": b, "n": n, "h": h,
         })
 
@@ -163,10 +166,13 @@ class Simpson38(NumericalMethod):
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "evaluation",
-                "description": (
+                "description": {"es": (
                     f"x_{i} = {xi:.8g}, f(x_{i}) = {fxi:.10g}, "
                     f"coeficiente = {ci}"
-                ),
+                ), "en": (
+                    f"x_{i} = {xi:.8g}, f(x_{i}) = {fxi:.10g}, "
+                    f"coeficiente = {ci}"
+                )},
                 "index": i,
                 "x": xi,
                 "f_x": fxi,
@@ -178,10 +184,13 @@ class Simpson38(NumericalMethod):
         steps.append({
             "step": len(steps) + 1,
             "phase": "weighted_sum",
-            "description": (
+            "description": {"es": (
                 f"Suma ponderada Σ(c_i · f(x_i)) = {weighted_sum:.10g}  "
                 f"con patrón de coeficientes [1, 3, 3, 2, 3, 3, 2, …, 3, 3, 1]"
-            ),
+            ), "en": (
+                f"Suma ponderada Σ(c_i · f(x_i)) = {weighted_sum:.10g}  "
+                f"con patrón de coeficientes [1, 3, 3, 2, 3, 3, 2, …, 3, 3, 1]"
+            )},
             "weighted_sum": weighted_sum,
             "coefficients_pattern": coefs,
         })
@@ -191,10 +200,13 @@ class Simpson38(NumericalMethod):
         steps.append({
             "step": len(steps) + 1,
             "phase": "result",
-            "description": (
+            "description": {"es": (
                 f"Integral ≈ (3h/8) · suma = (3·{h:.8g}/8) · {weighted_sum:.10g} "
                 f"= {integral:.10g}"
-            ),
+            ), "en": (
+                f"Integral ≈ (3h/8) · suma = (3·{h:.8g}/8) · {weighted_sum:.10g} "
+                f"= {integral:.10g}"
+            )},
             "factor": 3 * h / 8,
             "integral": integral,
         })
@@ -212,10 +224,13 @@ class Simpson38(NumericalMethod):
         steps.append({
             "step": len(steps) + 1,
             "phase": "error_estimation",
-            "description": (
+            "description": {"es": (
                 f"Estimación de error (extrapolación de Richardson con n_ref={n_ref}): "
                 f"I_ref = {integral_ref:.10g}, error estimado ≈ {error_est:.2e}"
-            ),
+            ), "en": (
+                f"Estimación de error (extrapolación de Richardson con n_ref={n_ref}): "
+                f"I_ref = {integral_ref:.10g}, error estimado ≈ {error_est:.2e}"
+            )},
             "n_ref": n_ref,
             "integral_ref": integral_ref,
             "error_estimate": error_est,

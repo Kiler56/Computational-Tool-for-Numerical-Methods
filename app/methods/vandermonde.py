@@ -222,10 +222,13 @@ class VandermondeMethod(NumericalMethod):
 
             "phase": "setup",
 
-            "description": (
+            "description": {"es": (
                 f"Construcción de la matriz de Vandermonde "
                 f"para n = {n} nodos."
-            )
+            ), "en": (
+                f"Construcción de la matriz de Vandermonde "
+                f"para n = {n} nodos."
+            )}
 
         })
 
@@ -239,10 +242,13 @@ class VandermondeMethod(NumericalMethod):
 
             "phase": "matrix",
 
-            "description": (
+            "description": {"es": (
                 "Matriz de Vandermonde construida "
                 "usando potencias descendentes."
-            ),
+            ), "en": (
+                "Matriz de Vandermonde construida "
+                "usando potencias descendentes."
+            )},
 
             "matrix_state": V.tolist()
 
@@ -260,10 +266,13 @@ class VandermondeMethod(NumericalMethod):
 
             "phase": "solution",
 
-            "description": (
+            "description": {"es": (
                 "Coeficientes del polinomio interpolante "
                 "obtenidos resolviendo V·a = y."
-            ),
+            ), "en": (
+                "Coeficientes del polinomio interpolante "
+                "obtenidos resolviendo V·a = y."
+            )},
 
             "coefficients": coeffs_list
 
@@ -281,9 +290,11 @@ class VandermondeMethod(NumericalMethod):
 
             "phase": "polynomial",
 
-            "description": (
+            "description": {"es": (
                 "Polinomio interpolante explícito generado."
-            ),
+            ), "en": (
+                "Generated explicit interpolating polynomial."
+            )},
 
             "polynomial": polynomial_str,
 
@@ -310,9 +321,11 @@ class VandermondeMethod(NumericalMethod):
 
                 "phase": "evaluation",
 
-                "description": (
+                "description": {"es": (
                     f"P({x_eval:g}) = {p_x:.16g}"
-                ),
+                ), "en": (
+                    f"P({x_eval:g}) ={p_x:.16g}"
+                )},
 
                 "eval_x": x_eval,
 
@@ -337,10 +350,13 @@ class VandermondeMethod(NumericalMethod):
 
                 "phase": "verification",
 
-                "description": (
+                "description": {"es": (
                     f"P({xi}) = {pi:.8g} "
                     f"(esperado {yi}, error = {err:.2e})"
-                ),
+                ), "en": (
+                    f"P({xi}) = {pi:.8g} "
+                    f"(esperado {yi}, error = {err:.2e})"
+                )},
 
                 "x": xi,
 

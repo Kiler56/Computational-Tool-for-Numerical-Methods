@@ -100,7 +100,7 @@ class IncrementalSearch(NumericalMethod):
                     "step": i, "phase": "singularity",
                     "x_prev": x_prev, "x_curr": x_curr,
                     "f_prev": f_prev, "f_curr": None,
-                    "description": f"Iter {i}: [{x_prev:.6g}, {x_curr:.6g}] — division by zero at x={x_curr:.6g}, skipping.",
+                    "description": {"es": f"Iter {i}: [{x_prev:.6g}, {x_curr:.6g}] — division by zero at x={x_curr:.6g}, skipping.", "en": f"Iter{i}:[{x_prev:.6g},{x_curr:.6g}] — division by zero at x={x_curr:.6g}, skipping."},
                 })
                 x_prev = x_curr
                 f_prev = float("nan")
@@ -109,7 +109,7 @@ class IncrementalSearch(NumericalMethod):
                 steps.append({
                     "step": i, "phase": "overflow",
                     "x_prev": x_prev, "x_curr": x_curr,
-                    "description": f"Iter {i}: overflow at x={x_curr:.6g}, skipping.",
+                    "description": {"es": f"Iter {i}: overflow at x={x_curr:.6g}, skipping.", "en": f"Iter{i}: overflow at x={x_curr:.6g}, skipping."},
                 })
                 x_prev = x_curr
                 f_prev = float("nan")
@@ -121,7 +121,7 @@ class IncrementalSearch(NumericalMethod):
                 "step": i, "phase": "search",
                 "x_prev": x_prev, "x_curr": x_curr,
                 "f_prev": f_prev, "f_curr": f_curr,
-                "description": f"Iter {i}: [{x_prev:.6g}, {x_curr:.6g}], f = [{f_prev:.6e}, {f_curr:.6e}]",
+                "description": {"es": f"Iter {i}: [{x_prev:.6g}, {x_curr:.6g}], f = [{f_prev:.6e}, {f_curr:.6e}]", "en": f"Iter{i}:[{x_prev:.6g},{x_curr:.6g}], f = [{f_prev:.6e},{f_curr:.6e}]"},
             }
 
             if math.isfinite(f_prev) and math.isfinite(f_curr) and f_prev * f_curr < 0:

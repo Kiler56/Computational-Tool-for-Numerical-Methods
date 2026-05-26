@@ -120,7 +120,7 @@ class PuntoFijo(NumericalMethod):
             steps.append({
                 "step": i, "phase": "fixed_point",
                 "x": x, "g_x": x_new, "error": E,
-                "description": f"Iter {i}: x = {x:.10g}, g(x) = {x_new:.10g}, E = {E:.6e}",
+                "description": {"es": f"Iter {i}: x = {x:.10g}, g(x) = {x_new:.10g}, E = {E:.6e}", "en": f"Iter{i}: x ={x:.10g}, g(x) ={x_new:.10g}, E ={E:.6e}"},
             })
 
             if E < tol:
@@ -131,11 +131,15 @@ class PuntoFijo(NumericalMethod):
         else:
             steps.append({
                 "step": N + 1, "phase": "max_iter_reached",
-                "description": (
+                "description": {"es": (
                     f"Maximum iterations ({N}) reached without convergence. "
                     f"Last approximation: x = {x_new:.10g}. "
                     "Verify that |g'(x)| < 1 near the root, or choose a better g(x)."
-                ),
+                ), "en": (
+                    f"Maximum iterations ({N}) reached without convergence. "
+                    f"Last approximation: x = {x_new:.10g}. "
+                    "Verify that |g'(x)| < 1 near the root, or choose a better g(x)."
+                )},
                 "x": x_new,
             })
 

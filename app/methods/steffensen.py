@@ -137,7 +137,7 @@ class Steffensen(NumericalMethod):
             steps.append({
                 "step": i, "phase": "steffensen",
                 "x": x, "f_x": fx, "f_x_fx": f_x_fx, "x_new": x_new, "error": E,
-                "description": f"Iter {i}: x={x:.6f}, f(x)={fx:.6e}, x_new={x_new:.6f}, E={E:.6e}"
+                "description": {"es": f"Iter {i}: x={x:.6f}, f(x)={fx:.6e}, x_new={x_new:.6f}, E={E:.6e}", "en": f"Iter{i}:x={x:.6f}, f(x)={fx:.6e}, x_new={x_new:.6f}, E={E:.6e}"}
             })
 
             if E < tol:
@@ -148,11 +148,15 @@ class Steffensen(NumericalMethod):
         else:
             steps.append({
                 "step": N + 1, "phase": "max_iter_reached",
-                "description": (
+                "description": {"es": (
                     f"Maximum iterations ({N}) reached. "
                     f"Last approximation: x = {x_new:.10g}. "
                     "Try a closer initial guess or increase max_iter."
-                ),
+                ), "en": (
+                    f"Maximum iterations ({N}) reached. "
+                    f"Last approximation: x = {x_new:.10g}. "
+                    "Try a closer initial guess or increase max_iter."
+                )},
             })
 
         return {

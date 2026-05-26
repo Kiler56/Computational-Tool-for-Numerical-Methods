@@ -139,7 +139,7 @@ class RaicesMultiples(NumericalMethod):
                 "step": i, "phase": "multiple_roots",
                 "x": x, "f_x": fx, "df_x": dfx, "d2f_x": d2fx,
                 "x_new": x_new, "error": E,
-                "description": f"Iter {i}: x={x:.10g}, f={fx:.6e}, f'={dfx:.6e}, f''={d2fx:.6e}, x_new={x_new:.10g}, E={E:.6e}",
+                "description": {"es": f"Iter {i}: x={x:.10g}, f={fx:.6e}, f'={dfx:.6e}, f''={d2fx:.6e}, x_new={x_new:.10g}, E={E:.6e}", "en": f"Iter{i}:x={x:.10g}, f={fx:.6e}, f'={dfx:.6e}, f''={d2fx:.6e}, x_new={x_new:.10g}, E={E:.6e}"},
             })
 
             if E < tol:
@@ -150,11 +150,15 @@ class RaicesMultiples(NumericalMethod):
         else:
             steps.append({
                 "step": N + 1, "phase": "max_iter_reached",
-                "description": (
+                "description": {"es": (
                     f"Maximum iterations ({N}) reached. "
                     f"Last approximation: x = {x_new:.10g}. "
                     "Try a different x₀ or increase max_iter."
-                ),
+                ), "en": (
+                    f"Maximum iterations ({N}) reached. "
+                    f"Last approximation: x = {x_new:.10g}. "
+                    "Try a different x₀ or increase max_iter."
+                )},
             })
 
         return {

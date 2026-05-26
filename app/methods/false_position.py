@@ -127,7 +127,7 @@ class FalsePosition(NumericalMethod):
             steps.append({
                 "step": i, "phase": "false_position",
                 "a": a, "b": b, "xm": xm, "f_xm": fxm, "error": E,
-                "description": f"Iter {i}: xm = {xm:.10g}, f(xm) = {fxm:.6e}" + (f", E = {E:.6e}" if E is not None else ""),
+                "description": {"es": f"Iter {i}: xm = {xm:.10g}, f(xm) = {fxm:.6e}" + (f", E = {E:.6e}" if E is not None else ""), "en": f"Iter{i}: xm ={xm:.10g}, f(xm) ={fxm:.6e}" + (f", E = {E:.6e}" if E is not None else "")},
             })
 
             if fa * fxm < 0:
@@ -156,17 +156,20 @@ class FalsePosition(NumericalMethod):
             if E < tol:
                 steps.append({
                     "step": i + 1, "phase": "converged",
-                    "description": f"Converged: xm = {xm:.10g}, E = {E:.6e}",
+                    "description": {"es": f"Converged: xm = {xm:.10g}, E = {E:.6e}", "en": f"Converged: xm ={xm:.10g}, E ={E:.6e}"},
                     "a": a, "b": b, "xm": xm, "f_xm": f(xm), "error": E,
                 })
                 break
         else:
             steps.append({
                 "step": N + 1, "phase": "max_iter_reached",
-                "description": (
+                "description": {"es": (
                     f"Maximum iterations ({N}) reached. Last xm = {xm:.10g}, E = {E:.6e}. "
                     "Try increasing max_iter or tightening the initial interval."
-                ),
+                ), "en": (
+                    f"Maximum iterations ({N}) reached. Last xm = {xm:.10g}, E = {E:.6e}. "
+                    "Try increasing max_iter or tightening the initial interval."
+                )},
                 "xm": xm, "error": E,
             })
 

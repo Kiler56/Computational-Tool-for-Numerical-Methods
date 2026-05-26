@@ -123,13 +123,20 @@ function createStepElement(step, index) {
     else if (step.phase === 'result') phaseLabel = 'Resultado';
     else if (step.phase === 'error_estimation') phaseLabel = 'Estimación de Error';
 
+    // Support bilingual descriptions
+    let descText = step.description;
+    if (typeof step.description === 'object' && step.description !== null) {
+        const lang = (typeof I18n !== 'undefined' && I18n.currentLang) ? I18n.currentLang : 'en';
+        descText = step.description[lang] || step.description['en'] || Object.values(step.description)[0];
+    }
+
     stepEl.innerHTML = `
         <div class="step-header">
             <span class="step-number">${step.step}</span>
             <span class="step-phase">${phaseLabel}</span>
             ${badges}
         </div>
-        <p class="step-desc">${step.description}</p>
+        <p class="step-desc">${descText}</p>
     `;
 
     // Renderizar la matriz del estado actual si existe

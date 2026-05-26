@@ -62,14 +62,14 @@ class Crout(NumericalMethod):
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "elimination",
-                "description": f"Paso {k+1}: Construcción de columna {k+1} de L y fila {k+1} de U",
+                "description": {"es": f"Paso {k+1}: Construcción de columna {k+1} de L y fila {k+1} de U", "en": f"Passed{k+1}: Column construction{k+1}of L and row{k+1}of U"},
                 "matrix_state": self._snapshot(L)
             })
 
         steps.append({
             "step": len(steps) + 1,
             "phase": "extract",
-            "description": "Factorización L y U (Crout) completada.",
+            "description": {"es": "Factorización L y U (Crout) completada.", "en": "L and U (Crout) factorization completed."},
             "matrix_state": self._snapshot(L)
         })
 
@@ -81,7 +81,7 @@ class Crout(NumericalMethod):
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "forward_sweep",
-                "description": f"z[{i+1}] = {z[i]:.6g}"
+                "description": {"es": f"z[{i+1}] = {z[i]:.6g}", "en": f"z[{i+1}] ={z[i]:.6g}"}
             })
 
         # Backward substitution: Ux = z
@@ -92,7 +92,7 @@ class Crout(NumericalMethod):
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "back_substitution",
-                "description": f"x[{i+1}] = {x[i]:.6g}"
+                "description": {"es": f"x[{i+1}] = {x[i]:.6g}", "en": f"x[{i+1}] ={x[i]:.6g}"}
             })
 
         return {

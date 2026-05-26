@@ -109,7 +109,7 @@ class GaussSeidel(NumericalMethod):
         steps.append({
             "step": 0,
             "phase": "analysis",
-            "description": f"Valores iniciales: x = {self._snapshot(x)}"
+            "description": {"es": f"Valores iniciales: x = {self._snapshot(x)}", "en": f"Initial values: x ={self._snapshot(x)}"}
         })
 
         try:
@@ -127,7 +127,7 @@ class GaussSeidel(NumericalMethod):
                 steps.append({
                     "step": k + 1,
                     "phase": "elimination",
-                    "description": desc
+                    "description": {"es": desc, "en": desc}
                 })
                 
                 if error < tol:
@@ -137,7 +137,7 @@ class GaussSeidel(NumericalMethod):
                 steps.append({
                     "step": max_iter + 1,
                     "phase": "analysis",
-                    "description": "ADVERTENCIA: El método no convergió."
+                    "description": {"es": "ADVERTENCIA: El método no convergió.", "en": "WARNING: The method did not converge."}
                 })
         except OverflowError:
             raise ValueError(

@@ -68,7 +68,7 @@ class Cholesky(NumericalMethod):
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "analysis",
-                "description": "ADVERTENCIA: La matriz no es definida positiva según el criterio de Sylvester. Cholesky puede fallar.",
+                "description": {"es": "ADVERTENCIA: La matriz no es definida positiva según el criterio de Sylvester. Cholesky puede fallar.", "en": "WARNING: The matrix is ​​not positive definite according to Sylvester's criterion. "},
             })
 
         # Construcción de L y U
@@ -89,14 +89,14 @@ class Cholesky(NumericalMethod):
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "elimination",
-                "description": f"Cálculo de fila {i+1} de L y columna {i+1} de U",
+                "description": {"es": f"Cálculo de fila {i+1} de L y columna {i+1} de U", "en": f"Row calculation{i+1}of L and column{i+1}of U"},
                 "matrix_state": self._snapshot(L)
             })
             
         steps.append({
             "step": len(steps) + 1,
             "phase": "extract",
-            "description": "Factorización L y U completada.",
+            "description": {"es": "Factorización L y U completada.", "en": "L and U factoring completed."},
             "matrix_state": self._snapshot(L)
         })
 
@@ -108,7 +108,7 @@ class Cholesky(NumericalMethod):
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "forward_sweep",
-                "description": f"z[{i+1}] = {z[i]:.6g}"
+                "description": {"es": f"z[{i+1}] = {z[i]:.6g}", "en": f"z[{i+1}] ={z[i]:.6g}"}
             })
 
         # Backward substitution: Ux = z
@@ -119,7 +119,7 @@ class Cholesky(NumericalMethod):
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "back_substitution",
-                "description": f"x[{i+1}] = {x[i]:.6g}"
+                "description": {"es": f"x[{i+1}] = {x[i]:.6g}", "en": f"x[{i+1}] ={x[i]:.6g}"}
             })
 
         return {

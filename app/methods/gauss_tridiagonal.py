@@ -68,7 +68,7 @@ class GaussTridiagonal(NumericalMethod):
         steps.append({
             "step": 1,
             "phase": "extract",
-            "description": "Vectores extraídos de la matriz tridiagonal",
+            "description": {"es": "Vectores extraídos de la matriz tridiagonal", "en": "Vectors extracted from the tridiagonal matrix"},
             "sub_diagonal": self._snapshot(a),
             "main_diagonal": self._snapshot(d),
             "super_diagonal": self._snapshot(c),
@@ -86,10 +86,13 @@ class GaussTridiagonal(NumericalMethod):
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "forward_sweep",
-                "description": (
+                "description": {"es": (
                     f"i={i}: w = a[{i}]/d[{i-1}] = {w:.6g}, "
                     f"d[{i}] = {d[i]:.6g}, r[{i}] = {r[i]:.6g}"
-                ),
+                ), "en": (
+                    f"i={i}: w = a[{i}]/d[{i-1}] = {w:.6g}, "
+                    f"d[{i}] = {d[i]:.6g}, r[{i}] = {r[i]:.6g}"
+                )},
                 "w": w,
                 "main_diagonal": self._snapshot(d),
                 "rhs": self._snapshot(r),
@@ -104,7 +107,7 @@ class GaussTridiagonal(NumericalMethod):
         steps.append({
             "step": len(steps) + 1,
             "phase": "back_substitution",
-            "description": f"x[{n-1}] = r[{n-1}] / d[{n-1}] = {x[n-1]:.6g}",
+            "description": {"es": f"x[{n-1}] = r[{n-1}] / d[{n-1}] = {x[n-1]:.6g}", "en": f"x[{n-1}] = r[{n-1}] / d[{n-1}] ={x[n-1]:.6g}"},
             "solution_partial": self._snapshot(x),
         })
 
@@ -116,9 +119,11 @@ class GaussTridiagonal(NumericalMethod):
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "back_substitution",
-                "description": (
+                "description": {"es": (
                     f"x[{i}] = (r[{i}] - c[{i}]·x[{i+1}]) / d[{i}] = {x[i]:.6g}"
-                ),
+                ), "en": (
+                    f"x[{i}] = (r[{i}] - c[{i}]·x[{i+1}]) / d[{i}] ={x[i]:.6g}"
+                )},
                 "solution_partial": self._snapshot(x),
             })
 

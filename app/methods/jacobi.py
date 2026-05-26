@@ -111,7 +111,7 @@ class Jacobi(NumericalMethod):
         steps.append({
             "step": 0,
             "phase": "analysis",
-            "description": f"Valores iniciales: x = {self._snapshot(x)}"
+            "description": {"es": f"Valores iniciales: x = {self._snapshot(x)}", "en": f"Initial values: x ={self._snapshot(x)}"}
         })
 
         try:
@@ -131,7 +131,7 @@ class Jacobi(NumericalMethod):
                 steps.append({
                     "step": k + 1,
                     "phase": "elimination",
-                    "description": desc
+                    "description": {"es": desc, "en": desc}
                 })
                 
                 if error < tol:
@@ -141,7 +141,7 @@ class Jacobi(NumericalMethod):
                 steps.append({
                     "step": max_iter + 1,
                     "phase": "analysis",
-                    "description": "ADVERTENCIA: El método no convergió en el número máximo de iteraciones."
+                    "description": {"es": "ADVERTENCIA: El método no convergió en el número máximo de iteraciones.", "en": "WARNING: The method did not converge to the maximum number of iterations."}
                 })
         except OverflowError:
             raise ValueError(

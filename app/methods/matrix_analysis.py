@@ -108,7 +108,7 @@ class MatrixAnalysis(NumericalMethod):
         steps = [{
             "step": 1,
             "phase": "analysis",
-            "description": "Cálculo de propiedades de la matriz.",
+            "description": {"es": "Cálculo de propiedades de la matriz.", "en": "Calculation of matrix properties."},
             "matrix_state": self._snapshot(A)
         }]
 

@@ -124,7 +124,7 @@ class Secante(NumericalMethod):
                 "step": i, "phase": "secante",
                 "x0": x0, "x1": x1, "x2": x2,
                 "f_x0": f0, "f_x1": f1, "error": E,
-                "description": f"Iter {i}: x0={x0:.8g}, x1={x1:.8g}, x2={x2:.10g}, E = {E:.6e}",
+                "description": {"es": f"Iter {i}: x0={x0:.8g}, x1={x1:.8g}, x2={x2:.10g}, E = {E:.6e}", "en": f"Iter{i}: x0={x0:.8g}, x1={x1:.8g}, x2={x2:.10g}, E ={E:.6e}"},
             })
 
             if E < tol:
@@ -153,11 +153,15 @@ class Secante(NumericalMethod):
         else:
             steps.append({
                 "step": N + 1, "phase": "max_iter_reached",
-                "description": (
+                "description": {"es": (
                     f"Maximum iterations ({N}) reached. "
                     f"Last approximation: x₂ = {x2:.10g}. "
                     "Try different initial points or increase max_iter."
-                ),
+                ), "en": (
+                    f"Maximum iterations ({N}) reached. "
+                    f"Last approximation: x₂ = {x2:.10g}. "
+                    "Try different initial points or increase max_iter."
+                )},
                 "x2": x2,
             })
 

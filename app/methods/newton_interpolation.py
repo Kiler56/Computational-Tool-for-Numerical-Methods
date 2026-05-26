@@ -209,11 +209,15 @@ class NewtonInterpolation(NumericalMethod):
 
             "phase": "setup",
 
-            "description": (
+            "description": {"es": (
                 f"Nodos: n = {n}. "
                 f"X = {xs}, Y = {ys}. "
                 f"Evaluar P({x_eval:g}) usando diferencias divididas de Newton."
-            ),
+            ), "en": (
+                f"Nodos: n = {n}. "
+                f"X = {xs}, Y = {ys}. "
+                f"Evaluar P({x_eval:g}) usando diferencias divididas de Newton."
+            )},
 
         })
 
@@ -237,10 +241,13 @@ class NewtonInterpolation(NumericalMethod):
 
                 "phase": "divided_differences",
 
-                "description": (
+                "description": {"es": (
                     f"Columna j={j}: "
                     + " | ".join(col_vals)
-                ),
+                ), "en": (
+                    f"Column j={j}:"
+                    + " | ".join(col_vals)
+                )},
 
                 "matrix_state": [
                     [D[r + c][c] if r + c < n and c <= j else "" for c in range(n)]
@@ -265,9 +272,11 @@ class NewtonInterpolation(NumericalMethod):
 
             "phase": "polynomial",
 
-            "description": (
+            "description": {"es": (
                 "Polinomio interpolante explícito generado."
-            ),
+            ), "en": (
+                "Generated explicit interpolating polynomial."
+            )},
 
             "polynomial": polynomial_str
 
@@ -281,10 +290,13 @@ class NewtonInterpolation(NumericalMethod):
 
             "phase": "result",
 
-            "description": (
+            "description": {"es": (
                 f"Coeficientes del polinomio de Newton (diagonal): "
                 f"{[f'c{i}={c:.8g}' for i, c in enumerate(coeffs)]}"
-            ),
+            ), "en": (
+                f"Coeficientes del polinomio de Newton (diagonal): "
+                f"{[f'c{i}={c:.8g}' for i, c in enumerate(coeffs)]}"
+            )},
 
             "coefficients": coeffs[:],
 
@@ -300,10 +312,13 @@ class NewtonInterpolation(NumericalMethod):
 
             "phase": "evaluation",
 
-            "description": (
+            "description": {"es": (
                 f"Evaluación P({x_eval:g}) = {p_x:.16g} "
                 f"usando la forma anidada de Newton."
-            ),
+            ), "en": (
+                f"Evaluación P({x_eval:g}) = {p_x:.16g} "
+                f"usando la forma anidada de Newton."
+            )},
 
             "eval_x": x_eval,
 
@@ -325,10 +340,13 @@ class NewtonInterpolation(NumericalMethod):
 
                 "phase": "verification",
 
-                "description": (
+                "description": {"es": (
                     f"P({xi}) = {pi:.8g} "
                     f"(esperado {yi}, error = {err:.2e})"
-                ),
+                ), "en": (
+                    f"P({xi}) = {pi:.8g} "
+                    f"(esperado {yi}, error = {err:.2e})"
+                )},
 
                 "x": xi,
 

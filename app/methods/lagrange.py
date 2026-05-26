@@ -160,11 +160,15 @@ class LagrangeInterpolation(NumericalMethod):
 
             "phase": "lagrange_setup",
 
-            "description": (
+            "description": {"es": (
                 f"Nodes: n = {n}. Distinct abscissas verified. "
                 f"Evaluate P(x) at x = {x_eval:g} "
                 f"using Lagrange bases L_j(x)."
-            ),
+            ), "en": (
+                f"Nodes: n = {n}. Distinct abscissas verified. "
+                f"Evaluate P(x) at x = {x_eval:g} "
+                f"using Lagrange bases L_j(x)."
+            )},
 
         })
 
@@ -208,13 +212,19 @@ class LagrangeInterpolation(NumericalMethod):
 
                 "phase": "lagrange_basis",
 
-                "description": (
+                "description": {"es": (
                     f"j = {j}: "
                     f"L_j(x) = {lj:.16g}; "
                     f"y_j * L_j(x) = "
                     f"{ys[j]:g} * {lj:.16g} = {contrib:.16g}. "
                     f"Factors: {' × '.join(factors)}"
-                ),
+                ), "en": (
+                    f"j = {j}: "
+                    f"L_j(x) = {lj:.16g}; "
+                    f"y_j * L_j(x) = "
+                    f"{ys[j]:g} * {lj:.16g} = {contrib:.16g}. "
+                    f"Factors: {' × '.join(factors)}"
+                )},
 
             })
 
@@ -226,9 +236,11 @@ class LagrangeInterpolation(NumericalMethod):
 
             "phase": "polynomial",
 
-            "description": (
+            "description": {"es": (
                 "Explicit expanded interpolation polynomial generated."
-            ),
+            ), "en": (
+                "Explicit expanded interpolation polynomial generated."
+            )},
 
             "polynomial": polynomial_str,
 
@@ -244,9 +256,11 @@ class LagrangeInterpolation(NumericalMethod):
 
             "phase": "lagrange_sum",
 
-            "description": (
+            "description": {"es": (
                 f"P({x_eval:g}) = Σ_j y_j L_j(x) = {p_x:.16g}"
-            ),
+            ), "en": (
+                f"P({x_eval:g}) = Σ_j y_j L_j(x) ={p_x:.16g}"
+            )},
 
         })
 

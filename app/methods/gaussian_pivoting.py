@@ -70,7 +70,7 @@ class GaussianPartialPivoting(NumericalMethod):
             step_data = {
                 "step": len(steps) + 1,
                 "phase": "elimination",
-                "description": f"Pivote parcial en columna {k}: valor = {pivot:.6g}",
+                "description": {"es": f"Pivote parcial en columna {k}: valor = {pivot:.6g}", "en": f"Partial pivot in column{k}: value ={pivot:.6g}"},
                 "pivot": pivot,
                 "swap_rows": swap_info,
                 "matrix_state": self._snapshot(M),
@@ -86,7 +86,7 @@ class GaussianPartialPivoting(NumericalMethod):
                 steps.append({
                     "step": len(steps) + 1,
                     "phase": "elimination",
-                    "description": f"F{i+1} ← F{i+1} - ({factor:.6g})·F{k+1}",
+                    "description": {"es": f"F{i+1} ← F{i+1} - ({factor:.6g})·F{k+1}", "en": f"F{i+1}←F{i+1}- ({factor:.6g})·F{k+1}"},
                     "factor": factor,
                     "matrix_state": self._snapshot(M),
                 })
@@ -101,7 +101,7 @@ class GaussianPartialPivoting(NumericalMethod):
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "back_substitution",
-                "description": f"x[{i}] = {x[i]:.6g}",
+                "description": {"es": f"x[{i}] = {x[i]:.6g}", "en": f"x[{i}] ={x[i]:.6g}"},
                 "matrix_state": self._snapshot(M),
             })
 
@@ -190,7 +190,7 @@ class GaussianTotalPivoting(NumericalMethod):
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "elimination",
-                "description": f"Pivote total en paso {k}: valor = {pivot:.6g}",
+                "description": {"es": f"Pivote total en paso {k}: valor = {pivot:.6g}", "en": f"Total pivot in step{k}: value ={pivot:.6g}"},
                 "pivot": pivot,
                 "max_val": max_val,
                 "swap_rows": row_swap,
@@ -207,7 +207,7 @@ class GaussianTotalPivoting(NumericalMethod):
                 steps.append({
                     "step": len(steps) + 1,
                     "phase": "elimination",
-                    "description": f"F{i+1} ← F{i+1} - ({factor:.6g})·F{k+1}",
+                    "description": {"es": f"F{i+1} ← F{i+1} - ({factor:.6g})·F{k+1}", "en": f"F{i+1}←F{i+1}- ({factor:.6g})·F{k+1}"},
                     "factor": factor,
                     "matrix_state": self._snapshot(M),
                 })
@@ -222,7 +222,7 @@ class GaussianTotalPivoting(NumericalMethod):
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "back_substitution",
-                "description": f"x_perm[{i}] = {x_perm[i]:.6g}",
+                "description": {"es": f"x_perm[{i}] = {x_perm[i]:.6g}", "en": f"x_perm[{i}] ={x_perm[i]:.6g}"},
                 "matrix_state": self._snapshot(M),
             })
 
@@ -234,7 +234,7 @@ class GaussianTotalPivoting(NumericalMethod):
         steps.append({
             "step": len(steps) + 1,
             "phase": "reorder",
-            "description": f"Reordenamiento de columnas: {col_order} → solución final",
+            "description": {"es": f"Reordenamiento de columnas: {col_order} → solución final", "en": f"Column reordering:{col_order}→ final solution"},
             "col_permutation": col_order[:],
             "matrix_state": self._snapshot(M),
         })

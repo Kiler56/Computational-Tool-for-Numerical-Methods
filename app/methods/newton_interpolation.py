@@ -214,9 +214,9 @@ class NewtonInterpolation(NumericalMethod):
                 f"X = {xs}, Y = {ys}. "
                 f"Evaluar P({x_eval:g}) usando diferencias divididas de Newton."
             ), "en": (
-                f"Nodos: n = {n}. "
+                f"Nodes: n = {n}. "
                 f"X = {xs}, Y = {ys}. "
-                f"Evaluar P({x_eval:g}) usando diferencias divididas de Newton."
+                f"Evaluate P({x_eval:g}) using Newton's divided differences."
             )},
 
         })
@@ -245,7 +245,7 @@ class NewtonInterpolation(NumericalMethod):
                     f"Columna j={j}: "
                     + " | ".join(col_vals)
                 ), "en": (
-                    f"Column j={j}:"
+                    f"Column j={j}: "
                     + " | ".join(col_vals)
                 )},
 
@@ -294,7 +294,7 @@ class NewtonInterpolation(NumericalMethod):
                 f"Coeficientes del polinomio de Newton (diagonal): "
                 f"{[f'c{i}={c:.8g}' for i, c in enumerate(coeffs)]}"
             ), "en": (
-                f"Coeficientes del polinomio de Newton (diagonal): "
+                f"Newton polynomial coefficients (diagonal): "
                 f"{[f'c{i}={c:.8g}' for i, c in enumerate(coeffs)]}"
             )},
 
@@ -316,8 +316,8 @@ class NewtonInterpolation(NumericalMethod):
                 f"Evaluación P({x_eval:g}) = {p_x:.16g} "
                 f"usando la forma anidada de Newton."
             ), "en": (
-                f"Evaluación P({x_eval:g}) = {p_x:.16g} "
-                f"usando la forma anidada de Newton."
+                f"Evaluation P({x_eval:g}) = {p_x:.16g} "
+                f"using nested Newton form."
             )},
 
             "eval_x": x_eval,
@@ -345,7 +345,7 @@ class NewtonInterpolation(NumericalMethod):
                     f"(esperado {yi}, error = {err:.2e})"
                 ), "en": (
                     f"P({xi}) = {pi:.8g} "
-                    f"(esperado {yi}, error = {err:.2e})"
+                    f"(expected {yi}, error = {err:.2e})"
                 )},
 
                 "x": xi,

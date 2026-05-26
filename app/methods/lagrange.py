@@ -161,9 +161,9 @@ class LagrangeInterpolation(NumericalMethod):
             "phase": "lagrange_setup",
 
             "description": {"es": (
-                f"Nodes: n = {n}. Distinct abscissas verified. "
-                f"Evaluate P(x) at x = {x_eval:g} "
-                f"using Lagrange bases L_j(x)."
+                f"Nodos: n = {n}. Abscisas distintas verificadas. "
+                f"Evaluar P(x) en x = {x_eval:g} "
+                f"usando bases de Lagrange L_j(x)."
             ), "en": (
                 f"Nodes: n = {n}. Distinct abscissas verified. "
                 f"Evaluate P(x) at x = {x_eval:g} "
@@ -217,7 +217,7 @@ class LagrangeInterpolation(NumericalMethod):
                     f"L_j(x) = {lj:.16g}; "
                     f"y_j * L_j(x) = "
                     f"{ys[j]:g} * {lj:.16g} = {contrib:.16g}. "
-                    f"Factors: {' × '.join(factors)}"
+                    f"Factores: {' × '.join(factors)}"
                 ), "en": (
                     f"j = {j}: "
                     f"L_j(x) = {lj:.16g}; "
@@ -237,7 +237,7 @@ class LagrangeInterpolation(NumericalMethod):
             "phase": "polynomial",
 
             "description": {"es": (
-                "Explicit expanded interpolation polynomial generated."
+                "Polinomio de interpolación expandido explícito generado."
             ), "en": (
                 "Explicit expanded interpolation polynomial generated."
             )},

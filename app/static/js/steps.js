@@ -90,7 +90,14 @@ function updateStepControls() {
     
     if (btnPrev) btnPrev.disabled = (currentStepIndex === 0);
     if (btnNext) btnNext.disabled = (currentStepIndex === globalSteps.length - 1);
-    if (display) display.textContent = `Paso ${currentStepIndex + 1} de ${globalSteps.length}`;
+    const currentLang = window.I18n ? window.I18n.getLang() : 'es';
+    if (display) {
+        if (currentLang === 'en') {
+            display.textContent = `Step ${currentStepIndex + 1} of ${globalSteps.length}`;
+        } else {
+            display.textContent = `Paso ${currentStepIndex + 1} de ${globalSteps.length}`;
+        }
+    }
 }
 
 function createStepElement(step, index) {

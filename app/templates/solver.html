@@ -138,17 +138,17 @@
         <div id="plot-container" class="result-plot" style="display:none; margin-bottom: 2rem; text-align: center;"></div>
         <div class="result-steps">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
-                <h2 style="margin: 0;"><span data-i18n="steps_title">Pasos</span> <span id="step-count" class="badge"></span></h2>
+                <h2 style="margin: 0;"><span data-i18n-es="Pasos" data-i18n-en="Steps">Pasos</span> <span id="step-count" class="badge"></span></h2>
                 <div class="view-mode-toggle" style="display: flex; gap: 0.5rem;">
-                    <button class="btn btn-sm btn-outline active" id="btn-view-all" onclick="setViewMode('all')">Show All</button>
-                    <button class="btn btn-sm btn-outline" id="btn-view-step" onclick="setViewMode('step')">Step by Step</button>
+                    <button class="btn btn-sm btn-outline active" id="btn-view-all" onclick="setViewMode('all')" data-i18n-es="Mostrar Todos" data-i18n-en="Show All">Show All</button>
+                    <button class="btn btn-sm btn-outline" id="btn-view-step" onclick="setViewMode('step')" data-i18n-es="Paso a Paso" data-i18n-en="Step by Step">Step by Step</button>
                 </div>
             </div>
             
             <div id="step-controls" class="step-controls" style="display: none; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1.5rem; background: var(--bg-tertiary); padding: 1rem; border-radius: 8px;">
-                <button class="btn btn-primary btn-sm" id="btn-prev-step" onclick="prevStep()">← Prev</button>
+                <button class="btn btn-primary btn-sm" id="btn-prev-step" onclick="prevStep()" data-i18n-es="← Ant" data-i18n-en="← Prev">← Prev</button>
                 <span id="current-step-display" style="font-weight: 600; font-size: 1.1rem; color: var(--text-primary); min-width: 120px; text-align: center;">Step 1 of X</span>
-                <button class="btn btn-primary btn-sm" id="btn-next-step" onclick="nextStep()">Next →</button>
+                <button class="btn btn-primary btn-sm" id="btn-next-step" onclick="nextStep()" data-i18n-es="Sig →" data-i18n-en="Next →">Next →</button>
             </div>
 
             <div id="steps-container" class="steps-list"></div>
@@ -388,7 +388,8 @@
                 }
             }
             // ─────────────────────────────────────────────────────────────
-            document.getElementById('step-count').textContent = result.steps.length + ' ' + (I18n.t('steps_suffix') || 'Pasos');
+            const stepSuffix = (I18n.getLang() === 'en') ? 'steps' : 'pasos';
+            document.getElementById('step-count').textContent = result.steps.length + ' ' + stepSuffix;
             document.getElementById('results-section').style.display = 'block';
             document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
 

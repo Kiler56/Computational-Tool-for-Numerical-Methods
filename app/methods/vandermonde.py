@@ -223,11 +223,9 @@ class VandermondeMethod(NumericalMethod):
             "phase": "setup",
 
             "description": {"es": (
-                f"Construcción de la matriz de Vandermonde "
-                f"para n = {n} nodos."
+                f"Construcción de la matriz de Vandermonde para n = {n} nodos."
             ), "en": (
-                f"Construcción de la matriz de Vandermonde "
-                f"para n = {n} nodos."
+                f"Construction of the Vandermonde matrix for n = {n} nodes."
             )}
 
         })
@@ -243,11 +241,9 @@ class VandermondeMethod(NumericalMethod):
             "phase": "matrix",
 
             "description": {"es": (
-                "Matriz de Vandermonde construida "
-                "usando potencias descendentes."
+                "Matriz de Vandermonde construida usando potencias descendentes."
             ), "en": (
-                "Matriz de Vandermonde construida "
-                "usando potencias descendentes."
+                "Vandermonde matrix built using descending powers."
             )},
 
             "matrix_state": V.tolist()
@@ -267,11 +263,9 @@ class VandermondeMethod(NumericalMethod):
             "phase": "solution",
 
             "description": {"es": (
-                "Coeficientes del polinomio interpolante "
-                "obtenidos resolviendo V·a = y."
+                "Coeficientes del polinomio interpolante obtenidos resolviendo V·a = y."
             ), "en": (
-                "Coeficientes del polinomio interpolante "
-                "obtenidos resolviendo V·a = y."
+                "Interpolating polynomial coefficients obtained by solving V·a = y."
             )},
 
             "coefficients": coeffs_list
@@ -322,9 +316,9 @@ class VandermondeMethod(NumericalMethod):
                 "phase": "evaluation",
 
                 "description": {"es": (
-                    f"P({x_eval:g}) = {p_x:.16g}"
+                    f"P({x_eval}) = {p_x}"
                 ), "en": (
-                    f"P({x_eval:g}) ={p_x:.16g}"
+                    f"P({x_eval}) = {p_x}"
                 )},
 
                 "eval_x": x_eval,

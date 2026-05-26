@@ -12,7 +12,7 @@ plot_type registrados:
     iterative_matrix  — jacobi, gauss_seidel, sor
     matrix_analysis   — matrix_analysis
     interpolation     — lagrange, vandermonde, newton_interpolation
-    integration       — simpson38
+    integration       — simpson38, composite_trapezoidal
 """
 
 from __future__ import annotations
@@ -845,8 +845,9 @@ METHOD_TO_PLOT_TYPE: dict[str, str] = {
     "matrix_analysis":        "matrix_analysis",
     "lagrange":               "interpolation",
     "vandermonde":            "interpolation",
-    "newton_interpolation":   "interpolation",
-    "simpson38":              "integration",
+    "newton_interpolation":      "interpolation",
+    "simpson38":                 "integration",
+    "composite_trapezoidal":     "integration",
 }
 
 

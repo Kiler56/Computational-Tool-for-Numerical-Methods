@@ -65,6 +65,10 @@ ROOT_TESTS = {
         "expr": "x**2",
         "params": {"a": 0, "b": 1, "n": 3},
     },
+    "composite_trapezoidal": {
+        "expr": "x**2",
+        "params": {"a": 0, "b": 1, "n": 4},
+    },
 }
 
 # Direct linear system methods: solve(A, b) — no params

@@ -8,7 +8,7 @@ Este manual te guiará sobre cómo interactuar correctamente con la plataforma, 
 ---
 
 ## 2. Acceso y Navegación Básica
-Para utilizar la calculadora, abre tu navegador web (recomendado Chrome, Firefox o Edge) e ingresa a la dirección URL de tu servidor (por ejemplo, `http://TU_IP_PUBLICA:5000`).
+Para utilizar la calculadora, abre tu navegador web (recomendado Chrome, Firefox o Edge) e ingresa a la siguiente dirección URL: **[http://54.88.246.211:5000](http://54.88.246.211:5000)**.
 
 ### Estructura de la Interfaz
 - **Barra Lateral (Menú):** Te permite alternar entre las tres grandes familias de métodos:

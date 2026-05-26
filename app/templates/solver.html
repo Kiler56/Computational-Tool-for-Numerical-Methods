@@ -138,7 +138,7 @@
         <div id="plot-container" class="result-plot" style="display:none; margin-bottom: 2rem; text-align: center;"></div>
         <div class="result-steps">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
-                <h2 style="margin: 0;"><span data-i18n-es="Pasos" data-i18n-en="Steps">Pasos</span> <span id="step-count" class="badge"></span></h2>
+                <h2 style="margin: 0;"><span data-i18n-es="Pasos" data-i18n-en="Steps">Steps</span> <span id="step-count" class="badge"></span></h2>
                 <div class="view-mode-toggle" style="display: flex; gap: 0.5rem;">
                     <button class="btn btn-sm btn-outline active" id="btn-view-all" onclick="setViewMode('all')" data-i18n-es="Mostrar Todos" data-i18n-en="Show All">Show All</button>
                     <button class="btn btn-sm btn-outline" id="btn-view-step" onclick="setViewMode('step')" data-i18n-es="Paso a Paso" data-i18n-en="Step by Step">Step by Step</button>
@@ -388,6 +388,7 @@
                 }
             }
             // ─────────────────────────────────────────────────────────────
+            globalSteps = result.steps;
             const stepSuffix = (I18n.getLang() === 'en') ? 'steps' : 'pasos';
             document.getElementById('step-count').textContent = result.steps.length + ' ' + stepSuffix;
             document.getElementById('results-section').style.display = 'block';
@@ -665,6 +666,16 @@ const html = `<div class="solution-vector">
                     : el.getAttribute('data-i18n-es');
             });
         });
+    });
+
+    document.addEventListener('numcalc:langchange', function(e) {
+        if (typeof globalSteps !== 'undefined' && globalSteps && globalSteps.length > 0) {
+            const stepCount = document.getElementById('step-count');
+            if (stepCount) {
+                const stepSuffix = (I18n.getLang() === 'en') ? 'steps' : 'pasos';
+                stepCount.textContent = globalSteps.length + ' ' + stepSuffix;
+            }
+        }
     });
 </script>
 {% endblock %}

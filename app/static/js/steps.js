@@ -133,7 +133,7 @@ function createStepElement(step, index) {
     // Support bilingual descriptions
     let descText = step.description;
     if (typeof step.description === 'object' && step.description !== null) {
-        const lang = (typeof I18n !== 'undefined' && I18n.currentLang) ? I18n.currentLang : 'en';
+        const lang = (typeof I18n !== 'undefined') ? I18n.getLang() : 'es';
         descText = step.description[lang] || step.description['en'] || Object.values(step.description)[0];
     }
 
@@ -248,3 +248,9 @@ function renderSolution(result, containerId) {
         container.appendChild(wrapper);
     }
 }
+
+document.addEventListener('numcalc:langchange', function(e) {
+    if (globalSteps && globalSteps.length > 0) {
+        updateStepsView();
+    }
+});

@@ -46,4 +46,4 @@ echo "Building and starting containers..."
 sudo docker-compose down || true
 sudo docker-compose up -d --build
 
-echo "Deployment complete! App is running on port 80."
+echo "Deployment complete! App is running on port 5000."

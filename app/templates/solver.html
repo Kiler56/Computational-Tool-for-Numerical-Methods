@@ -338,6 +338,9 @@
 
             if (result.error) throw new Error(result.error);
 
+            // Store result globally so the language toggle can re-render it
+            window.currentResult = result;
+
             if (METHOD_TYPE === 'root') {
                 renderRootSolution(result, 'solution-container');
             } else if (METHOD_TYPE === 'interpolation') {
@@ -581,12 +584,33 @@
     });
 
     document.addEventListener('numcalc:langchange', function(e) {
+        // Re-render step count label
         if (typeof globalSteps !== 'undefined' && globalSteps && globalSteps.length > 0) {
             const stepCount = document.getElementById('step-count');
             if (stepCount) {
                 const stepSuffix = (I18n.getLang() === 'en') ? 'steps' : 'pasos';
                 stepCount.textContent = globalSteps.length + ' ' + stepSuffix;
             }
+        }
+
+        // Re-render solution box with the last result in the new language
+        const result = window.currentResult;
+        if (!result) return;
+
+        const solutionContainer = document.getElementById('solution-container');
+        if (!solutionContainer) return;
+
+        if (METHOD_TYPE === 'root') {
+            renderRootSolution(result, 'solution-container');
+        } else if (METHOD_TYPE === 'interpolation') {
+            renderInterpSolution(result, 'solution-container');
+        } else {
+            renderSolution(result, 'solution-container');
+        }
+
+        // Re-render the steps list in the new language
+        if (typeof renderSteps === 'function' && result.steps && result.steps.length > 0) {
+            renderSteps(result.steps, 'steps-container');
         }
     });
 </script>

@@ -2,21 +2,36 @@
 
 **Herramienta Computacional para Métodos Numéricos**
 
-**Información general del proyecto**
+**Información General del Proyecto**
 
-**Nombre del proyecto:** Computational Tool for Numerical Methods  
-**Repositorio oficial:** [Computational Tool for Numerical Methods](https://github.com/Kiler56/Computational-Tool-for-Numerical-Methods?utm_source=chatgpt.com)
+Nombre del proyecto: Computational Tool for Numerical Methods
+
+Repositorio oficial:  
+<https://github.com/Kiler56/Computational-Tool-for-Numerical-Methods>
 
 La aplicación fue desarrollada como una herramienta educativa y computacional orientada al aprendizaje, análisis y aplicación práctica de métodos numéricos utilizados en ingeniería, matemáticas y ciencias computacionales.
 
 El sistema permite que estudiantes e ingenieros puedan:
 
-- ejecutar diferentes métodos numéricos,
-- analizar resultados iterativos,
-- comprender las condiciones necesarias para aplicar cada método,
-- y visualizar gráficamente el comportamiento de funciones y aproximaciones.
+- Ejecutar diferentes métodos numéricos.
+- Analizar resultados iterativos.
+- Comprender las condiciones necesarias para aplicar cada método.
+- Visualizar gráficamente funciones y aproximaciones numéricas.
 
 La plataforma integra además una graficadora que facilita la interpretación visual de los algoritmos implementados.
+
+**Tabla de Contenido**
+
+- Introducción
+- Usuarios Objetivo
+- Requisitos del Sistema
+- Instalación y Acceso a la Aplicación
+- Navegación General
+- Métodos Implementados
+- Graficadora Integrada
+- Recomendaciones de Uso
+- Posibles Errores
+- Conclusiones
 
 **1\. Introducción**
 
@@ -24,25 +39,25 @@ Los métodos numéricos son técnicas matemáticas utilizadas para resolver prob
 
 Esta herramienta reúne diferentes algoritmos clásicos utilizados en:
 
-- búsqueda de raíces,
-- solución de sistemas de ecuaciones,
-- interpolación,
-- integración numérica,
-- y ecuaciones diferenciales ordinarias.
+- Búsqueda de raíces.
+- Solución de sistemas de ecuaciones.
+- Interpolación.
+- Integración numérica.
+- Ecuaciones diferenciales ordinarias.
 
 El propósito principal de la aplicación es fortalecer el aprendizaje práctico mediante simulaciones, iteraciones y visualización gráfica de los métodos.
 
-**2\. Usuarios objetivo**
+**2\. Usuarios Objetivo**
 
 La herramienta está dirigida principalmente a:
 
-- estudiantes de ingeniería de sistemas,
-- estudiantes de ingeniería matemática,
-- estudiantes de ciencias aplicadas,
-- docentes,
-- y usuarios interesados en métodos numéricos.
+- Estudiantes de ingeniería de sistemas.
+- Estudiantes de ingeniería matemática.
+- Estudiantes de ciencias aplicadas.
+- Docentes.
+- Usuarios interesados en métodos numéricos.
 
-**3\. Requisitos del sistema**
+**3\. Requisitos del Sistema**
 
 **Requisitos mínimos**
 
@@ -57,7 +72,21 @@ La herramienta está dirigida principalmente a:
 - Procesador multinúcleo.
 - Resolución Full HD.
 
-**4\. Instalación del sistema**
+**4\. Instalación y Acceso a la Aplicación**
+
+La aplicación fue desplegada exitosamente y puede utilizarse tanto de manera web como de manera local.
+
+**Acceso web**
+
+El usuario puede acceder directamente a la plataforma desde el siguiente enlace:
+
+<http://54.88.246.211:5000/>
+
+Desde este entorno es posible utilizar todos los métodos numéricos implementados, realizar cálculos iterativos y visualizar resultados mediante la graficadora integrada.
+
+**Ejecución local**
+
+En caso de que el usuario desee ejecutar la aplicación localmente, debe seguir los siguientes pasos.
 
 **Paso 1: Clonar el repositorio**
 
@@ -77,24 +106,30 @@ python main.py
 
 Nota: Dependiendo de la estructura del proyecto, el archivo principal puede variar.
 
-**5\. Navegación general de la aplicación**
+**Recomendaciones de acceso**
+
+- Se recomienda utilizar navegadores actualizados.
+- Verificar conexión a internet para el acceso web.
+- Para ejecución local, asegurarse de tener Python y las dependencias instaladas correctamente.
+
+**5\. Navegación General de la Aplicación**
 
 La plataforma se encuentra organizada por módulos de métodos numéricos.
 
 Cada sección incluye:
 
-- explicación básica del método,
-- entradas requeridas,
-- validaciones,
-- tablas iterativas,
-- resultados numéricos,
-- y visualización gráfica.
+- Explicación básica del método.
+- Entradas requeridas.
+- Validaciones.
+- Tablas iterativas.
+- Resultados numéricos.
+- Visualización gráfica.
 
 La interfaz permite navegar entre diferentes categorías de métodos desde el menú principal.
 
-**6\. Métodos implementados**
+**6\. Métodos Implementados**
 
-**6.1 Métodos de búsqueda de raíces**
+**6.1 Métodos de Búsqueda de Raíces**
 
 Estos métodos permiten encontrar soluciones de ecuaciones no lineales.
 
@@ -108,148 +143,117 @@ Estos métodos permiten encontrar soluciones de ecuaciones no lineales.
 - Secante
 - Raíces múltiples
 
-**6.1.1 Búsquedas Incrementales**
+**Búsquedas Incrementales**
 
-**Descripción**
+Descripción:
 
 Método utilizado para detectar intervalos donde posiblemente exista una raíz mediante cambios de signo.
 
-**Requisitos**
+Requisitos:
 
 - La función debe ser continua.
 - Debe existir un intervalo de exploración.
 
-**Entradas**
-
-- Función
-- Valor inicial
-- Incremento
-- Número máximo de iteraciones
-
-**Resultados**
+Resultados:
 
 - Intervalos candidatos
 - Tabla iterativa
 - Representación gráfica
 
-**6.1.2 Método de Bisección**
+**Método de Bisección**
 
-**Descripción**
+Descripción:
 
 Método iterativo que divide continuamente un intervalo para aproximar una raíz.
 
-**Requisitos**
+Requisitos:
 
 - La función debe ser continua.
 - Debe existir cambio de signo en el intervalo.
 
-**Entradas**
-
-- Función (f(x))
-- Intervalo inicial (\[a,b\])
-- Tolerancia
-- Número máximo de iteraciones
-
-**Resultados**
+Resultados:
 
 - Aproximación de la raíz
 - Error calculado
 - Tabla iterativa
 - Gráfica de la función
 
-**6.1.3 Regla Falsa**
+**Regla Falsa**
 
-**Descripción**
+Descripción:
 
 Método similar a bisección, pero utilizando interpolación lineal para aproximar la raíz.
 
-**Requisitos**
+Requisitos:
 
 - Cambio de signo en el intervalo.
 - Función continua.
 
-**Resultados**
+Resultados:
 
 - Aproximación de la raíz
 - Error relativo
 - Tabla de iteraciones
 
-**6.1.4 Punto Fijo**
+**Punto Fijo**
 
-**Descripción**
+Descripción:
 
-Método iterativo basado en la transformación (x=g(x)).
+Método iterativo basado en la transformación x = g(x).
 
-**Requisitos**
+Requisitos:
 
 - La función transformada debe converger.
-- La derivada de (g(x)) debe cumplir condiciones de convergencia.
+- La derivada de g(x) debe cumplir condiciones de convergencia.
 
-**Resultados**
+Resultados:
 
 - Aproximación de la raíz
 - Iteraciones realizadas
 - Error obtenido
 
-**6.1.5 Método de Newton**
+**Método de Newton**
 
-**Descripción**
+Descripción:
 
 Método basado en derivadas para aproximar raíces rápidamente.
 
-**Requisitos**
+Requisitos:
 
 - La función debe ser derivable.
 - La derivada no debe ser cero cerca de la raíz.
 
-**Entradas**
-
-- Función
-- Derivada
-- Valor inicial
-- Tolerancia
-
-**Resultados**
+Resultados:
 
 - Aproximación de la raíz
 - Iteraciones
 - Error
 - Visualización gráfica
 
-**6.1.6 Método de la Secante**
+**Método de la Secante**
 
-**Descripción**
+Descripción:
 
 Método iterativo que aproxima la derivada utilizando dos valores iniciales.
 
-**Requisitos**
-
-- Dos aproximaciones iniciales.
-- Convergencia adecuada.
-
-**Resultados**
+Resultados:
 
 - Aproximación numérica
 - Error iterativo
 - Tabla de resultados
 
-**6.1.7 Método de Raíces Múltiples**
+**Método de Raíces Múltiples**
 
-**Descripción**
+Descripción:
 
 Método diseñado para funciones con raíces repetidas.
 
-**Requisitos**
-
-- Conocimiento de derivadas.
-- Aproximación inicial adecuada.
-
-**Resultados**
+Resultados:
 
 - Aproximación de la raíz múltiple
 - Convergencia iterativa
 
-**6.2 Sistemas de ecuaciones lineales**
+**6.2 Sistemas de Ecuaciones Lineales**
 
 Estos métodos permiten resolver sistemas matriciales.
 
@@ -267,47 +271,42 @@ Estos métodos permiten resolver sistemas matriciales.
 - Gauss-Seidel
 - SOR
 
-**6.2.1 Eliminación Gaussiana**
+**Eliminación Gaussiana**
 
-**Descripción**
+Descripción:
 
 Transforma el sistema en una matriz triangular superior.
 
-**Requisitos**
-
-- Sistema compatible.
-- Pivotes válidos.
-
-**Resultados**
+Resultados:
 
 - Solución del sistema
 - Procedimiento paso a paso
 
-**6.2.2 Pivoteo Parcial**
+**Pivoteo Parcial**
 
-**Descripción**
+Descripción:
 
 Intercambia filas para mejorar estabilidad numérica.
 
-**Resultados**
+Resultados:
 
 - Matriz transformada
 - Solución estable
 
-**6.2.3 Pivoteo Total**
+**Pivoteo Total**
 
-**Descripción**
+Descripción:
 
 Intercambia filas y columnas para evitar errores numéricos.
 
-**Resultados**
+Resultados:
 
 - Mayor estabilidad computacional
 - Solución del sistema
 
-**6.2.4 Factorización LU**
+**Factorización LU**
 
-**Métodos incluidos**
+Métodos incluidos:
 
 - LU simple
 - LU pivoteo
@@ -315,38 +314,28 @@ Intercambia filas y columnas para evitar errores numéricos.
 - Doolittle
 - Cholesky
 
-**Descripción**
+Descripción:
 
 Descomponen una matriz en productos matriciales para resolver sistemas lineales.
 
-**Requisitos**
-
-- Matriz cuadrada.
-- En Cholesky, la matriz debe ser simétrica positiva definida.
-
-**Resultados**
+Resultados:
 
 - Matrices factorizadas
 - Solución del sistema
 
-**6.2.5 Métodos Iterativos**
+**Métodos Iterativos**
 
-**Métodos incluidos**
+Métodos incluidos:
 
 - Jacobi
 - Gauss-Seidel
 - SOR
 
-**Descripción**
+Descripción:
 
 Métodos aproximativos para resolver sistemas lineales.
 
-**Requisitos**
-
-- Preferiblemente matrices diagonalmente dominantes.
-- Tolerancia y máximo de iteraciones definidos.
-
-**Resultados**
+Resultados:
 
 - Aproximaciones iterativas
 - Error por iteración
@@ -362,75 +351,43 @@ Estos métodos permiten aproximar funciones a partir de conjuntos de puntos.
 - Newton (Diferencias divididas)
 - Lagrange
 
-**6.3.1 Método de Vandermonde**
+**Método de Vandermonde**
 
-**Descripción**
+Descripción:
 
 Construye un sistema matricial utilizando los puntos dados para obtener el polinomio interpolante.
 
-**Requisitos**
-
-- Los valores de (x) no deben repetirse.
-- Se requieren al menos dos puntos.
-
-**Entradas**
-
-- Vector de puntos (x)
-- Vector de puntos (y)
-
-**Resultados**
+Resultados:
 
 - Matriz de Vandermonde
 - Polinomio interpolante
 - Evaluación gráfica
 
-**Uso recomendado**
+**Método de Newton por Diferencias Divididas**
 
-Se utiliza para comprender la construcción algebraica del polinomio interpolante.
-
-**6.3.2 Método de Newton por Diferencias Divididas**
-
-**Descripción**
+Descripción:
 
 Construye el polinomio interpolante utilizando diferencias divididas sucesivas.
 
-**Ventajas**
-
-- Permite agregar nuevos puntos sin recalcular todo el polinomio.
-- Mayor eficiencia computacional.
-
-**Entradas**
-
-- Puntos (x)
-- Puntos (y)
-
-**Resultados**
+Resultados:
 
 - Tabla de diferencias divididas
 - Polinomio interpolante
 - Aproximación gráfica
 
-**6.3.3 Método de Lagrange**
+**Método de Lagrange**
 
-**Descripción**
+Descripción:
 
 Genera un polinomio interpolante mediante polinomios base.
 
-**Requisitos**
-
-- Los valores de (x) deben ser distintos.
-
-**Resultados**
+Resultados:
 
 - Polinomio interpolante
 - Evaluación numérica
 - Representación gráfica
 
-**Uso recomendado**
-
-Adecuado para conjuntos pequeños de datos y fines educativos.
-
-**6.4 Integración numérica**
+**6.4 Integración Numérica**
 
 Permite aproximar integrales definidas.
 
@@ -440,42 +397,38 @@ Permite aproximar integrales definidas.
 - Método de Simpson 1/3 compuesto
 - Método de Simpson 3/8 simple
 
-**6.4.1 Método de Trapecio Compuesto**
+**Método de Trapecio Compuesto**
 
-**Descripción**
+Descripción:
 
 Aproxima el área bajo la curva mediante trapecios sucesivos.
 
-**Resultados**
+Resultados:
 
 - Aproximación de la integral
 - Error aproximado
 - Gráfica del área
 
-**6.4.2 Método de Simpson 1/3 Compuesto**
+**Método de Simpson 1/3 Compuesto**
 
-**Requisitos**
-
-- Número par de subintervalos.
-
-**Resultados**
+Resultados:
 
 - Aproximación del área
 - Tabla de cálculo
 - Representación gráfica
 
-**6.4.3 Método de Simpson 3/8 Simple**
+**Método de Simpson 3/8 Simple**
 
-**Descripción**
+Descripción:
 
 Utiliza interpolación cúbica para aproximar integrales.
 
-**Resultados**
+Resultados:
 
 - Aproximación numérica
 - Área visualizada gráficamente
 
-**6.5 Ecuaciones diferenciales**
+**6.5 Ecuaciones Diferenciales**
 
 Métodos para aproximar soluciones de ecuaciones diferenciales ordinarias.
 
@@ -484,48 +437,41 @@ Métodos para aproximar soluciones de ecuaciones diferenciales ordinarias.
 - Euler
 - Heun
 
-**6.5.1 Método de Euler**
+**Método de Euler**
 
-**Descripción**
+Descripción:
 
 Método básico para aproximar soluciones de problemas de valor inicial.
 
-**Entradas**
-
-- Ecuación diferencial
-- Condición inicial
-- Tamaño de paso
-- Intervalo
-
-**Resultados**
+Resultados:
 
 - Tabla de aproximaciones
 - Solución gráfica
 
-**6.5.2 Método de Heun**
+**Método de Heun**
 
-**Descripción**
+Descripción:
 
 Mejora la aproximación del método de Euler utilizando un promedio de pendientes.
 
-**Resultados**
+Resultados:
 
 - Aproximación refinada
 - Comparación gráfica
 - Error reducido
 
-**7\. Graficadora integrada**
+**7\. Graficadora Integrada**
 
 La aplicación incluye una herramienta gráfica que permite visualizar:
 
-- funciones matemáticas,
-- comportamiento iterativo,
-- aproximaciones numéricas,
-- convergencia de métodos,
-- interpolaciones,
-- y soluciones aproximadas.
+- Funciones matemáticas.
+- Comportamiento iterativo.
+- Aproximaciones numéricas.
+- Convergencia de métodos.
+- Interpolaciones.
+- Soluciones aproximadas.
 
-**Funcionalidades principales**
+Funcionalidades principales:
 
 - Graficación de funciones.
 - Visualización de raíces.
@@ -535,7 +481,7 @@ La aplicación incluye una herramienta gráfica que permite visualizar:
 
 La graficadora facilita la comprensión visual y el análisis matemático de cada algoritmo.
 
-**8\. Recomendaciones de uso**
+**8\. Recomendaciones de Uso**
 
 - Verificar correctamente la sintaxis de las funciones matemáticas.
 - Utilizar intervalos válidos.
@@ -543,7 +489,7 @@ La graficadora facilita la comprensión visual y el análisis matemático de cad
 - Definir tolerancias apropiadas.
 - Validar las condiciones de las matrices antes de ejecutar métodos iterativos.
 
-**9\. Posibles errores comunes**
+**9\. Posibles Errores**
 
 | **Error**              | **Posible causa**                  |
 | ---------------------- | ---------------------------------- |

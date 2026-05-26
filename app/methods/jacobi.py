@@ -123,11 +123,12 @@ class Jacobi(NumericalMethod):
                 error = max(abs(x_new[i] - x[i]) for i in range(n))
                 x = x_new[:]
                 
-                desc = f"Iteración {k+1}: x = [" + ", ".join(f"{v:.6g}" for v in x) + f"], Error = {error:.6g}"
+                desc_es = f"Iteración {k+1}: x = [" + ", ".join(f"{v:.6g}" for v in x) + f"], Error = {error:.6g}"
+                desc_en = f"Iteration {k+1}: x = [" + ", ".join(f"{v:.6g}" for v in x) + f"], Error = {error:.6g}"
                 steps.append({
                     "step": k + 1,
                     "phase": "elimination",
-                    "description": {"es": desc, "en": desc}
+                    "description": {"es": desc_es, "en": desc_en}
                 })
                 
                 if error < tol:

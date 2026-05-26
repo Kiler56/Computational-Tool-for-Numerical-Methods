@@ -114,26 +114,46 @@ function createStepElement(step, index) {
         badges += `<span class="badge badge-swap-col">↔ Cols ${step.swap_cols[0]+1} ↔ ${step.swap_cols[1]+1}</span>`;
     }
 
+    const lang = (typeof I18n !== 'undefined') ? I18n.getLang() : 'es';
+
+    const phaseLabels = {
+        'elimination': { es: 'Eliminación', en: 'Elimination' },
+        'forward_sweep': { es: 'Barrido Hacia Adelante', en: 'Forward Sweep' },
+        'back_substitution': { es: 'Sustitución Hacia Atrás', en: 'Back Substitution' },
+        'forward_substitution': { es: 'Sustitución Hacia Adelante', en: 'Forward Substitution' },
+        'extract': { es: 'Extracción', en: 'Extraction' },
+        'reorder': { es: 'Reorden', en: 'Reordering' },
+        'analysis': { es: 'Análisis', en: 'Analysis' },
+        'lagrange_setup': { es: 'Configuración Lagrange', en: 'Lagrange Setup' },
+        'lagrange_basis': { es: 'Base L_j', en: 'L_j Basis' },
+        'lagrange_sum': { es: 'Suma de Términos', en: 'Sum of Terms' },
+        'setup': { es: 'Configuración', en: 'Setup' },
+        'evaluation': { es: 'Evaluación', en: 'Evaluation' },
+        'weighted_sum': { es: 'Suma Ponderada', en: 'Weighted Sum' },
+        'result': { es: 'RESULTADO', en: 'RESULT' },
+        'error_estimation': { es: 'Estimación de Error', en: 'Error Estimation' },
+        'bisection': { es: 'Bisección', en: 'Bisection' },
+        'root_found': { es: 'Raíz Encontrada', en: 'Root Found' },
+        'max_iter_reached': { es: 'Límite Iteraciones', en: 'Max Iterations' },
+        'converged': { es: 'Convergencia', en: 'Converged' },
+        'secante': { es: 'Secante', en: 'Secant' },
+        'false_position': { es: 'Regla Falsa', en: 'False Position' },
+        'factorization': { es: 'Factorización', en: 'Factorization' },
+        'singularity': { es: 'Singularidad', en: 'Singularity' },
+        'overflow': { es: 'Desbordamiento', en: 'Overflow' },
+        'search': { es: 'Búsqueda', en: 'Search' }
+    };
+
     let phaseLabel = '';
-    if (step.phase === 'elimination') phaseLabel = 'Eliminación';
-    else if (step.phase === 'forward_sweep') phaseLabel = 'Forward Sweep';
-    else if (step.phase === 'back_substitution') phaseLabel = 'Sustitución';
-    else if (step.phase === 'extract') phaseLabel = 'Extracción';
-    else if (step.phase === 'reorder') phaseLabel = 'Reorden';
-    else if (step.phase === 'analysis') phaseLabel = 'Análisis';
-    else if (step.phase === 'lagrange_setup') phaseLabel = 'Configuración Lagrange';
-    else if (step.phase === 'lagrange_basis') phaseLabel = 'Base L_j';
-    else if (step.phase === 'lagrange_sum') phaseLabel = 'Suma de Términos';
-    else if (step.phase === 'setup') phaseLabel = 'Configuración';
-    else if (step.phase === 'evaluation') phaseLabel = 'Evaluación';
-    else if (step.phase === 'weighted_sum') phaseLabel = 'Suma Ponderada';
-    else if (step.phase === 'result') phaseLabel = 'Resultado';
-    else if (step.phase === 'error_estimation') phaseLabel = 'Estimación de Error';
+    if (step.phase && phaseLabels[step.phase]) {
+        phaseLabel = phaseLabels[step.phase][lang];
+    } else if (step.phase) {
+        phaseLabel = step.phase.replace(/_/g, ' ').toUpperCase();
+    }
 
     // Support bilingual descriptions
     let descText = step.description;
     if (typeof step.description === 'object' && step.description !== null) {
-        const lang = (typeof I18n !== 'undefined') ? I18n.getLang() : 'es';
         descText = step.description[lang] || step.description['en'] || Object.values(step.description)[0];
     }
 

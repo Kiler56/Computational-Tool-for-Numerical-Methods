@@ -58,7 +58,7 @@ class Crout(NumericalMethod):
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "elimination",
-                "description": {"es": f"Paso {k+1}: Construcción de columna {k+1} de L y fila {k+1} de U", "en": f"Passed{k+1}: Column construction{k+1}of L and row{k+1}of U"},
+                "description": {"es": f"Paso {k+1}: Construcción de columna {k+1} de L y fila {k+1} de U", "en": f"Step {k+1}: Column {k+1} of L and row {k+1} of U construction"},
                 "matrix_state": self._snapshot(L)
             })
 

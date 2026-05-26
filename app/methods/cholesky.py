@@ -85,7 +85,7 @@ class Cholesky(NumericalMethod):
             steps.append({
                 "step": len(steps) + 1,
                 "phase": "elimination",
-                "description": {"es": f"Cálculo de fila {i+1} de L y columna {i+1} de U", "en": f"Row calculation{i+1}of L and column{i+1}of U"},
+                "description": {"es": f"Cálculo de fila {i+1} de L y columna {i+1} de U", "en": f"Calculation of row {i+1} of L and column {i+1} of U"},
                 "matrix_state": self._snapshot(L)
             })
             

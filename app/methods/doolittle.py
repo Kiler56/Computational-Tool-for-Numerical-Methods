@@ -129,9 +129,9 @@ class Doolittle(NumericalMethod):
                     f"Construcción de fila {k + 1} de U "
                     f"y columna {k + 1} de L."
                 ), "en": (
-                    f"Paso {k + 1}: "
-                    f"Construcción de fila {k + 1} de U "
-                    f"y columna {k + 1} de L."
+                    f"Step {k + 1}: "
+                    f"Construction of row {k + 1} of U "
+                    f"and column {k + 1} of L."
                 )},
 
                 # Separate matrices

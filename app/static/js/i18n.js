@@ -130,7 +130,12 @@ const I18n = (() => {
         const esHTML = container.getAttribute("data-instructions-es");
         const enHTML = container.getAttribute("data-instructions-en");
 
-        container.innerHTML = currentLang === "en" ? enHTML : esHTML;
+        const body = document.getElementById("instructions-body");
+        if (body) {
+            body.innerHTML = currentLang === "en" ? enHTML : esHTML;
+        } else {
+            container.innerHTML = currentLang === "en" ? enHTML : esHTML;
+        }
     }
 
     function getLang() {

@@ -45,19 +45,31 @@ class LagrangeInterpolation(NumericalMethod):
     @property
     def instructions(self) -> dict:
 
-        html = (
+        html_es = (
+            "<ul>"
+            "<li>Ingrese al menos dos nodos distintos <code>x_i</code> con sus valores <code>y_i</code>.</li>"
+            "<li>El polinomio interpolante tiene grado máximo <code>n - 1</code> para <code>n</code> nodos.</li>"
+            "<li>Polinomios base: "
+            "<code>L_j(x) = Π_{m≠j} (x - x_m) / (x_j - x_m)</code>; "
+            "<code>P(x) = Σ_j y_j L_j(x)</code>.</li>"
+            "<li>También se genera el polinomio expandido explícito.</li>"
+            "<li>Defina <code>x</code> para evaluar <code>P(x)</code> en ese punto.</li>"
+            "</ul>"
+        )
+
+        html_en = (
             "<ul>"
             "<li>Enter at least two distinct nodes <code>x_i</code> with values <code>y_i</code>.</li>"
-            "<li>The interpolating polynomial has degree at most <code>n − 1</code> for <code>n</code> nodes.</li>"
+            "<li>The interpolating polynomial has degree at most <code>n - 1</code> for <code>n</code> nodes.</li>"
             "<li>Basis polynomials: "
-            "<code>L_j(x) = Π_{m≠j} (x − x_m) / (x_j − x_m)</code>; "
+            "<code>L_j(x) = Π_{m≠j} (x - x_m) / (x_j - x_m)</code>; "
             "<code>P(x) = Σ_j y_j L_j(x)</code>.</li>"
             "<li>The explicit expanded polynomial is also generated.</li>"
             "<li>Set <code>x</code> to evaluate <code>P(x)</code> at that point.</li>"
             "</ul>"
         )
 
-        return {"es": html, "en": html}
+        return {"es": html_es, "en": html_en}
 
     # ── Build Explicit Polynomial ────────────────────────────────────────────
 

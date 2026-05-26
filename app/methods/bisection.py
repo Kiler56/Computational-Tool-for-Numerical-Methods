@@ -38,10 +38,6 @@ class Bisection(NumericalMethod):
         return {
             "es": (
                 "<ul><li>Ingrese una función <code>f(x)</code> y un intervalo <code>[a, b]</code>.</li><li>⚠️ <strong>Requisito:</strong> <code>f(a)</code> y <code>f(b)</code> deben tener signos opuestos (Bolzano).</li><li>El intervalo se reduce a la mitad en cada iteración hasta que el error esté por debajo de la tolerancia.</li></ul>"
-            )</code> and an interval <code>[a, b]</code>.</li>"
-                "<li>⚠️ <strong>Requirement:</strong> <code>f(a)</code> and <code>f(b)</code> must have opposite signs (Bolzano).</li>"
-                "<li>The interval is halved each iteration until the error is below the tolerance.</li>"
-                "</ul>"
             ),
             "en": (
                 "<ul>"

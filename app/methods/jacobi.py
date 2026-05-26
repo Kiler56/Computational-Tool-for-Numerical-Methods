@@ -22,9 +22,7 @@ class Jacobi(NumericalMethod):
     def instructions(self) -> dict:
         return {
             "es": (
-                "<ul><li>Ingrese la matriz <code>A</code> y el vector <code>b</code>.</li><li>Recomendado: La matriz debería ser diagonalmente dominante.</li>"
-            ) y el máximo de iteraciones.</li>"
-                "</ul>"
+                "<ul><li>Ingrese la matriz <code>A</code> y el vector <code>b</code>.</li><li>Recomendado: La matriz debería ser diagonalmente dominante.</li><li>Establezca la tolerancia, el vector inicial (separado por comas) y el máximo de iteraciones.</li></ul>"
             ),
             "en": (
                 "<ul>"

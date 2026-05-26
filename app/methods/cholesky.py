@@ -24,9 +24,7 @@ class Cholesky(NumericalMethod):
     def instructions(self) -> dict:
         return {
             "es": (
-                "<ul><li>Ingrese una matriz cuadrada <code>A</code> y el vector <code>b</code>.</li><li>La matriz debe ser <strong>Simétrica y Definida Positiva</strong>.</li>"
-            ) y luego resuelve Lz = b y Ux = z.</li>"
-                "</ul>"
+                "<ul><li>Ingrese una matriz cuadrada <code>A</code> y el vector <code>b</code>.</li><li>La matriz debe ser <strong>Simétrica y Definida Positiva</strong>.</li><li>Calcula L y U (donde U = L^T) y luego resuelve Lz = b y Ux = z.</li></ul>"
             ),
             "en": (
                 "<ul>"

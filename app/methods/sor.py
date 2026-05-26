@@ -22,9 +22,7 @@ class SOR(NumericalMethod):
     def instructions(self) -> dict:
         return {
             "es": (
-                "<ul><li>Ingrese la matriz <code>A</code> y el vector <code>b</code>.</li>"
-            ), tolerancia, vector inicial y límite de iteraciones.</li>"
-                "</ul>"
+                "<ul><li>Ingrese la matriz <code>A</code> y el vector <code>b</code>.</li><li>Especifique omega (ω), tolerancia, vector inicial y límite de iteraciones.</li></ul>"
             ),
             "en": (
                 "<ul>"

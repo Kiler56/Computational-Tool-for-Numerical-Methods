@@ -22,10 +22,7 @@ class GaussSeidel(NumericalMethod):
     def instructions(self) -> dict:
         return {
             "es": (
-                "<ul>"
-                "<li>Ingrese la matriz <code>A</code> y el vector <code>b</code>.</li>"
-                "<li>Configure la tolerancia, el vector inicial y el máximo de iteraciones.</li>"
-                "</ul>"
+                "<ul><li>Ingrese la matriz <code>A</code> y el vector <code>b</code>.</li><li>Configure la tolerancia, el vector inicial y el máximo de iteraciones.</li></ul>"
             ),
             "en": (
                 "<ul>"
@@ -38,7 +35,7 @@ class GaussSeidel(NumericalMethod):
     @property
     def params_schema(self) -> list:
         return [
-            {"key": "tol", "label_es": "Tolerancia", "label_en": "Tolerance", "type": "number", "default": 0.0001},
+            {"key": "tol", "label_es": "tolerancia", "label_en": "Tolerance", "type": "number", "default": 0.0001},
             {"key": "max_iter", "label_es": "Iteraciones Max", "label_en": "Max Iterations", "type": "number", "default": 100},
             {"key": "x0", "label_es": "Vector Inicial (x0)", "label_en": "Initial Vector (x0)", "type": "text", "default": "0,0,0"}
         ]

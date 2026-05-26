@@ -26,12 +26,7 @@ class MatrixAnalysis(NumericalMethod):
     def instructions(self) -> dict:
         return {
             "es": (
-                "<ul>"
-                "<li>Ingrese una matriz cuadrada <code>A</code>. No necesita el vector <code>b</code>.</li>"
-                "<li>Calcula el determinante de la matriz.</li>"
-                "<li>Verifica si es Estrictamente Diagonal Dominante.</li>"
-                "<li>Verifica si es Definida Positiva.</li>"
-                "</ul>"
+                "<ul><li>Ingrese una matriz cuadrada <code>A</code>. No necesita el vector <code>b</code>.</li><li>Calcula el determinante de la matriz.</li><li>Verifica si es Estrictamente Diagonal Dominante.</li><li>Verifica si es Definida Positiva.</li></ul>"
             ),
             "en": (
                 "<ul>"

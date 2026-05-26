@@ -15,8 +15,8 @@ class GaussianSimple(NumericalMethod):
         return "gaussian_simple"
 
     @property
-    def description(self) -> str:
-        return "Gaussian elimination (simple)"
+    def description(self) -> dict:
+        return {"es": "Eliminación gaussiana (simple)", "en": "Gaussian elimination (simple)"}
 
     @property
     def plot_type(self) -> str:
@@ -26,11 +26,7 @@ class GaussianSimple(NumericalMethod):
     def instructions(self) -> dict:
         return {
             "es": (
-                "<ul>"
-                "<li>Enter a square coefficient matrix <code>A</code> and RHS vector <code>b</code>.</li>"
-                "<li>This variant does not swap rows.</li>"
-                "<li>⚠️ <strong>Restriction:</strong> A zero or tiny diagonal pivot makes the method fail — use a pivoting variant instead.</li>"
-                "</ul>"
+                "<ul><li>Ingrese una matriz de coeficientes cuadrados <code>A</code> y un vector RHS <code>b</code>.</li><li>Esta variante no intercambia filas.</li><li>⚠️ <strong>Restricción:</strong> Un pivote diagonal cero o pequeño hace que el método falle; use una variante pivotante en su lugar.</li></ul>"
             ),
             "en": (
                 "<ul>"

@@ -31,8 +31,8 @@ class LagrangeInterpolation(NumericalMethod):
         return "lagrange"
 
     @property
-    def description(self) -> str:
-        return "Lagrange interpolation"
+    def description(self) -> dict:
+        return {"es": "interpolación de Lagrange", "en": "Lagrange interpolation"}
 
     @property
     def method_type(self) -> str:

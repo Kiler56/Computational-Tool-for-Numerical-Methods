@@ -30,7 +30,7 @@ class Secante(NumericalMethod):
         return [
             {"key": "x0", "label_es": "x₀ (primer punto)", "label_en": "x₀ (first point)", "type": "float", "default": 0},
             {"key": "x1", "label_es": "x₁ (segundo punto)", "label_en": "x₁ (second point)", "type": "float", "default": 2},
-            {"key": "tol", "label_es": "Tolerancia", "label_en": "Tolerance", "type": "float", "default": 1e-7},
+            {"key": "tol", "label_es": "tolerancia", "label_en": "Tolerance", "type": "float", "default": 1e-7},
             {"key": "max_iter", "label_es": "Máx. iteraciones", "label_en": "Max iterations", "type": "int", "default": 100},
         ]
 

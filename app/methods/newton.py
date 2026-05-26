@@ -13,8 +13,8 @@ class Newton(NumericalMethod):
         return "newton"
 
     @property
-    def description(self) -> str:
-        return "Newton-Raphson"
+    def description(self) -> dict:
+        return {"es": "Newton-Raphson", "en": "Newton-Raphson"}
 
     @property
     def method_type(self) -> str:
@@ -27,9 +27,9 @@ class Newton(NumericalMethod):
     @property
     def params_schema(self) -> list:
         return [
-            {"key": "x0", "label_es": "Initial value (x₀)", "label_en": "Initial value (x₀)", "type": "float", "default": 1.5},
-            {"key": "tol", "label_es": "Tolerance", "label_en": "Tolerance", "type": "float", "default": 1e-7},
-            {"key": "max_iter", "label_es": "Max iterations", "label_en": "Max iterations", "type": "int", "default": 100},
+            {"key": "x0", "label_es": "Valor inicial (x₀)", "label_en": "Initial value (x₀)", "type": "float", "default": 1.5},
+            {"key": "tol", "label_es": "Tolerancia", "label_en": "Tolerance", "type": "float", "default": 1e-7},
+            {"key": "max_iter", "label_es": "iteraciones máximas", "label_en": "Max iterations", "type": "int", "default": 100},
         ]
 
     @property

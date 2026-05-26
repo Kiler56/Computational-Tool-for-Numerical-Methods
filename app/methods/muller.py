@@ -14,8 +14,8 @@ class Muller(NumericalMethod):
         return "muller"
 
     @property
-    def description(self) -> str:
-        return "Müller"
+    def description(self) -> dict:
+        return {"es": "Müller", "en": "Müller"}
 
     @property
     def method_type(self) -> str:
@@ -31,7 +31,7 @@ class Muller(NumericalMethod):
             {"key": "x0", "label_es": "x₀", "label_en": "x₀", "type": "float", "default": 0.0},
             {"key": "x1", "label_es": "x₁", "label_en": "x₁", "type": "float", "default": 0.5},
             {"key": "x2", "label_es": "x₂", "label_en": "x₂", "type": "float", "default": 1.0},
-            {"key": "tol", "label_es": "Tolerancia", "label_en": "Tolerance", "type": "float", "default": 1e-7},
+            {"key": "tol", "label_es": "tolerancia", "label_en": "Tolerance", "type": "float", "default": 1e-7},
             {"key": "max_iter", "label_es": "Máx. iteraciones", "label_en": "Max iterations", "type": "int", "default": 100},
         ]
 

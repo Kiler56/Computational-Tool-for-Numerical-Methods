@@ -13,8 +13,8 @@ class Bisection(NumericalMethod):
         return "bisection"
 
     @property
-    def description(self) -> str:
-        return "Bisection"
+    def description(self) -> dict:
+        return {"es": "Bisección", "en": "Bisection"}
 
     @property
     def method_type(self) -> str:
@@ -27,18 +27,18 @@ class Bisection(NumericalMethod):
     @property
     def params_schema(self) -> list:
         return [
-            {"key": "a", "label_es": "Left endpoint (a)", "label_en": "Left endpoint (a)", "type": "float", "default": 0},
-            {"key": "b", "label_es": "Right endpoint (b)", "label_en": "Right endpoint (b)", "type": "float", "default": 2},
-            {"key": "tol", "label_es": "Tolerance", "label_en": "Tolerance", "type": "float", "default": 1e-7},
-            {"key": "max_iter", "label_es": "Max iterations", "label_en": "Max iterations", "type": "int", "default": 100},
+            {"key": "a", "label_es": "Punto final izquierdo (a)", "label_en": "Left endpoint (a)", "type": "float", "default": 0},
+            {"key": "b", "label_es": "Extremo derecho (b)", "label_en": "Right endpoint (b)", "type": "float", "default": 2},
+            {"key": "tol", "label_es": "Tolerancia", "label_en": "Tolerance", "type": "float", "default": 1e-7},
+            {"key": "max_iter", "label_es": "iteraciones máximas", "label_en": "Max iterations", "type": "int", "default": 100},
         ]
 
     @property
     def instructions(self) -> dict:
         return {
             "es": (
-                "<ul>"
-                "<li>Enter a function <code>f(x)</code> and an interval <code>[a, b]</code>.</li>"
+                "<ul><li>Ingrese una función <code>f(x)</code> y un intervalo <code>[a, b]</code>.</li><li>⚠️ <strong>Requisito:</strong> <code>f(a)</code> y <code>f(b)</code> deben tener signos opuestos (Bolzano).</li><li>El intervalo se reduce a la mitad en cada iteración hasta que el error esté por debajo de la tolerancia.</li></ul>"
+            )</code> and an interval <code>[a, b]</code>.</li>"
                 "<li>⚠️ <strong>Requirement:</strong> <code>f(a)</code> and <code>f(b)</code> must have opposite signs (Bolzano).</li>"
                 "<li>The interval is halved each iteration until the error is below the tolerance.</li>"
                 "</ul>"

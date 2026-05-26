@@ -51,13 +51,7 @@ class Doolittle(NumericalMethod):
         return {
 
             "es": (
-                "<ul>"
-                "<li>Ingrese una matriz cuadrada <code>A</code> y el vector <code>b</code>.</li>"
-                "<li>El método calcula las matrices <code>L</code> y <code>U</code>.</li>"
-                "<li>La matriz <code>L</code> tiene unos en su diagonal principal.</li>"
-                "<li>Primero se resuelve <code>Lz = b</code>.</li>"
-                "<li>Luego se resuelve <code>Ux = z</code>.</li>"
-                "</ul>"
+                "<ul><li>Ingrese una matriz cuadrada <code>A</code> y el vector <code>b</code>.</li><li>El método calcula las matrices <code>L</code> y <code>U</code>.</li><li>La matriz <code>L</code> tiene unos en su diagonal principal.</li><li>Primero se resuelve <code>Lz = b</code>.</li><li>Luego se resuelve <code>Ux = z</code>.</li></ul>"
             ),
 
             "en": (

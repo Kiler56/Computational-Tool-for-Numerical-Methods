@@ -26,11 +26,7 @@ class GaussianPartialPivoting(NumericalMethod):
     def instructions(self) -> dict:
         return {
             "es": (
-                "<ul>"
-                "<li>Ingrese el sistema de ecuaciones. Antes de cada paso de eliminación, el algoritmo buscará el valor absoluto mayor en la columna actual.</li>"
-                "<li>Si ese valor no está en la fila pivote actual, intercambiará las filas pertinentes.</li>"
-                "<li>💡 <strong>Ventaja:</strong> Evita la división por cero y reduce significativamente los errores de redondeo comparado con la Gaussiana Simple.</li>"
-                "</ul>"
+                "<ul><li>Ingrese el sistema de ecuaciones. Antes de cada paso de eliminación, el algoritmo buscará el valor absoluto mayor en la columna actual.</li><li>Si ese valor no está en la fila pivote actual, intercambiará las filas pertinentes.</li><li>💡 <strong>Ventaja:</strong> Evita la división por cero y reduce significativamente los errores de redondeo en comparación con la Gaussiana Simple.</li></ul>"
             ),
             "en": (
                 "<ul>"
@@ -132,12 +128,7 @@ class GaussianTotalPivoting(NumericalMethod):
     def instructions(self) -> dict:
         return {
             "es": (
-                "<ul>"
-                "<li>Este método busca el valor absoluto máximo no solo en la columna actual, sino en toda la submatriz restante.</li>"
-                "<li>Puede intercambiar tanto <strong>filas como columnas</strong> para posicionar el pivote.</li>"
-                "<li>💡 <strong>Ventaja:</strong> Ofrece la mayor estabilidad numérica entre todos los métodos de eliminación directa.</li>"
-                "<li>El orden de las incógnitas cambiará durante el proceso, pero el sistema reordena la solución final automáticamente.</li>"
-                "</ul>"
+                "<ul><li>Este método busca el valor absoluto máximo no solo en la columna actual, sino en toda la submatriz restante.</li><li>Puede intercambiar tanto <strong>filas como columnas</strong> para posicionar el pivote.</li><li>💡 <strong>Ventaja:</strong> Ofrece la mayor estabilidad numérica entre todos los métodos de eliminación directa.</li><li>El orden de las incógnitas cambiará durante el proceso, pero el sistema reordena la solución final automáticamente.</li></ul>"
             ),
             "en": (
                 "<ul>"

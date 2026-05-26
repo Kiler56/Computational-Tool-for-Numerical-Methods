@@ -22,9 +22,8 @@ class SOR(NumericalMethod):
     def instructions(self) -> dict:
         return {
             "es": (
-                "<ul>"
-                "<li>Ingrese la matriz <code>A</code> y el vector <code>b</code>.</li>"
-                "<li>Especifique omega (ω), tolerancia, vector inicial y límite de iteraciones.</li>"
+                "<ul><li>Ingrese la matriz <code>A</code> y el vector <code>b</code>.</li>"
+            ), tolerancia, vector inicial y límite de iteraciones.</li>"
                 "</ul>"
             ),
             "en": (
@@ -39,7 +38,7 @@ class SOR(NumericalMethod):
     def params_schema(self) -> list:
         return [
             {"key": "w", "label_es": "Omega (ω)", "label_en": "Omega (ω)", "type": "number", "default": 1.5},
-            {"key": "tol", "label_es": "Tolerancia", "label_en": "Tolerance", "type": "number", "default": 0.0001},
+            {"key": "tol", "label_es": "tolerancia", "label_en": "Tolerance", "type": "number", "default": 0.0001},
             {"key": "max_iter", "label_es": "Iteraciones Max", "label_en": "Max Iterations", "type": "number", "default": 100},
             {"key": "x0", "label_es": "Vector Inicial (x0)", "label_en": "Initial Vector (x0)", "type": "text", "default": "0,0,0"}
         ]

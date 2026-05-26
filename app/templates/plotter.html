@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}NumCalc — Independent Plotter{% endblock %}
+
+{% block content %}
+<div class="solver-container">
+    <header class="solver-header">
+        <h1 class="solver-title" data-i18n="plotter_title">Interactive Plotter</h1>
+        <p class="solver-desc" data-i18n="plotter_desc">Plot independent mathematical functions or discrete data points without running a specific method.</p>
+    </header>
+
+    <div class="solver-layout">
+        <aside class="solver-config">
+            <!-- Tabs for Function vs Points -->
+            <div class="tabs" style="display:flex; gap: 10px; margin-bottom: 20px;">
+                <button class="btn btn-primary" id="tab-func" onclick="switchTab('func')" style="flex:1;">Function</button>
+                <button class="btn btn-outline" id="tab-points" onclick="switchTab('points')" style="flex:1;">Points</button>
+            </div>
+
+            <!-- Function Config -->
+            <div id="config-func" class="config-section">
+                <div class="input-group">
+                    <label class="input-label">Function f(x)</label>
+                    <input type="text" id="plot-expr" class="input-field" placeholder="e.g. x**2 - 4">
+                </div>
+                <div class="input-row" style="display:flex; gap: 10px;">
+                    <div class="input-group" style="flex:1;">
+                        <label class="input-label">x Min</label>
+                        <input type="number" id="plot-xmin" class="input-field" value="-10">
+                    </div>
+                    <div class="input-group" style="flex:1;">
+                        <label class="input-label">x Max</label>
+                        <input type="number" id="plot-xmax" class="input-field" value="10">
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="renderPlotFunc()">Plot Function</button>
+            </div>
+
+            <!-- Points Config -->
+            <div id="config-points" class="config-section" style="display:none;">
+                <div class="input-group">
+                    <label class="input-label">Data Points (x,y)</label>
+                    <textarea id="plot-points" class="input-field" rows="5" placeholder="0, 1&#10;1, 3&#10;2, 7&#10;3, 13"></textarea>
+                    <small style="color:var(--text-muted); margin-top:4px; display:block;">Enter one pair per line, separated by a comma.</small>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="renderPlotPoints()">Plot Points</button>
+            </div>
+        </aside>
+
+        <section class="solver-results">
+            <div class="card" style="height: 100%; min-height: 500px;">
+                <div id="independent-plot" style="width: 100%; height: 100%;">
+                    <!-- Plotly will render here -->
+                    <div style="display:flex; align-items:center; justify-content:center; height:100%; color:var(--text-muted);">
+                        <p>Configure parameters on the left to generate a plot.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function switchTab(tab) {
+        document.getElementById('config-func').style.display = tab === 'func' ? 'block' : 'none';
+        document.getElementById('config-points').style.display = tab === 'points' ? 'block' : 'none';
+        
+        document.getElementById('tab-func').className = tab === 'func' ? 'btn btn-primary' : 'btn btn-outline';
+        document.getElementById('tab-points').className = tab === 'points' ? 'btn btn-primary' : 'btn btn-outline';
+    }
+
+    function renderPlotFunc() {
+        const expr = document.getElementById('plot-expr').value;
+        const xMin = parseFloat(document.getElementById('plot-xmin').value) || -10;
+        const xMax = parseFloat(document.getElementById('plot-xmax').value) || 10;
+        
+        if (!expr) {
+            alert('Please enter a function expression.');
+            return;
+        }
+
+        document.getElementById('independent-plot').innerHTML = ''; // clear
+        MathPlotter.plotFunction('independent-plot', expr, xMin, xMax);
+    }
+
+    function renderPlotPoints() {
+        const text = document.getElementById('plot-points').value;
+        if (!text.trim()) {
+            alert('Please enter some data points.');
+            return;
+        }
+
+        const lines = text.trim().split('\n');
+        const x = [];
+        const y = [];
+
+        for (let line of lines) {
+            const parts = line.split(',');
+            if (parts.length >= 2) {
+                x.push(parseFloat(parts[0].trim()));
+                y.push(parseFloat(parts[1].trim()));
+            }
+        }
+
+        if (x.length === 0) {
+            alert('Invalid points format. Use "x, y" on each line.');
+            return;
+        }
+
+        document.getElementById('independent-plot').innerHTML = ''; // clear
+        MathPlotter.plotInterpolation('independent-plot', x, y, null);
+    }
+</script>
+{% endblock %}

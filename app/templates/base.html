@@ -47,6 +47,22 @@
                 {% if methods is defined %}
                 <div class="method-nav-groups" id="method-nav-groups">
 
+                    <div class="nav-group" data-category="tools">
+                        <button type="button" class="nav-group-toggle" aria-expanded="true" aria-controls="nav-panel-tools">
+                            <span class="nav-group-label" data-i18n="nav_tools">Tools</span>
+                            <span class="nav-group-meta">
+                                <span class="nav-group-chevron" aria-hidden="true"></span>
+                            </span>
+                        </button>
+                        <ul class="nav-list nav-group-panel" id="nav-panel-tools">
+                            <li class="nav-item">
+                                <a href="/plotter" class="nav-link">
+                                    <span style="font-size: 1.2em; margin-right: 8px;">📈</span> Independent Plotter
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
                     <div class="nav-group" data-category="linear_system">
                         <button type="button" class="nav-group-toggle" aria-expanded="true" aria-controls="nav-panel-systems">
                             <span class="nav-group-label" data-i18n="nav_systems">Linear systems</span>

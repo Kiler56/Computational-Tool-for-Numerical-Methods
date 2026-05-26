@@ -20,6 +20,11 @@ def index():
     return render_template("index.html", methods=methods)
 
 
+@main_bp.route("/plotter")
+def plotter():
+    return render_template("plotter.html", methods=registry.list_all())
+
+
 @main_bp.route("/solver/<method_name>")
 def solver(method_name: str):
     try:
